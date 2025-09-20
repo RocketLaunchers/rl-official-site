@@ -10,6 +10,9 @@ const Blog = () => {
         </h2>
         
         <div className="space-y-8">
+          {blogPosts.length === 0 && (
+            <div className="text-gray-400 font-light">No blog posts available.</div>
+          )}
           {blogPosts.map((post, index) => (
             <Link 
               key={index}
