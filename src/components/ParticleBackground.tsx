@@ -1,11 +1,5 @@
 import { useEffect } from 'react';
 
-declare global {
-  interface Window {
-    particlesJS: any;
-  }
-}
-
 const ParticleBackground = () => {
   useEffect(() => {
     // Load particles.js script
