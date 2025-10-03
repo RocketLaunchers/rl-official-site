@@ -31,29 +31,16 @@ function makeStaticCopyPlugin() {
       const assetsDir = path.join(blogsDir, slug, 'assets');
       const videosDir = path.join(blogsDir, slug, 'videos');
       if (hasFiles(assetsDir)) {
+        // Copy preserving slug/assets relative structure
         targets.push({
           src: `src/blogs/${slug}/assets/**/*`,
-          dest: 'blogs',
-          rename: (fileName: string, filePath: string) => {
-            const m = filePath.replace(/\\/g, '/').match(/src\/blogs\/([^/]+)\/assets\/(.*)$/);
-            if (!m) return fileName;
-            const s = m[1];
-            const rest = m[2];
-            return `${s}/assets/${rest}`;
-          }
+          dest: `blogs/${slug}/assets`
         });
       }
       if (hasFiles(videosDir)) {
         targets.push({
           src: `src/blogs/${slug}/videos/**/*`,
-          dest: 'blogs',
-          rename: (fileName: string, filePath: string) => {
-            const m = filePath.replace(/\\/g, '/').match(/src\/blogs\/([^/]+)\/videos\/(.*)$/);
-            if (!m) return fileName;
-            const s = m[1];
-            const rest = m[2];
-            return `${s}/videos/${rest}`;
-          }
+          dest: `blogs/${slug}/videos`
         });
       }
     }
