@@ -22,7 +22,7 @@ export interface BlogPost {
 import { parseBlogPost } from '../utils/parseBlogPost';
 
 // Try both absolute-from-root and relative patterns, then merge
-const mdFilesAbs = import.meta.glob('/src/blogs/*/index.md', { eager: true, query: '?raw', import: 'default' });
+const mdFilesAbs = import.meta.glob('../blogs/*/index.md', { eager: true, query: '?raw', import: 'default' });
 const mdFiles = mdFilesAbs as Record<string, unknown>;
 
 const loadedPosts: BlogPost[] = [];
