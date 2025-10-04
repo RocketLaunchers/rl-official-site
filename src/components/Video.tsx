@@ -1,4 +1,5 @@
 import React from 'react';
+import { useImageModal } from './ImageModalProvider';
 
 interface VideoProps {
   src: string;
@@ -15,32 +16,39 @@ const Video: React.FC<VideoProps> = ({
   src,
   alt,
   caption,
-  autoplay = false,
-  loop = false,
+  // autoplay and loop are not used for inline preview
   muted = true,
   controls = true,
   className = ''
 }) => {
+  const { openModal } = useImageModal();
+
+  const handleOpen = () => {
+    openModal(src, alt, 'video');
+  };
   return (
-    <div className={`video-container ${className}`}>
-      <div className="flex justify-center">
+    <div className={`video-container ${className} cursor-pointer`} onClick={handleOpen}>
+      <div className="flex justify-center relative">
+        {/* small inline preview - clicking opens modal */}
         <video
           src={src}
-          autoPlay={autoplay}
-          loop={loop}
+          // do not autoplay inline preview
+          autoPlay={false}
+          loop={false}
           muted={muted}
           controls={controls}
-          className="max-w-md w-full h-auto border border-gray-700 rounded-lg"
+          className="w-full h-auto border border-gray-700 rounded-lg object-cover"
           aria-label={alt}
           preload="metadata"
-        >
-          <p className="text-gray-400 text-center py-8">
-            Your browser does not support the video tag. 
-            <a href={src} className="text-blue-400 hover:text-blue-300 ml-2">
-              Download the video
-            </a>
-          </p>
-        </video>
+        />
+        {/* Play overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-black bg-opacity-40 rounded-full p-3">
+            <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
       </div>
       {caption && (
         <p className="text-gray-500 text-sm font-light mt-2 text-center">

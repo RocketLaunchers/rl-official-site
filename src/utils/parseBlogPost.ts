@@ -120,7 +120,13 @@ export function parseBlogPost(mdContent: string, postId: string): BlogPost {
       case 'heading': {
         const t = token as Tokens.Heading;
         if (t.text && t.text.trim()) {
-          sections.push({ type: 'heading', content: t.text.trim() });
+          // Render inline markdown (bold/italic/links) to HTML for headings
+          try {
+            const html = (marked.parseInline(t.text) as unknown) as string;
+            sections.push({ type: 'heading', content: html });
+          } catch (e) {
+            sections.push({ type: 'heading', content: t.text.trim() });
+          }
         }
         break;
       }
@@ -135,7 +141,13 @@ export function parseBlogPost(mdContent: string, postId: string): BlogPost {
         const image = parseImageFromText(text, id);
         if (image) { sections.push(image); break; }
 
-        sections.push({ type: 'text', content: text });
+        // Render inline markdown (bold/italic/links) to HTML for paragraphs
+        try {
+          const html = (marked.parseInline(text) as unknown) as string;
+          sections.push({ type: 'text', content: html });
+        } catch (e) {
+          sections.push({ type: 'text', content: text });
+        }
         break;
       }
       case 'image': {
@@ -149,7 +161,14 @@ export function parseBlogPost(mdContent: string, postId: string): BlogPost {
         const t = token as Tokens.List;
         for (const item of t.items) {
           const text = (item.text || '').trim();
-          if (text) sections.push({ type: 'text', content: `• ${text}` });
+          if (text) {
+            try {
+              const html = (marked.parseInline(text) as unknown) as string;
+              sections.push({ type: 'text', content: `• ${html}` });
+            } catch (e) {
+              sections.push({ type: 'text', content: `• ${text}` });
+            }
+          }
         }
         break;
       }

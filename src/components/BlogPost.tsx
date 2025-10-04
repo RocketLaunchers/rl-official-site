@@ -67,26 +67,32 @@ const BlogPost = () => {
             switch (section.type) {
               case 'heading':
                 return (
-                  <h2 key={index} className="text-3xl font-light text-white mt-12 mb-6">
-                    {section.content}
-                  </h2>
+                  <h2
+                    key={index}
+                    className="text-3xl font-light text-white mt-12 mb-6"
+                    // section.content may contain inline HTML (bold/links)
+                    dangerouslySetInnerHTML={{ __html: section.content }}
+                  />
                 );
               case 'text':
                 return (
-                  <p key={index} className="text-gray-300 leading-relaxed font-light mb-6 text-lg">
-                    {section.content}
-                  </p>
+                  <p
+                    key={index}
+                    className="text-gray-300 leading-relaxed font-light mb-6 text-lg"
+                    // section.content may contain inline HTML (bold/links)
+                    dangerouslySetInnerHTML={{ __html: section.content }}
+                  />
                 );
               case 'image':
                 return (
-                  <div key={index} className="my-12">
+                  <div key={index} className="my-12 flex flex-col items-center">
                     <ClickableImage 
                       src={section.content} 
                       alt={section.alt || ''} 
-                      className="w-full h-auto border border-gray-700"
+                      className="max-w-xs w-full h-auto border border-gray-700 rounded-lg mx-auto"
                     />
                     {section.alt && (
-                      <p className="text-gray-500 text-sm font-light mt-2 text-center">
+                      <p className="text-gray-500 text-sm font-light mt-2 text-center max-w-xs">
                         {section.alt}
                       </p>
                     )}
@@ -94,7 +100,7 @@ const BlogPost = () => {
                 );
               case 'video':
                 return (
-                  <div key={index} className="my-12">
+                  <div key={index} className="my-12 flex justify-center">
                     <Video
                       src={section.content}
                       alt={section.alt}
@@ -103,6 +109,7 @@ const BlogPost = () => {
                       loop={section.loop}
                       muted={section.muted}
                       controls={section.controls}
+                      className="max-w-xs w-full h-auto"
                     />
                   </div>
                 );
