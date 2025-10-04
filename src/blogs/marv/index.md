@@ -1,5 +1,5 @@
 ---
-id: test
+id: marv
 title: MARV Development
 date: October 3, 2025
 excerpt: Blog documenting the development of MARV, RL's next gen flight computer
