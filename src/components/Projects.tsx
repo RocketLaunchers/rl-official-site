@@ -9,7 +9,6 @@ const Projects = () => {
       image: "/rocketGame.png",
       description: "A 2D arcade-style rocket game showcasing cross-platform development with Flutter and Dart, featuring a custom ASP.NET Core (C#) backend. Implemented custom API for score submission, deployed on Azure with PostgreSQL on Neon.tech.",
       tags: ["Flutter", "Dart", "C#", "ASP.NET", "SQL", "Postgres"],
-      deploymentUrl: "https://rocketcs.web.app/",
       github: "https://github.com/Lmx154/dart_demo"
     },
     {
@@ -46,7 +45,7 @@ const Projects = () => {
       statusColor: "bg-green-600",
       image: "/brunito.jpg",
       description: "Comprehensive multi-board flight computer system and ground station for advanced rocketry telemetry. Implemented dual-board architecture with multiple sensors and real-time communication protocols using LoRa radio.",
-      tags: ["C++", "Embedded"]
+      tags: ["C++", "Embedded", "RTOS"]
     },
     {
       title: "APPLYTRON",

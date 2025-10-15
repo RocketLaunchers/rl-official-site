@@ -17,7 +17,7 @@ const Hero = () => {
               DEVELOPER.
             </h2>
             <h2 className="text-5xl lg:text-6xl font-light text-white leading-tight">
-              PROBLEM SOLVER.
+              AVIONICS ENTHUSIAST.
             </h2>
             <h2 className="text-5xl lg:text-6xl font-light text-white leading-tight">
               INNOVATOR.
