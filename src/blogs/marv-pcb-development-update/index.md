@@ -4,7 +4,7 @@ title: MARV PCB Development update
 date: October 18, 2025
 excerpt: A brief update on how the hardware aspect of MARV is progressing.
 readTime: 2 min read
-tags: []
+tags: [PCB Design, Hardware Design, Schematic]
 ---
 
 
