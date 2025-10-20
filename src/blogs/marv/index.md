@@ -1,11 +1,12 @@
 ---
 id: marv
-title: MARV Development
-date: October 3, 2025
-excerpt: Blog documenting the development of MARV, RL's next gen flight computer
+title: MARV Prototyping
+date: October 18, 2025
+excerpt: Blog documenting the initial development of MARV, RL's next gen flight computer
 readTime: 4 min read
-tags: [Avionics, Rust, Embedded, GNC, PID, Control Systems, System Design]
+tags: [Avionics, Rust, Embedded, System Design]
 ---
+
 
 # Developing MARV: Advancing Rocket Avionics Beyond Brunito
 
