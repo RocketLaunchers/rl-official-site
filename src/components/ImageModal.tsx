@@ -26,7 +26,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ src, alt = '', type = 'image', 
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-2 sm:p-4"
+      className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
       onClick={onClose}
     >
       <div className="relative w-full h-full flex items-center justify-center">
@@ -47,7 +47,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ src, alt = '', type = 'image', 
             src={src}
             controls
             autoPlay
-            className="max-w-full max-h-full w-auto h-auto object-contain rounded"
+            className="max-w-full max-h-full w-auto h-auto object-contain"
             onClick={(e) => e.stopPropagation()}
             style={{ maxWidth: '95vw', maxHeight: '95vh' }}
           />
@@ -64,7 +64,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ src, alt = '', type = 'image', 
         {/* Caption */}
         {alt && (
           <div className="absolute bottom-4 left-4 right-4 text-center">
-            <p className="text-white text-sm font-light bg-black bg-opacity-70 px-4 py-2 rounded max-w-2xl mx-auto">
+            <p className="text-white text-sm font-light bg-black/70 px-4 py-2 max-w-2xl mx-auto">
               {alt}
             </p>
           </div>

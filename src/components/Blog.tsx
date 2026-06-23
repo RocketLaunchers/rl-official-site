@@ -3,36 +3,39 @@ import { blogPosts } from '../data/blogPosts';
 
 const Blog = () => {
   return (
-    <section id="blog" className="py-20 bg-gray-900/50">
+    <section id="blog" className="py-24">
       <div className="max-w-4xl mx-auto px-6">
-        <h2 className="text-4xl font-light text-white mb-12 tracking-wide">
-          BLOG
-        </h2>
-        
-        <div className="space-y-8">
+        <div className="flex items-center gap-6 mb-14">
+          <h2 className="font-display text-3xl md:text-4xl font-light tracking-[0.12em] text-white whitespace-nowrap">
+            BLOG
+          </h2>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
+
+        <div className="space-y-10">
           {blogPosts.length === 0 && (
-            <div className="text-gray-400 font-light">No blog posts available.</div>
+            <div className="text-neutral-500 font-light">No blog posts available.</div>
           )}
           {blogPosts.map((post, index) => (
-            <Link 
+            <Link
               key={index}
               to={`/blog/${post.id}`}
-              className="block border-l-4 border-gray-600 pl-6 hover:border-gray-400 transition-colors group cursor-pointer"
+              className="block border-l border-white/15 pl-6 hover:border-white transition-colors group cursor-pointer"
             >
-              <div className="text-gray-400 text-sm mb-2 tracking-wide font-light">
+              <div className="text-neutral-500 text-xs mb-3 tracking-[0.15em] uppercase font-light">
                 {post.displayDate || post.date}
               </div>
-              <h3 className="text-2xl font-light text-white mb-3 group-hover:text-gray-300 transition-colors">
+              <h3 className="font-display text-2xl font-light text-white mb-3 tracking-tight group-hover:text-neutral-300 transition-colors">
                 {post.title}
               </h3>
-              <p className="text-gray-300 leading-relaxed font-light mb-3">
+              <p className="text-neutral-400 leading-relaxed font-light mb-4 text-[15px]">
                 {post.excerpt}
               </p>
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                <span>{post.readTime}</span>
+              <div className="flex items-center gap-4 text-neutral-500">
+                <span className="text-xs tracking-wide">{post.readTime}</span>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.slice(0, 3).map((tag, tagIndex) => (
-                    <span key={tagIndex} className="px-2 py-1 bg-gray-800 text-gray-400 text-xs">
+                    <span key={tagIndex} className="border border-white/10 text-neutral-400 text-[11px] tracking-wide px-2.5 py-1">
                       {tag}
                     </span>
                   ))}

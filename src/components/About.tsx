@@ -26,23 +26,26 @@ function TraitIcon({ name }: { name: string }) {
 
 const About = () => {
   return (
-    <section id="about" className="py-20 bg-gray-900/50">
+    <section id="about" className="py-24">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-4xl font-light text-white mb-12 tracking-wide">
-          {about.sectionTitle}
-        </h2>
+        <div className="flex items-center gap-6 mb-14">
+          <h2 className="font-display text-3xl md:text-4xl font-light tracking-[0.12em] text-white whitespace-nowrap">
+            {about.sectionTitle}
+          </h2>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Traits */}
           <div className="space-y-6">
             {about.traits.map((trait, index) => (
               <div key={index} className="flex items-start space-x-4">
-                <div className="bg-gray-600 p-3 text-white">
+                <div className="bg-white/5 border border-white/10 p-3 text-white shrink-0">
                   <TraitIcon name={trait.icon} />
                 </div>
                 <div>
                   <h3 className="text-white font-light mb-1">{trait.title}</h3>
-                  <p className="text-gray-400 text-sm font-light">{trait.description}</p>
+                  <p className="text-neutral-400 text-sm font-light leading-relaxed">{trait.description}</p>
                 </div>
               </div>
             ))}
@@ -50,7 +53,7 @@ const About = () => {
 
           {/* Profile Image */}
           <div className="flex justify-center">
-            <div className="w-80 h-80 bg-gray-800 border-4 border-gray-700 overflow-hidden">
+            <div className="w-72 h-72 lg:w-80 lg:h-80 bg-neutral-950 border border-white/10 overflow-hidden">
               <ClickableImage
                 src={about.profileImage}
                 alt={about.profileAlt}
@@ -62,22 +65,22 @@ const About = () => {
           {/* Description */}
           <div className="space-y-6">
             {about.paragraphs.map((paragraph, index) => (
-              <p key={index} className="text-gray-300 leading-relaxed font-light">
+              <p key={index} className="text-neutral-400 leading-relaxed font-light">
                 {paragraph}
               </p>
             ))}
 
             <div className="grid grid-cols-2 gap-4 mt-8">
-              <div className="bg-gray-800 p-4 border border-gray-700">
-                <h4 className="text-white font-light mb-2">{about.education.title}</h4>
+              <div className="bg-white/[0.02] p-5 border border-white/10">
+                <h4 className="text-white text-[11px] uppercase tracking-[0.18em] font-light mb-3">{about.education.title}</h4>
                 {about.education.items.map((item, index) => (
-                  <p key={index} className="text-gray-400 text-sm font-light">{item}</p>
+                  <p key={index} className="text-neutral-400 text-sm font-light mb-1">{item}</p>
                 ))}
               </div>
-              <div className="bg-gray-800 p-4 border border-gray-700">
-                <h4 className="text-white font-light mb-2">{about.focus.title}</h4>
+              <div className="bg-white/[0.02] p-5 border border-white/10">
+                <h4 className="text-white text-[11px] uppercase tracking-[0.18em] font-light mb-3">{about.focus.title}</h4>
                 {about.focus.items.map((item, index) => (
-                  <p key={index} className="text-gray-400 text-sm font-light">{item}</p>
+                  <p key={index} className="text-neutral-400 text-sm font-light mb-1">{item}</p>
                 ))}
               </div>
             </div>
@@ -88,7 +91,7 @@ const About = () => {
                 <a
                   href={about.resume.href}
                   download={about.resume.downloadName || undefined}
-                  className="group relative inline-flex items-center space-x-3 px-8 py-4 bg-gray-800 border border-gray-600 hover:border-gray-500 text-white font-light transition-all duration-300 hover:bg-gray-700"
+                  className="group relative inline-flex items-center space-x-3 px-8 py-3.5 border border-white/20 text-white text-[13px] tracking-[0.12em] font-light transition-all duration-300 hover:border-white/50 hover:bg-white/5"
                   style={{
                     animation: 'subtle-pulse 3s ease-in-out infinite'
                   }}

@@ -2,14 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Subtle pulsing animation for resume button */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+}
+
+/* Sleek, minimal dark scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid #000;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Subtle pulse for the resume button */
 @keyframes subtle-pulse {
   0%, 100% {
-    border-color: rgb(75, 85, 99); /* gray-600 */
-    box-shadow: 0 0 0 0 rgba(75, 85, 99, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.12);
   }
   50% {
-    border-color: rgb(107, 114, 128); /* gray-500 */
-    box-shadow: 0 0 0 4px rgba(107, 114, 128, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
   }
 }

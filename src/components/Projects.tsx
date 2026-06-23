@@ -3,58 +3,65 @@ import { projects, projectStatusColor } from '../data/projects';
 
 const Projects = () => {
   return (
-    <section id="projects" className="py-20">
+    <section id="projects" className="py-24">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-4xl font-light text-white mb-12 tracking-wide">
-          PROJECTS
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex items-center gap-6 mb-14">
+          <h2 className="font-display text-3xl md:text-4xl font-light tracking-[0.12em] text-white whitespace-nowrap">
+            PROJECTS
+          </h2>
+          <div className="h-px flex-1 bg-white/10" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projects.map((project, index) => (
-            <div key={index} className="bg-gray-800/50 border border-gray-700 hover:border-gray-600 transition-colors group cursor-pointer">
-              <div className="aspect-video bg-gray-900 overflow-hidden">
-                <ClickableImage 
-                  src={project.image} 
+            <div
+              key={index}
+              className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300"
+            >
+              <div className="aspect-video bg-neutral-950 overflow-hidden border-b border-white/10">
+                <ClickableImage
+                  src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              
+
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-light text-white group-hover:text-gray-300 transition-colors">
+                  <h3 className="font-display text-lg font-light text-white tracking-tight group-hover:text-neutral-300 transition-colors">
                     {project.title}
                   </h3>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  <svg className="w-4 h-4 text-neutral-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                 </div>
-                
-                <div className="mb-4">
-                  <span className={`inline-block px-3 py-1 text-xs font-light text-white ${projectStatusColor(project.status)}`}>
+
+                <div className="mb-4 flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 ${projectStatusColor(project.status)}`} />
+                  <span className="text-[11px] uppercase tracking-[0.15em] text-neutral-400 font-light">
                     {project.status}
                   </span>
                 </div>
-                
-                <p className="text-gray-300 mb-4 leading-relaxed font-light">
+
+                <p className="text-neutral-400 mb-5 leading-relaxed font-light text-sm">
                   {project.description}
                 </p>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
+
+                <div className="flex flex-wrap gap-2 mb-5">
                   {project.tags.map((tag, tagIndex) => (
-                    <span key={tagIndex} className="px-2 py-1 bg-gray-700 text-gray-300 text-xs font-light">
+                    <span key={tagIndex} className="border border-white/10 text-neutral-400 text-[11px] tracking-wide px-2.5 py-1 font-light">
                       {tag}
                     </span>
                   ))}
                 </div>
-                
-                <div className="flex items-center gap-4 mt-4">
+
+                <div className="flex items-center gap-4">
                   {project.github && (
                     <a
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-white transition-colors"
+                      className="text-neutral-500 hover:text-white transition-colors"
                       aria-label="View on GitHub"
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -67,7 +74,7 @@ const Projects = () => {
                       href={project.deploymentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-600 text-white text-sm font-light hover:bg-blue-700 transition-colors"
+                      className="bg-white text-black px-4 py-2 text-xs tracking-[0.1em] font-medium hover:bg-neutral-200 transition-colors"
                     >
                       Live Demo
                     </a>

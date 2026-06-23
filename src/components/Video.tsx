@@ -37,7 +37,7 @@ const Video: React.FC<VideoProps> = ({
           loop={false}
           muted={muted}
           controls={controls}
-          className="w-full h-auto border border-gray-700 rounded-lg object-cover"
+          className="w-full h-auto border border-white/10 object-cover"
           aria-label={alt}
           preload="metadata"
         />
@@ -51,7 +51,7 @@ const Video: React.FC<VideoProps> = ({
         </div>
       </div>
       {caption && (
-        <p className="text-gray-500 text-sm font-light mt-2 text-center">
+        <p className="text-neutral-500 text-sm font-light mt-3 text-center">
           {caption}
         </p>
       )}

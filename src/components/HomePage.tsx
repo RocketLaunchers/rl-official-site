@@ -20,23 +20,23 @@ const HomePage = () => {
         <Gallery />
       </main>
       
-      <footer className="bg-gray-900 border-t border-gray-800 py-8 relative z-10">
+      <footer className="border-t border-white/10 py-12 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Links */}
             <div>
-              <h3 className="text-white font-light mb-4 tracking-wide">LINKS</h3>
+              <h3 className="text-white text-xs uppercase tracking-[0.18em] font-light mb-4">LINKS</h3>
               <div className="space-y-2">
-                <a href="#about" className="block text-gray-400 hover:text-white transition-colors font-light">
+                <a href="#about" className="block text-neutral-400 hover:text-white transition-colors font-light text-sm">
                   About
                 </a>
-                <a href="#gallery" className="block text-gray-400 hover:text-white transition-colors font-light">
+                <a href="#gallery" className="block text-neutral-400 hover:text-white transition-colors font-light text-sm">
                   Gallery
                 </a>
-                <a href="#projects" className="block text-gray-400 hover:text-white transition-colors font-light">
+                <a href="#projects" className="block text-neutral-400 hover:text-white transition-colors font-light text-sm">
                   Projects
                 </a>
-                <a href="#blog" className="block text-gray-400 hover:text-white transition-colors font-light">
+                <a href="#blog" className="block text-neutral-400 hover:text-white transition-colors font-light text-sm">
                   Blog
                 </a>
               </div>
@@ -44,13 +44,13 @@ const HomePage = () => {
 
             {/* External Links */}
             <div>
-              <h3 className="text-white font-light mb-4 tracking-wide">EXTERNAL</h3>
+              <h3 className="text-white text-xs uppercase tracking-[0.18em] font-light mb-4">EXTERNAL</h3>
               <div className="space-y-2">
                 <a 
                   href={site.links.github} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors font-light flex items-center space-x-2"
+                  className="text-neutral-400 hover:text-white transition-colors font-light text-sm flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -61,7 +61,7 @@ const HomePage = () => {
                   href={site.links.linkedin} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors font-light flex items-center space-x-2"
+                  className="text-neutral-400 hover:text-white transition-colors font-light text-sm flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -72,7 +72,7 @@ const HomePage = () => {
                   href={site.links.twitter} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors font-light flex items-center space-x-2"
+                  className="text-neutral-400 hover:text-white transition-colors font-light text-sm flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -84,10 +84,10 @@ const HomePage = () => {
 
             {/* Copyright */}
             <div className="md:text-right">
-              <p className="text-gray-400 font-light">
+              <p className="text-neutral-400 font-light text-sm">
                 {site.footer.copyright}
               </p>
-              <p className="text-gray-500 text-sm font-light mt-1">
+              <p className="text-neutral-600 text-xs font-light mt-1">
                 {site.footer.rights}
               </p>
             </div>
