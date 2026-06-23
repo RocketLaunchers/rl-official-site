@@ -135,6 +135,15 @@ export const BlogPostSchema = z
     }
   });
 
+/** One item in a project's media gallery: an image, a video, or a 3D model (GLB/STEP). */
+export const MediaItemSchema = z.object({
+  type: z.enum(['image', 'video', 'model']).default('image'),
+  /** Public path (/foo.png, /foo.glb) or external URL. */
+  src: z.string().default(''),
+  alt: z.string().optional(),
+  caption: z.string().optional(),
+});
+
 export const ProjectSchema = z.object({
   type: z.literal('project').default('project'),
   id: z.string().min(1),
@@ -143,8 +152,10 @@ export const ProjectSchema = z.object({
   /** Lower sorts first; controls card order on the homepage. */
   order: z.number().default(0),
   image: z.string().default(''),
-  /** Optional STEP file (in public/) shown as an interactive 3D viewer instead of the image. */
+  /** Optional STEP/GLB file (in public/) shown as an interactive 3D viewer instead of the image. */
   model3d: z.string().default(''),
+  /** Optional media gallery (images/videos/3D models). When set, replaces the single image/model. */
+  media: z.array(MediaItemSchema).default([]),
   description: z.string().default(''),
   tags: z.array(z.string()).default([]),
   github: z.string().url().nullable().optional(),
@@ -260,6 +271,7 @@ export const SiteSchema = z.object({
 
 export type BlogPost = z.infer<typeof BlogPostSchema>;
 export type Project = z.infer<typeof ProjectSchema>;
+export type MediaItem = z.infer<typeof MediaItemSchema>;
 export type GalleryItem = z.infer<typeof GalleryItemSchema>;
 export type Gallery = z.infer<typeof GallerySchema>;
 export type Video = z.infer<typeof VideoSchema>;

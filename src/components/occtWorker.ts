@@ -1,7 +1,7 @@
 // Web Worker: parses a STEP (CAD) file into render-ready meshes off the main
 // thread, so large models don't freeze the page. Uses occt-import-js
 // (OpenCascade compiled to WASM). The result arrays are transferred (zero-copy)
-// back to the StepViewer, which builds three.js geometry from them.
+// back to ModelViewer, which builds three.js geometry from them.
 import occtimportjs, { type Occt } from 'occt-import-js';
 import occtWasmUrl from 'occt-import-js/dist/occt-import-js.wasm?url';
 

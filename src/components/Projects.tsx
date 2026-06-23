@@ -1,6 +1,14 @@
-import ClickableImage from './ClickableImage';
-import Model3D from './Model3D';
+import ProjectGallery from './ProjectGallery';
 import { projects, projectStatusColor } from '../data/projects';
+import type { MediaItem, Project } from '../content/schema';
+
+/** Build the tile's media list: explicit gallery, else the single model/image. */
+function projectMedia(project: Project): MediaItem[] {
+  if (project.media.length) return project.media;
+  if (project.model3d) return [{ type: 'model', src: project.model3d }];
+  if (project.image) return [{ type: 'image', src: project.image, alt: project.title }];
+  return [];
+}
 
 const Projects = () => {
   return (
@@ -20,15 +28,7 @@ const Projects = () => {
               className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300"
             >
               <div className="aspect-video bg-neutral-950 overflow-hidden border-b border-white/10">
-                {project.model3d ? (
-                  <Model3D src={project.model3d} />
-                ) : (
-                  <ClickableImage
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                )}
+                <ProjectGallery items={projectMedia(project)} title={project.title} />
               </div>
 
               <div className="p-6">

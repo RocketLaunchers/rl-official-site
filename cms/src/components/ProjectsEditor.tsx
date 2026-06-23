@@ -1,11 +1,54 @@
 import { useEffect, useState } from 'react';
-import { listProjects, saveProject, createProject, deleteProject, importPublicImage, importPublicFile, type Project } from '../api';
+import { listProjects, saveProject, createProject, deleteProject, importPublicImage, importPublicMedia, importPublicFile, type Project } from '../api';
 import { Field, ImageField, ItemToolbar, TagsField, TextArea, TextField } from './fields';
+import type { MediaItem } from '@portfolio/content-schema';
 
 const STATUSES = ['Completed', 'In Progress', 'Planned'];
 
 function slugify(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+/** Editor for a project's media gallery (images / videos / 3D models). */
+function ProjectMediaEditor({ repo, media, onChange }: { repo: string; media: MediaItem[]; onChange: (m: MediaItem[]) => void }) {
+  const set = (i: number, patch: Partial<MediaItem>) => onChange(media.map((it, j) => (j === i ? { ...it, ...patch } : it)));
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= media.length) return;
+    const next = [...media];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  const importFor = (type: MediaItem['type']) => {
+    if (type === 'image') return importPublicImage(repo);
+    if (type === 'video') return importPublicMedia(repo);
+    return importPublicFile(repo, ['glb', 'gltf', 'step', 'stp']);
+  };
+
+  return (
+    <Field label="Media gallery — images / videos / 3D models (takes precedence over the image)">
+      <div style={{ display: 'grid', gap: 10 }}>
+        {media.map((item, i) => (
+          <div key={i} className="tile" style={{ margin: 0, padding: 10 }}>
+            <div className="row">
+              <select value={item.type} onChange={(e) => set(i, { type: e.target.value as MediaItem['type'] })} style={{ width: 110 }}>
+                <option value="image">image</option>
+                <option value="video">video</option>
+                <option value="model">model</option>
+              </select>
+              <input value={item.src} placeholder="/file.png · /file.glb" onChange={(e) => set(i, { src: e.target.value })} />
+              <button className="small" onClick={async () => { const href = await importFor(item.type); if (href) set(i, { src: href }); }}>Import…</button>
+              <button className="small ghost" title="Move up" onClick={() => move(i, -1)}>↑</button>
+              <button className="small ghost" title="Move down" onClick={() => move(i, 1)}>↓</button>
+              <button className="small danger" title="Remove" onClick={() => onChange(media.filter((_, j) => j !== i))}>✕</button>
+            </div>
+            <input value={item.caption ?? ''} placeholder="caption (optional)" style={{ marginTop: 8 }} onChange={(e) => set(i, { caption: e.target.value || undefined })} />
+          </div>
+        ))}
+        <button className="small ghost" style={{ justifySelf: 'start' }} onClick={() => onChange([...media, { type: 'image', src: '' }])}>＋ Add media</button>
+      </div>
+    </Field>
+  );
 }
 
 export default function ProjectsEditor({ repo }: { repo: string }) {
@@ -118,20 +161,7 @@ export default function ProjectsEditor({ repo }: { repo: string }) {
                   </Field>
                 </div>
                 <ImageField label="Image" root={repo} value={p.image} onChange={(src) => update(p.id, { image: src })} onImport={() => importPublicImage(repo)} />
-                <Field label="3D model — STEP file (replaces the image when set)">
-                  <div className="row">
-                    <input value={p.model3d} placeholder="/model.step" onChange={(e) => update(p.id, { model3d: e.target.value })} />
-                    <button
-                      className="small"
-                      onClick={async () => {
-                        const href = await importPublicFile(repo, ['step', 'stp']);
-                        if (href) update(p.id, { model3d: href });
-                      }}
-                    >
-                      Import STEP…
-                    </button>
-                  </div>
-                </Field>
+                <ProjectMediaEditor repo={repo} media={p.media} onChange={(media) => update(p.id, { media })} />
                 <TextArea label="Description" value={p.description} onChange={(v) => update(p.id, { description: v })} />
                 <TagsField label="Tags" value={p.tags} onChange={(v) => update(p.id, { tags: v })} />
                 <div className="grid2">
