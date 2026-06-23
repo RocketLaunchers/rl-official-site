@@ -143,6 +143,8 @@ export const ProjectSchema = z.object({
   /** Lower sorts first; controls card order on the homepage. */
   order: z.number().default(0),
   image: z.string().default(''),
+  /** Optional STEP file (in public/) shown as an interactive 3D viewer instead of the image. */
+  model3d: z.string().default(''),
   description: z.string().default(''),
   tags: z.array(z.string()).default([]),
   github: z.string().url().nullable().optional(),

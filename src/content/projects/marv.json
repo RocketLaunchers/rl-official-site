@@ -1,0 +1,11 @@
+{
+  "type": "project",
+  "id": "marv",
+  "title": "MARV",
+  "status": "In Progress",
+  "order": 5,
+  "image": "",
+  "model3d": "/MARV-PCB-3D.step",
+  "description": "Modular Avionics for Rockets and Vehicles — the next-generation flight computer for the UTRGV Rocket Launchers, succeeding Brunito. A dual-core RP2350 platform with a Rust (RTIC) firmware stack and a custom sensor suite. Drag to explore the PCB in 3D.",
+  "tags": ["Rust", "Embedded", "RP2350", "PCB", "RTIC", "Avionics"]
+}

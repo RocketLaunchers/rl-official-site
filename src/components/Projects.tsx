@@ -1,4 +1,5 @@
 import ClickableImage from './ClickableImage';
+import Model3D from './Model3D';
 import { projects, projectStatusColor } from '../data/projects';
 
 const Projects = () => {
@@ -19,11 +20,15 @@ const Projects = () => {
               className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300"
             >
               <div className="aspect-video bg-neutral-950 overflow-hidden border-b border-white/10">
-                <ClickableImage
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                {project.model3d ? (
+                  <Model3D src={project.model3d} />
+                ) : (
+                  <ClickableImage
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
               </div>
 
               <div className="p-6">

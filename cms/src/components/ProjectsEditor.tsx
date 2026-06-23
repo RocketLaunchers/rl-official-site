@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { listProjects, saveProject, createProject, deleteProject, importPublicImage, type Project } from '../api';
+import { listProjects, saveProject, createProject, deleteProject, importPublicImage, importPublicFile, type Project } from '../api';
 import { Field, ImageField, ItemToolbar, TagsField, TextArea, TextField } from './fields';
 
 const STATUSES = ['Completed', 'In Progress', 'Planned'];
@@ -118,6 +118,20 @@ export default function ProjectsEditor({ repo }: { repo: string }) {
                   </Field>
                 </div>
                 <ImageField label="Image" root={repo} value={p.image} onChange={(src) => update(p.id, { image: src })} onImport={() => importPublicImage(repo)} />
+                <Field label="3D model — STEP file (replaces the image when set)">
+                  <div className="row">
+                    <input value={p.model3d} placeholder="/model.step" onChange={(e) => update(p.id, { model3d: e.target.value })} />
+                    <button
+                      className="small"
+                      onClick={async () => {
+                        const href = await importPublicFile(repo, ['step', 'stp']);
+                        if (href) update(p.id, { model3d: href });
+                      }}
+                    >
+                      Import STEP…
+                    </button>
+                  </div>
+                </Field>
                 <TextArea label="Description" value={p.description} onChange={(v) => update(p.id, { description: v })} />
                 <TagsField label="Tags" value={p.tags} onChange={(v) => update(p.id, { tags: v })} />
                 <div className="grid2">
