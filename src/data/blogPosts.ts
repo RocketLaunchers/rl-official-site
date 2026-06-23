@@ -1,48 +1,64 @@
-export interface BlogPost {
-  id: string;
-  title: string;
-  date: string;
-  excerpt: string;
-  readTime: string;
-  content: {
-    sections: Array<{
-      type: 'text' | 'heading' | 'image' | 'video';
-      content: string;
-      alt?: string;
-      caption?: string;
-      autoplay?: boolean;
-      loop?: boolean;
-      muted?: boolean;
-      controls?: boolean;
-    }>;
-  };
-  tags: string[];
+import { BlogPostSchema, type BlogPost } from '../content/schema';
+
+export type { BlogPost };
+
+/**
+ * Loads blog posts from JSON at build time, validates each against the shared
+ * Zod schema, and resolves colocated media paths to public URLs.
+ *
+ * Validation here is the build-time safety net: a malformed or schema-violating
+ * post throws and fails `vite build`, so broken content can never ship. Drafts
+ * are visible during `vite dev` (for CMS preview) and excluded from production.
+ */
+
+const modules = import.meta.glob('../content/blog/*/index.json', { eager: true });
+
+function isExternal(src: string): boolean {
+  const s = src.trim();
+  return s.startsWith('/') || /^(?:[a-z]+:)?\/\//i.test(s) || s.startsWith('data:');
 }
 
-import { parseBlogPost } from '../utils/parseBlogPost';
+/** Rewrite a post-relative media path (assets/.., videos/..) to its public URL. */
+function resolveMedia(src: string | null | undefined, slug: string): string {
+  if (!src) return src ?? '';
+  const s = src.trim();
+  if (isExternal(s)) return s;
+  return `/content/blog/${slug}/${s.replace(/^\.\//, '')}`;
+}
 
-// Try both absolute-from-root and relative patterns, then merge
-const mdFilesAbs = import.meta.glob('../blogs/*/index.md', { eager: true, query: '?raw', import: 'default' });
-const mdFiles = mdFilesAbs as Record<string, unknown>;
+function slugFromPath(path: string): string {
+  return path.replace(/\\/g, '/').match(/blog\/([^/]+)\/index\.json$/)?.[1] ?? 'unknown';
+}
 
-const loadedPosts: BlogPost[] = [];
-for (const [path, raw] of Object.entries(mdFiles)) {
-  try {
-    const m = path.replace(/\\/g, '/').match(/blogs\/([^/]+)\/index\.md$/);
-    const postId = m?.[1] || 'unknown';
-    const post = parseBlogPost(raw as string, postId);
-    loadedPosts.push(post);
-  } catch (err) {
-    console.warn('[blogPosts] Failed to parse', path, err);
+const loaded: BlogPost[] = [];
+
+for (const [path, mod] of Object.entries(modules)) {
+  const slug = slugFromPath(path);
+  const raw = (mod as { default: unknown }).default;
+
+  const result = BlogPostSchema.safeParse(raw);
+  if (!result.success) {
+    const message = `[content] Invalid blog post "${slug}":\n${result.error.message}`;
+    // Fail loudly in production builds; warn (don't crash the dev server) in dev.
+    if (import.meta.env.PROD) throw new Error(message);
+    console.error(message);
+    continue;
   }
+
+  const post = result.data;
+  loaded.push({
+    ...post,
+    coverImage: post.coverImage ? resolveMedia(post.coverImage, slug) : post.coverImage,
+    blocks: post.blocks.map((block) =>
+      'src' in block ? { ...block, src: resolveMedia(block.src, slug) } : block,
+    ),
+  });
 }
 
-// Sort by date string descending if possible; falls back to original order
-loadedPosts.sort((a, b) => {
-  const da = Date.parse(a.date || '');
-  const db = Date.parse(b.date || '');
-  if (Number.isFinite(da) && Number.isFinite(db)) return db - da;
-  return 0;
-});
+// Published-only in production; keep drafts visible during local development.
+const visible = import.meta.env.PROD ? loaded.filter((p) => p.status === 'published') : loaded;
 
-export const blogPosts: BlogPost[] = loadedPosts;
+// Newest first by ISO date (lexical sort is correct for YYYY-MM-DD).
+visible.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+
+export const blogPosts: BlogPost[] = visible;

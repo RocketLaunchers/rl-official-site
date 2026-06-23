@@ -1,3 +1,5 @@
+import { site } from '../data/site';
+
 const Hero = () => {
   return (
     <section id="hero" className="min-h-screen flex items-center justify-center pt-20">
@@ -5,38 +7,35 @@ const Hero = () => {
         <div className="flex flex-col items-center text-center space-y-8">
           <div className="space-y-2">
             <h1 className="text-2xl text-gray-300 tracking-wide font-light">
-              LUIS MARTINEZ
+              {site.name}
             </h1>
             <p className="text-gray-400 text-lg font-light">
-              Computer Science Student & Software Engineer
+              {site.role}
             </p>
           </div>
-          
+
           <div className="space-y-6">
-            <h2 className="text-5xl lg:text-6xl font-light text-white leading-tight">
-              DEVELOPER.
-            </h2>
-            <h2 className="text-5xl lg:text-6xl font-light text-white leading-tight">
-              AVIONICS ENTHUSIAST.
-            </h2>
-            <h2 className="text-5xl lg:text-6xl font-light text-white leading-tight">
-              INNOVATOR.
-            </h2>
+            {site.headlines.map((headline, index) => (
+              <h2 key={index} className="text-5xl lg:text-6xl font-light text-white leading-tight">
+                {headline}
+              </h2>
+            ))}
           </div>
-          
+
           <div className="flex space-x-4">
-            <button
-              onClick={() => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 transition-colors font-light tracking-wide"
-            >
-              VIEW BLOG
-            </button>
-            <button
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border border-gray-600 hover:border-gray-500 text-white px-8 py-3 transition-colors font-light tracking-wide"
-            >
-              PROJECTS
-            </button>
+            {site.ctas.map((cta, index) => (
+              <button
+                key={index}
+                onClick={() => document.getElementById(cta.target)?.scrollIntoView({ behavior: 'smooth' })}
+                className={
+                  index === 0
+                    ? 'bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 transition-colors font-light tracking-wide'
+                    : 'border border-gray-600 hover:border-gray-500 text-white px-8 py-3 transition-colors font-light tracking-wide'
+                }
+              >
+                {cta.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>

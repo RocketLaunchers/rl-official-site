@@ -1,0 +1,5 @@
+packages:
+  - cms
+
+allowBuilds:
+  esbuild: true

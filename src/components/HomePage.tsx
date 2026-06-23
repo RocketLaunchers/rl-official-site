@@ -5,6 +5,7 @@ import Blog from './Blog';
 import Projects from './Projects';
 import About from './About';
 import Gallery from './Gallery';
+import { site } from '../data/site';
 
 const HomePage = () => {
   return (
@@ -46,7 +47,7 @@ const HomePage = () => {
               <h3 className="text-white font-light mb-4 tracking-wide">EXTERNAL</h3>
               <div className="space-y-2">
                 <a 
-                  href="https://github.com/Lmx154" 
+                  href={site.links.github} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-white transition-colors font-light flex items-center space-x-2"
@@ -57,7 +58,7 @@ const HomePage = () => {
                   <span>GitHub</span>
                 </a>
                 <a 
-                  href="https://www.linkedin.com/in/luismtz-2b54f/" 
+                  href={site.links.linkedin} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-white transition-colors font-light flex items-center space-x-2"
@@ -68,7 +69,7 @@ const HomePage = () => {
                   <span>LinkedIn</span>
                 </a>
                 <a 
-                  href="https://x.com/Lmx154" 
+                  href={site.links.twitter} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-white transition-colors font-light flex items-center space-x-2"
@@ -84,10 +85,10 @@ const HomePage = () => {
             {/* Copyright */}
             <div className="md:text-right">
               <p className="text-gray-400 font-light">
-                © 2025 Luis Martinez
+                {site.footer.copyright}
               </p>
               <p className="text-gray-500 text-sm font-light mt-1">
-                All rights reserved.
+                {site.footer.rights}
               </p>
             </div>
           </div>

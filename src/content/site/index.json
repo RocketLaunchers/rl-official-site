@@ -1,0 +1,29 @@
+{
+  "name": "LUIS MARTINEZ",
+  "role": "Computer Science Student & Software Engineer",
+  "headlines": [
+    "DEVELOPER.",
+    "AVIONICS ENTHUSIAST.",
+    "INNOVATOR."
+  ],
+  "ctas": [
+    {
+      "label": "VIEW BLOG",
+      "target": "blog"
+    },
+    {
+      "label": "PROJECTS",
+      "target": "projects"
+    }
+  ],
+  "links": {
+    "github": "https://github.com/Lmx154",
+    "linkedin": "https://www.linkedin.com/in/luismtz-2b54f/",
+    "twitter": "https://x.com/Lmx154",
+    "email": "Luis_Mtz907@live.com"
+  },
+  "footer": {
+    "copyright": "© 2025 Luis Martinez",
+    "rights": "All rights reserved."
+  }
+}

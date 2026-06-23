@@ -20,7 +20,7 @@ const Blog = () => {
               className="block border-l-4 border-gray-600 pl-6 hover:border-gray-400 transition-colors group cursor-pointer"
             >
               <div className="text-gray-400 text-sm mb-2 tracking-wide font-light">
-                {post.date}
+                {post.displayDate || post.date}
               </div>
               <h3 className="text-2xl font-light text-white mb-3 group-hover:text-gray-300 transition-colors">
                 {post.title}

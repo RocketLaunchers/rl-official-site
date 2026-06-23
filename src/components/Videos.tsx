@@ -86,7 +86,7 @@ const Videos: React.FC = () => {
           <div className="text-gray-400 font-light space-y-2">
             <p>• Place video files in the <code className="bg-gray-800 px-2 py-1 rounded">/public/videos/</code> directory</p>
             <p>• Supported formats: MP4, WebM, OGV</p>
-            <p>• Update the video data in <code className="bg-gray-800 px-2 py-1 rounded">src/data/videos.ts</code></p>
+            <p>• Update the video data in <code className="bg-gray-800 px-2 py-1 rounded">src/content/videos/index.json</code></p>
             <p>• Recommended resolution: 1920x1080 or 1280x720 for web optimization</p>
           </div>
         </div>

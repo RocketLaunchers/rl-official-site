@@ -6,8 +6,11 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 // Build static copy targets dynamically only if folders exist
+// Colocated blog media (src/content/blog/<slug>/{assets,videos}) is served at
+// /content/blog/<slug>/... — by a dev middleware while running `vite dev`, and
+// copied into dist/ by vite-plugin-static-copy for production builds.
 function makeStaticCopyPlugin() {
-  const blogsDir = path.resolve(process.cwd(), 'src', 'blogs');
+  const blogsDir = path.resolve(process.cwd(), 'src', 'content', 'blog');
   let targets: any[] = [];
   const hasFiles = (dir: string): boolean => {
     if (!fs.existsSync(dir)) return false;
@@ -33,14 +36,14 @@ function makeStaticCopyPlugin() {
       if (hasFiles(assetsDir)) {
         // Copy preserving slug/assets relative structure
         targets.push({
-          src: `src/blogs/${slug}/assets/**/*`,
-          dest: `blogs/${slug}/assets`
+          src: `src/content/blog/${slug}/assets/**/*`,
+          dest: `content/blog/${slug}/assets`
         });
       }
       if (hasFiles(videosDir)) {
         targets.push({
-          src: `src/blogs/${slug}/videos/**/*`,
-          dest: `blogs/${slug}/videos`
+          src: `src/content/blog/${slug}/videos/**/*`,
+          dest: `content/blog/${slug}/videos`
         });
       }
     }
@@ -56,12 +59,12 @@ function devBlogsMiddleware(): Plugin {
       server.middlewares.use((req, res, next) => {
         try {
           const url = req.url || '';
-          const m = url.match(/^\/blogs\/([^/]+)\/(assets|videos)\/(.*)$/);
+          const m = url.match(/^\/content\/blog\/([^/]+)\/(assets|videos)\/(.*)$/);
           if (!m) return next();
           const slug = m[1];
           const kind = m[2];
           const rest = m[3];
-          const filePath = path.join(process.cwd(), 'src', 'blogs', slug, kind, rest);
+          const filePath = path.join(process.cwd(), 'src', 'content', 'blog', slug, kind, rest);
           if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
             fs.createReadStream(filePath).pipe(res);
             return;

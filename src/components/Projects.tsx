@@ -1,71 +1,7 @@
 import ClickableImage from './ClickableImage';
+import { projects, projectStatusColor } from '../data/projects';
 
 const Projects = () => {
-  const projects = [
-    {
-      title: "ROCKET GAME",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/rocketGame.png",
-      description: "A 2D arcade-style rocket game showcasing cross-platform development with Flutter and Dart, featuring a custom ASP.NET Core (C#) backend. Implemented custom API for score submission, deployed on Azure with PostgreSQL on Neon.tech.",
-      tags: ["Flutter", "Dart", "C#", "ASP.NET", "SQL", "Postgres"],
-      github: "https://github.com/Lmx154/dart_demo"
-    },
-    {
-      title: "TDAS-GUI",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/das-gui.png",
-      description: "Modernized the UTRGV Rocket Launchers telemetry visualization system. Built with Tauri 2.0, utilizing Rust for backend performance and React for frontend. Integrated high-frequency data handling (up to 100Hz).",
-      tags: ["Rust", "Tauri", "Tailwind", "JavaScript", "React"],
-      github: "https://github.com/Lmx154/TDAS-GUI"
-    },
-    {
-      title: "PORTFOLIO SITE",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/portfolio.png",
-      description: "A refresh of my personal portfolio website, emphasizing scalable architecture and modern web development practices. Built with TypeScript and React, styled with Tailwind CSS, hosted on Render.",
-      tags: ["TypeScript", "React", "Tailwind", "Node.js"],
-      deploymentUrl: "https://luisamartinez.xyz/",
-      github: "https://github.com/Lmx154/portfolio"
-    },
-    {
-      title: "SENTINEL",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/sentinel.png",
-      description: "Next-generation rocket telemetry system for UTRGV Rocket Launchers, building on the TDAS-GUI prototype. Implemented real-time 3D rocket orientation tracking and flight trajectory visualization.",
-      tags: ["Rust", "Tauri", "Tailwind", "JavaScript", "React"],
-      github: "https://github.com/andrewalvrz/SENTINEL"
-    },
-    {
-      title: "BRUNITO",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/brunito.jpg",
-      description: "Comprehensive multi-board flight computer system and ground station for advanced rocketry telemetry. Implemented dual-board architecture with multiple sensors and real-time communication protocols using LoRa radio.",
-      tags: ["C++", "Embedded", "RTOS"]
-    },
-    {
-      title: "APPLYTRON",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/applytron.png",
-      description: "Browser extension that allows users to autofill online job applications by extracting forms/fields and using AI to fill them with resume information. Streamlines the job application process significantly.",
-      tags: ["AI", "JavaScript"]
-    },
-    {
-      title: "SARE CLINOSTAT PROJECT",
-      status: "Completed",
-      statusColor: "bg-green-600",
-      image: "/clinostat.png",
-      description: "Led development of a high-precision clinostat control system, integrating Rust, React, and ESP32-based hardware. Selected as a finalist in the 2025 NASA MINDS competition. Architected Tauri 2.0 desktop app for real-time motor control.",
-      tags: ["Rust", "Tauri", "Tailwind", "JavaScript", "React"],
-      github: "https://github.com/Lmx154/clinostat"
-    }
-  ];
-
   return (
     <section id="projects" className="py-20">
       <div className="max-w-7xl mx-auto px-6">
@@ -95,7 +31,7 @@ const Projects = () => {
                 </div>
                 
                 <div className="mb-4">
-                  <span className={`inline-block px-3 py-1 text-xs font-light text-white ${project.statusColor}`}>
+                  <span className={`inline-block px-3 py-1 text-xs font-light text-white ${projectStatusColor(project.status)}`}>
                     {project.status}
                   </span>
                 </div>

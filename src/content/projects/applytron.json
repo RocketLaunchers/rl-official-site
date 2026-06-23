@@ -1,0 +1,10 @@
+{
+  "type": "project",
+  "id": "applytron",
+  "title": "APPLYTRON",
+  "status": "Completed",
+  "order": 60,
+  "image": "/applytron.png",
+  "description": "Browser extension that allows users to autofill online job applications by extracting forms/fields and using AI to fill them with resume information. Streamlines the job application process significantly.",
+  "tags": ["AI", "JavaScript"]
+}

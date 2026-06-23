@@ -1,8 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { blogPosts } from '../data/blogPosts';
-import Video from './Video';
-import ClickableImage from './ClickableImage';
+import BlockRenderer from './BlockRenderer';
+import { site } from '../data/site';
 
 const BlogPost = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,7 +48,7 @@ const BlogPost = () => {
             {post.title}
           </h1>
           <div className="flex items-center space-x-4 text-gray-400 font-light">
-            <span>{post.date}</span>
+            <span>{post.displayDate || post.date}</span>
             <span>•</span>
             <span>{post.readTime}</span>
           </div>
@@ -63,60 +63,7 @@ const BlogPost = () => {
 
         {/* Content */}
         <article className="prose prose-invert max-w-none">
-          {post.content.sections.map((section, index) => {
-            switch (section.type) {
-              case 'heading':
-                return (
-                  <h2
-                    key={index}
-                    className="text-3xl font-light text-white mt-12 mb-6"
-                    // section.content may contain inline HTML (bold/links)
-                    dangerouslySetInnerHTML={{ __html: section.content }}
-                  />
-                );
-              case 'text':
-                return (
-                  <p
-                    key={index}
-                    className="text-gray-300 leading-relaxed font-light mb-6 text-lg"
-                    // section.content may contain inline HTML (bold/links)
-                    dangerouslySetInnerHTML={{ __html: section.content }}
-                  />
-                );
-              case 'image':
-                return (
-                  <div key={index} className="my-12 flex flex-col items-center">
-                    <ClickableImage 
-                      src={section.content} 
-                      alt={section.alt || ''} 
-                      className="max-w-xs w-full h-auto border border-gray-700 rounded-lg mx-auto"
-                    />
-                    {section.alt && (
-                      <p className="text-gray-500 text-sm font-light mt-2 text-center max-w-xs">
-                        {section.alt}
-                      </p>
-                    )}
-                  </div>
-                );
-              case 'video':
-                return (
-                  <div key={index} className="my-12 flex justify-center">
-                    <Video
-                      src={section.content}
-                      alt={section.alt}
-                      caption={section.caption}
-                      autoplay={section.autoplay}
-                      loop={section.loop}
-                      muted={section.muted}
-                      controls={section.controls}
-                      className="max-w-xs w-full h-auto"
-                    />
-                  </div>
-                );
-              default:
-                return null;
-            }
-          })}
+          <BlockRenderer blocks={post.blocks} />
         </article>
 
         {/* Navigation Footer */}
@@ -130,7 +77,7 @@ const BlogPost = () => {
             </Link>
             <div className="flex space-x-6">
               <a
-                href="https://github.com"
+                href={site.links.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -140,7 +87,7 @@ const BlogPost = () => {
                 </svg>
               </a>
               <a
-                href="https://linkedin.com"
+                href={site.links.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
