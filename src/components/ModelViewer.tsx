@@ -4,21 +4,33 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-type WorkerMesh = {
-  position: Float32Array;
-  normal: Float32Array | null;
-  index: Uint32Array;
-  color: [number, number, number] | null;
-};
-
 /**
- * Interactive 3D model viewer. Loads GLB/glTF directly with GLTFLoader (fast,
- * no WASM) and falls back to parsing STEP via a web worker (occtWorker.ts) for
- * raw CAD files. Heavy (three.js) — lazy-loaded via LazyModel.
+ * Interactive 3D model viewer for GLB/glTF (the site's 3D format — fast, no
+ * WASM). STEP/OBJ are converted to GLB before they reach the site.
  *
- * `interactive` enables orbit controls; when false it shows a slowly spinning
- * preview whose clicks pass through (so a tile can open the fullscreen lightbox).
+ * The model is recentered on its bounding box and laid flat (its thinnest axis
+ * becomes "up"), so a board exported Z-up turntables nicely instead of spinning
+ * edge-on. Neutral tone mapping + a dialed-down environment keep colors true.
+ * Append `?debug3d` to the URL to overlay XYZ axes + a measured grid.
  */
+
+function makeLabel(text: string, color: string, scale: number): THREE.Sprite {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = color;
+  ctx.font = 'bold 64px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 64);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), depthTest: false, transparent: true }),
+  );
+  sprite.scale.set(scale * 2, scale, 1);
+  return sprite;
+}
+
 export default function ModelViewer({
   src,
   interactive = true,
@@ -32,11 +44,11 @@ export default function ModelViewer({
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const debug = typeof location !== 'undefined' && new URLSearchParams(location.search).has('debug3d');
 
     let disposed = false;
     let frame = 0;
@@ -44,7 +56,6 @@ export default function ModelViewer({
     let controls: OrbitControls | null = null;
     let pmrem: THREE.PMREMGenerator | null = null;
     let resizeObserver: ResizeObserver | null = null;
-    let worker: Worker | null = null;
 
     const setupScene = (object: THREE.Object3D) => {
       if (disposed) return;
@@ -55,37 +66,100 @@ export default function ModelViewer({
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(width, height);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.NeutralToneMapping;
+      renderer.toneMappingExposure = 0.9;
       mount.appendChild(renderer.domElement);
 
-      // Soft studio reflections so metal/PCB surfaces read well on the dark site.
       pmrem = new THREE.PMREMGenerator(renderer);
       scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x1a1a1f, 0.7));
-      const key = new THREE.DirectionalLight(0xffffff, 1.1);
-      key.position.set(1, 1.4, 1.2);
-      scene.add(key);
+      scene.environmentIntensity = 0.18;
 
-      // Center the model and frame it.
-      const box = new THREE.Box3().setFromObject(object);
+      // pivot (turntable) → orient (lay flat) → object (centered).
+      const orient = new THREE.Group();
+      const pivot = new THREE.Group();
+      orient.add(object);
+      pivot.add(orient);
+      scene.add(pivot);
+      scene.updateMatrixWorld(true);
+
+      // Center the geometry on the orient origin. `precise` walks the actual
+      // vertices — essential here: the fast path bounds rotated/quantized meshes
+      // by their local box corners, which inflates the AABB, mis-centers it, and
+      // mis-identifies the thin axis (it had the board "vertical" when it's flat).
+      const box = new THREE.Box3().setFromObject(object, true);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
       object.position.sub(center);
-      const pivot = new THREE.Group();
-      pivot.add(object);
-      scene.add(pivot);
+      object.traverse((o) => {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      });
 
-      const maxDim = Math.max(size.x, size.y, size.z) || 1;
-      const camera = new THREE.PerspectiveCamera(40, width / height, maxDim / 100, maxDim * 100);
-      const dist = maxDim * 2.1;
-      camera.position.set(dist * 0.9, dist * 0.55, dist);
+      // Lay flat: rotate the thinnest axis (board normal) up to +Y.
+      const dims = [size.x, size.y, size.z];
+      const thin = dims.indexOf(Math.min(dims[0], dims[1], dims[2]));
+      if (thin === 0) orient.rotation.z = Math.PI / 2; // X-thin → up
+      else if (thin === 2) orient.rotation.x = -Math.PI / 2; // Z-thin → up
+      scene.updateMatrixWorld(true);
+
+      // Re-measure after re-orienting (used for framing, ground, lights).
+      const box2 = new THREE.Box3().setFromObject(orient, true);
+      const size2 = box2.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size2.x, size2.y, size2.z) || 1;
+      const bottomY = -size2.y / 2;
+
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x202024, 0.22));
+      const key = new THREE.DirectionalLight(0xffffff, 1.4);
+      key.position.set(maxDim * 0.6, maxDim * 1.6, maxDim * 0.9);
+      key.castShadow = true;
+      key.shadow.mapSize.set(2048, 2048);
+      const sc = key.shadow.camera;
+      sc.near = maxDim * 0.05;
+      sc.far = maxDim * 8;
+      sc.left = -maxDim;
+      sc.right = maxDim;
+      sc.top = maxDim;
+      sc.bottom = -maxDim;
+      sc.updateProjectionMatrix();
+      key.shadow.bias = -0.0004;
+      key.shadow.normalBias = maxDim * 0.0015;
+      scene.add(key);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+      fill.position.set(-maxDim, maxDim * 0.5, -maxDim * 0.8);
+      scene.add(fill);
+
+      const ground = new THREE.Mesh(new THREE.PlaneGeometry(maxDim * 8, maxDim * 8), new THREE.ShadowMaterial({ opacity: 0.4 }));
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = bottomY - maxDim * 0.01;
+      ground.receiveShadow = true;
+      scene.add(ground);
+
+      if (debug) {
+        scene.add(new THREE.AxesHelper(maxDim * 0.75));
+        const grid = new THREE.GridHelper(Math.ceil(maxDim * 2), 20, 0x666666, 0x333333);
+        grid.position.y = bottomY;
+        scene.add(grid);
+        const cell = (Math.ceil(maxDim * 2) / 20).toFixed(1);
+        const lx = makeLabel(`+X ${size2.x.toFixed(0)}`, '#ff5555', maxDim * 0.12); lx.position.set(maxDim * 0.8, 0, 0); scene.add(lx);
+        const ly = makeLabel(`+Y ${size2.y.toFixed(0)}`, '#55ff55', maxDim * 0.12); ly.position.set(0, maxDim * 0.8, 0); scene.add(ly);
+        const lz = makeLabel(`+Z ${size2.z.toFixed(0)}`, '#5588ff', maxDim * 0.12); lz.position.set(0, 0, maxDim * 0.8); scene.add(lz);
+        const l0 = makeLabel(`0 · grid=${cell}`, '#cccccc', maxDim * 0.1); l0.position.set(0, bottomY, 0); scene.add(l0);
+      }
+
+      const camera = new THREE.PerspectiveCamera(38, width / height, maxDim / 100, maxDim * 100);
+      const dist = maxDim * 1.6;
+      camera.position.set(dist * 0.5, dist * 1.0, dist * 0.7);
       camera.lookAt(0, 0, 0);
 
       if (interactive) {
         controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.08;
+        controls.target.set(0, 0, 0);
         controls.autoRotate = autoRotate;
-        controls.autoRotateSpeed = 1.1;
+        controls.autoRotateSpeed = 1.0;
         controls.addEventListener('start', () => {
           if (controls) controls.autoRotate = false;
         });
@@ -94,7 +168,7 @@ export default function ModelViewer({
       const loop = () => {
         frame = requestAnimationFrame(loop);
         if (controls) controls.update();
-        else if (autoRotate) pivot.rotation.y += 0.005;
+        else if (autoRotate) pivot.rotation.y += 0.004;
         renderer?.render(scene, camera);
       };
       loop();
@@ -111,57 +185,20 @@ export default function ModelViewer({
       setStatus('ready');
     };
 
-    const fail = (msg: string) => {
-      if (!disposed) {
-        setError(msg);
-        setStatus('error');
-      }
-    };
-
-    if (/\.(step|stp)$/i.test(src)) {
-      worker = new Worker(new URL('./occtWorker.ts', import.meta.url), { type: 'module' });
-      worker.onmessage = (e: MessageEvent) => {
-        if (disposed) return;
-        const data = e.data as { meshes?: WorkerMesh[]; error?: string };
-        if (data.error || !data.meshes) {
-          fail(data.error || 'Failed to load model.');
-          return;
-        }
-        const group = new THREE.Group();
-        for (const m of data.meshes) {
-          const geometry = new THREE.BufferGeometry();
-          geometry.setAttribute('position', new THREE.BufferAttribute(m.position, 3));
-          if (m.normal) geometry.setAttribute('normal', new THREE.BufferAttribute(m.normal, 3));
-          geometry.setIndex(new THREE.BufferAttribute(m.index, 1));
-          if (!m.normal) geometry.computeVertexNormals();
-          const color = m.color ? new THREE.Color(m.color[0], m.color[1], m.color[2]) : new THREE.Color(0.7, 0.72, 0.75);
-          group.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color, metalness: 0.25, roughness: 0.55 })));
-        }
-        setupScene(group);
-      };
-      worker.onerror = () => fail('Failed to initialize the 3D engine.');
-      fetch(src)
-        .then((r) => {
-          if (!r.ok) throw new Error(`Could not load model (${r.status})`);
-          return r.arrayBuffer();
-        })
-        .then((buffer) => worker?.postMessage({ buffer }, [buffer]))
-        .catch((e) => fail(e instanceof Error ? e.message : String(e)));
-    } else {
-      new GLTFLoader().load(
-        src,
-        (gltf) => {
-          if (!disposed) setupScene(gltf.scene);
-        },
-        undefined,
-        () => fail('Could not load 3D model.'),
-      );
-    }
+    new GLTFLoader().load(
+      src,
+      (gltf) => {
+        if (!disposed) setupScene(gltf.scene);
+      },
+      undefined,
+      () => {
+        if (!disposed) setStatus('error');
+      },
+    );
 
     return () => {
       disposed = true;
       cancelAnimationFrame(frame);
-      worker?.terminate();
       resizeObserver?.disconnect();
       controls?.dispose();
       pmrem?.dispose();
@@ -178,7 +215,7 @@ export default function ModelViewer({
       {status !== 'ready' && (
         <div className="absolute inset-0 grid place-items-center text-center px-4 pointer-events-none">
           <span className="text-neutral-500 text-xs tracking-[0.15em] uppercase">
-            {status === 'error' ? error : 'Loading 3D…'}
+            {status === 'error' ? 'Could not load 3D model.' : 'Loading 3D…'}
           </span>
         </div>
       )}

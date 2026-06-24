@@ -17,6 +17,8 @@ React frontend (Vite)  ──►  api.ts  ──►  BlogPostSchema (shared with
 ## Prerequisites
 
 - Node + pnpm, Rust + cargo
+- **ffmpeg** on PATH — compresses images/videos on import (without it, files are
+  copied uncompressed). Node also handles 3D-model conversion on import.
 - Linux: the Tauri webview deps (`webkit2gtk-4.1`, `gtk+-3.0`, `libsoup-3.0`,
   `javascriptcoregtk-4.1`). macOS/Windows: standard Tauri prerequisites.
 
@@ -60,6 +62,26 @@ All saves are validated against the shared schema before writing.
 
 **Next:** full-page live preview is already covered by the Preview tab; remaining
 polish — extract `schema.ts` to `packages/content-schema`. See `../CMS_PLAN.md`.
+
+## Media handling
+
+The CMS **converts and compresses media on import**, so the repo never holds large
+files — only small, web-ready assets land in `public/`:
+
+- **Images** → resized (max 1920px) and re-encoded to **WebP** (ffmpeg).
+- **Videos** → transcoded to compressed **H.264 MP4**, max 1080p (ffmpeg).
+- **3D models** (`.step` / `.stp` / `.obj` / `.glb` / `.gltf`) → converted to an
+  optimized, quantized **GLB** via `scripts/convert-model.mjs` (Node + occt +
+  gltf-transform). The website only ever loads GLB — no STEP/WASM at runtime.
+
+If ffmpeg/Node aren't on PATH, imports fall back to a plain copy.
+
+> **PCBs / detail:** a STEP file is solid geometry only — usually little color and
+> **no copper traces or silkscreen** (those are 2D layers STEP doesn't carry). For a
+> board that shows silkscreen, traces, and true component colors, export **GLB/glTF
+> directly from KiCad** (File → Export → GLTF) and import that — the CMS just
+> optimizes it. Batch-convert STEP sources in `models/` with
+> `node scripts/step-to-glb.mjs`.
 
 ## Notes
 

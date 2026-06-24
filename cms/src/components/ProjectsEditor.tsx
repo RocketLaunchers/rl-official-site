@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { listProjects, saveProject, createProject, deleteProject, importPublicImage, importPublicMedia, importPublicFile, type Project } from '../api';
+import { listProjects, saveProject, createProject, deleteProject, importPublicImage, importPublicVideo, importPublicModel, type Project } from '../api';
 import { Field, ImageField, ItemToolbar, TagsField, TextArea, TextField } from './fields';
 import type { MediaItem } from '@portfolio/content-schema';
 
@@ -21,8 +21,8 @@ function ProjectMediaEditor({ repo, media, onChange }: { repo: string; media: Me
   };
   const importFor = (type: MediaItem['type']) => {
     if (type === 'image') return importPublicImage(repo);
-    if (type === 'video') return importPublicMedia(repo);
-    return importPublicFile(repo, ['glb', 'gltf', 'step', 'stp']);
+    if (type === 'video') return importPublicVideo(repo);
+    return importPublicModel(repo);
   };
 
   return (

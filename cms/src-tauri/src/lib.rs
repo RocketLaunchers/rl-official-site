@@ -77,6 +77,79 @@ fn remove_dir(path: String) -> Result<(), String> {
     fs::remove_dir_all(&path).map_err(|e| e.to_string())
 }
 
+/* ----------------------------------------------- media convert + compress */
+
+fn has_tool(name: &str) -> bool {
+    Command::new(name)
+        .arg("-version")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .is_ok()
+}
+
+fn ensure_parent(dest: &str) -> Result<(), String> {
+    if let Some(p) = Path::new(dest).parent() {
+        fs::create_dir_all(p).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+fn run_tool(cmd: &str, args: &[&str], cwd: Option<&str>) -> Result<(), String> {
+    let mut c = Command::new(cmd);
+    c.args(args);
+    if let Some(dir) = cwd {
+        c.current_dir(dir);
+    }
+    let out = c.output().map_err(|e| format!("{cmd} could not run: {e}"))?;
+    if out.status.success() {
+        Ok(())
+    } else {
+        let err = String::from_utf8_lossy(&out.stderr);
+        let last = err.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("failed");
+        Err(format!("{cmd}: {last}"))
+    }
+}
+
+/// Which optional tools are present (ffmpeg for media, node for 3D conversion).
+#[tauri::command]
+fn check_tools() -> serde_json::Value {
+    serde_json::json!({ "ffmpeg": has_tool("ffmpeg"), "node": has_tool("node") })
+}
+
+/// Compress + resize an image to WebP (max 1920px long edge).
+#[tauri::command]
+fn process_image(src: String, dest: String) -> Result<(), String> {
+    ensure_parent(&dest)?;
+    run_tool(
+        "ffmpeg",
+        &["-y", "-i", &src, "-vf", "scale='min(1920,iw)':-2", "-c:v", "libwebp", "-quality", "82", &dest],
+        None,
+    )
+}
+
+/// Transcode + compress a video to H.264 MP4 (max 1080p).
+#[tauri::command]
+fn process_video(src: String, dest: String) -> Result<(), String> {
+    ensure_parent(&dest)?;
+    run_tool(
+        "ffmpeg",
+        &[
+            "-y", "-i", &src, "-vf", "scale='min(1920,iw)':-2", "-c:v", "libx264", "-crf", "28",
+            "-preset", "medium", "-c:a", "aac", "-b:a", "96k", "-movflags", "+faststart", &dest,
+        ],
+        None,
+    )
+}
+
+/// Convert a 3D model (STEP/OBJ/GLB) to an optimized GLB via the repo's node script.
+#[tauri::command]
+fn convert_model(repo: String, src: String, dest: String) -> Result<(), String> {
+    ensure_parent(&dest)?;
+    let script = format!("{repo}/scripts/convert-model.mjs");
+    run_tool("node", &["--max-old-space-size=4096", &script, &src, &dest], Some(&repo))
+}
+
 /* --------------------------------------------------------- preview server */
 
 fn port_in_use(port: u16) -> bool {
@@ -236,6 +309,10 @@ pub fn run() {
             copy_file,
             remove_file,
             remove_dir,
+            check_tools,
+            process_image,
+            process_video,
+            convert_model,
             preview_status,
             start_preview,
             stop_preview,

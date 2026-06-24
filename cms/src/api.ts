@@ -80,36 +80,99 @@ export function mediaUrl(root: string, src: string | null | undefined, baseDir?:
 }
 
 const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'avif'];
-const MEDIA_EXTS = [...IMAGE_EXTS, 'mp4', 'webm', 'ogv', 'mov'];
+const VIDEO_EXTS = ['mp4', 'webm', 'ogv', 'mov', 'm4v'];
+const MODEL_EXTS = ['glb', 'gltf', 'step', 'stp', 'obj'];
+const extOf = (p: string) => (p.split('.').pop() || '').toLowerCase();
+const isVideoExt = (p: string) => VIDEO_EXTS.includes(extOf(p));
 
 async function pickFile(name: string, extensions: string[]): Promise<string | null> {
   const r = await open({ multiple: false, filters: [{ name, extensions }] });
   return typeof r === 'string' ? r : null;
 }
 
-/** Import an image into public/, returns the stored src ("/file.png") or null. */
-export async function importPublicImage(root: string): Promise<string | null> {
-  const src = await pickFile('Images', IMAGE_EXTS);
-  if (!src) return null;
-  const name = basename(src);
+/** Slugified base filename without extension: "My Photo.JPG" → "my-photo". */
+function cleanBase(p: string): string {
+  return (basename(p).replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')) || 'file';
+}
+
+export type Tools = { ffmpeg: boolean; node: boolean };
+export const checkTools = () => invoke<Tools>('check_tools');
+const processImageCmd = (src: string, dest: string) => invoke<void>('process_image', { src, dest });
+const processVideoCmd = (src: string, dest: string) => invoke<void>('process_video', { src, dest });
+const convertModelCmd = (repo: string, src: string, dest: string) => invoke<void>('convert_model', { repo, src, dest });
+
+let toolsCache: Tools | null = null;
+const tools = async (): Promise<Tools> => (toolsCache ??= await checkTools());
+
+// Compress a picked image → WebP in public/ (copy fallback if ffmpeg is absent).
+async function processImageFile(root: string, src: string): Promise<string> {
+  const base = cleanBase(src);
+  if ((await tools()).ffmpeg && extOf(src) !== 'svg') {
+    const name = base + '.webp';
+    await processImageCmd(src, join(root, 'public', name));
+    return '/' + name;
+  }
+  const name = base + '.' + extOf(src);
   await copyFile(src, join(root, 'public', name));
   return '/' + name;
 }
 
-/** Import any file into public/, returns the stored href ("/file.pdf") or null. */
+// Compress a picked video → MP4 in public/ (copy fallback if ffmpeg is absent).
+async function processVideoFile(root: string, src: string): Promise<string> {
+  const base = cleanBase(src);
+  if ((await tools()).ffmpeg) {
+    const name = base + '.mp4';
+    await processVideoCmd(src, join(root, 'public', name));
+    return '/' + name;
+  }
+  const name = base + '.' + extOf(src);
+  await copyFile(src, join(root, 'public', name));
+  return '/' + name;
+}
+
+/** Pick + compress an image into public/. */
+export async function importPublicImage(root: string): Promise<string | null> {
+  const src = await pickFile('Images', IMAGE_EXTS);
+  return src ? processImageFile(root, src) : null;
+}
+
+/** Pick + compress a video into public/. */
+export async function importPublicVideo(root: string): Promise<string | null> {
+  const src = await pickFile('Videos', VIDEO_EXTS);
+  return src ? processVideoFile(root, src) : null;
+}
+
+/** Pick an image OR video and compress it appropriately. */
+export async function importPublicMedia(root: string): Promise<string | null> {
+  const src = await pickFile('Media', [...IMAGE_EXTS, ...VIDEO_EXTS]);
+  if (!src) return null;
+  return isVideoExt(src) ? processVideoFile(root, src) : processImageFile(root, src);
+}
+
+/** Pick a 3D model (STEP/OBJ/GLB) and convert + optimize it to GLB in public/. */
+export async function importPublicModel(root: string): Promise<string | null> {
+  const src = await pickFile('3D models', MODEL_EXTS);
+  if (!src) return null;
+  const base = cleanBase(src);
+  const ext = extOf(src);
+  if ((await tools()).node) {
+    const name = base + '.glb';
+    await convertModelCmd(root, src, join(root, 'public', name));
+    return '/' + name;
+  }
+  if (ext === 'glb' || ext === 'gltf') {
+    const name = base + '.' + ext;
+    await copyFile(src, join(root, 'public', name));
+    return '/' + name;
+  }
+  throw new Error('Converting STEP/OBJ needs Node.js. Import a .glb instead, or run the CMS where Node is available.');
+}
+
+/** Import any file into public/ unchanged (e.g. a PDF resume). */
 export async function importPublicFile(root: string, extensions: string[]): Promise<string | null> {
   const src = await pickFile('File', extensions);
   if (!src) return null;
-  const name = basename(src);
-  await copyFile(src, join(root, 'public', name));
-  return '/' + name;
-}
-
-/** Import an image OR video into public/, returns the stored src ("/file.mp4"). */
-export async function importPublicMedia(root: string): Promise<string | null> {
-  const src = await pickFile('Media', MEDIA_EXTS);
-  if (!src) return null;
-  const name = basename(src);
+  const name = cleanBase(src) + '.' + extOf(src);
   await copyFile(src, join(root, 'public', name));
   return '/' + name;
 }
