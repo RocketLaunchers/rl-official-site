@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { MediaItem } from '../content/schema';
 import LazyModel from './LazyModel';
 
@@ -85,7 +86,7 @@ function MediaLightbox({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-sm grid place-items-center p-4 sm:p-10" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm grid place-items-center p-4 sm:p-10" onClick={onClose}>
       <div className="absolute top-5 left-6 text-white/40 text-xs tracking-[0.18em] uppercase pointer-events-none">{title}</div>
       <button
         onClick={(e) => {
@@ -153,15 +154,17 @@ export default function ProjectGallery({ items, title }: { items: MediaItem[]; t
         </div>
       </div>
 
-      {open && (
-        <MediaLightbox
-          items={media}
-          startIndex={clamped}
-          title={title}
-          onClose={() => setOpen(false)}
-          onIndexChange={setIndex}
-        />
-      )}
+      {open &&
+        createPortal(
+          <MediaLightbox
+            items={media}
+            startIndex={clamped}
+            title={title}
+            onClose={() => setOpen(false)}
+            onIndexChange={setIndex}
+          />,
+          document.body,
+        )}
     </>
   );
 }
