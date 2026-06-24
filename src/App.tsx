@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { useEffect } from 'react';
 import HomePage from './components/HomePage';
 import BlogPost from './components/BlogPost';
-import ParticleBackground from './components/ParticleBackground';
+import SpaceBackground from './components/SpaceBackground';
 import Header from './components/Header';
 import { ImageModalProvider } from './components/ImageModalProvider';
 
@@ -27,7 +27,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/blog/:id" element={
               <div className="relative">
-                <ParticleBackground />
+                <SpaceBackground />
                 <div className="relative z-10">
                   <Header />
                   <BlogPost />

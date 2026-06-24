@@ -12,7 +12,6 @@
   "dependencies": {
     "marked": "^16.3.0",
     "occt-import-js": "^0.0.23",
-    "particles.js": "^2.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.6.3",

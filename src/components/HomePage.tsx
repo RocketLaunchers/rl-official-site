@@ -1,4 +1,4 @@
-import ParticleBackground from './ParticleBackground';
+import SpaceBackground from './SpaceBackground';
 import Header from './Header';
 import Hero from './Hero';
 import Blog from './Blog';
@@ -10,7 +10,7 @@ import { site } from '../data/site';
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-black text-white relative">
-      <ParticleBackground />
+      <SpaceBackground />
       <Header />
       <main className="relative z-10">
         <Hero />
