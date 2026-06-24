@@ -26,8 +26,8 @@ const Hero = () => {
                 onClick={() => document.getElementById(cta.target)?.scrollIntoView({ behavior: 'smooth' })}
                 className={
                   index === 0
-                    ? 'bg-white text-black px-8 py-3.5 text-[13px] tracking-[0.12em] font-medium hover:bg-neutral-200 hover:scale-[1.03] hover:shadow-[0_0_22px_rgba(255,255,255,0.28)] transition-all duration-300 ease-out'
-                    : 'border border-white/20 text-white px-8 py-3.5 text-[13px] tracking-[0.12em] font-light hover:border-white/50 hover:bg-white/5 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(255,255,255,0.12)] transition-all duration-300 ease-out'
+                    ? 'bg-white text-black px-8 py-3.5 text-[13px] tracking-[0.12em] font-medium hover:bg-neutral-200 hover:shadow-[0_0_22px_rgba(255,255,255,0.28)] transition-all duration-300 ease-out'
+                    : 'border border-white/20 text-white px-8 py-3.5 text-[13px] tracking-[0.12em] font-light hover:border-white/50 hover:bg-white/5 hover:shadow-[0_0_18px_rgba(255,255,255,0.12)] transition-all duration-300 ease-out'
                 }
               >
                 {cta.label}

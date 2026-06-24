@@ -35,42 +35,52 @@ const About = () => {
           <div className="h-px flex-1 bg-white/10" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Traits */}
-          <div className="space-y-6">
-            {about.traits.map((trait, index) => (
-              <div key={index} className="flex items-start space-x-4">
-                <div className="bg-white/5 border border-white/10 p-3 text-white shrink-0">
-                  <TraitIcon name={trait.icon} />
-                </div>
-                <div>
-                  <h3 className="text-white font-light mb-1">{trait.title}</h3>
-                  <p className="text-neutral-400 text-sm font-light leading-relaxed">{trait.description}</p>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+          {/* Left: photo + personality traits */}
+          <div className="lg:col-span-4">
+            <div className="max-w-[300px] mx-auto lg:mx-0">
+              <div className="w-full aspect-[4/5] bg-neutral-950 border border-white/10 overflow-hidden">
+                <ClickableImage
+                  src={about.profileImage}
+                  alt={about.profileAlt}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            ))}
-          </div>
 
-          {/* Profile Image */}
-          <div className="flex justify-center">
-            <div className="w-72 h-72 lg:w-80 lg:h-80 bg-neutral-950 border border-white/10 overflow-hidden">
-              <ClickableImage
-                src={about.profileImage}
-                alt={about.profileAlt}
-                className="w-full h-full object-cover"
-              />
+              <div className="mt-8 space-y-5">
+                {about.traits.map((trait, index) => (
+                  <div key={index} className="flex items-start gap-3.5">
+                    <div className="bg-white/5 border border-white/10 p-2.5 text-white shrink-0">
+                      <TraitIcon name={trait.icon} />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-light text-[15px] mb-0.5">{trait.title}</h3>
+                      <p className="text-neutral-400 text-[13px] font-light leading-relaxed">{trait.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Description */}
-          <div className="space-y-6">
+          {/* Right: bio + quote + education/focus */}
+          <div className="lg:col-span-8 space-y-6">
             {about.paragraphs.map((paragraph, index) => (
-              <p key={index} className="text-neutral-400 leading-relaxed font-light">
+              <p key={index} className="text-neutral-300 leading-relaxed font-light">
                 {paragraph}
               </p>
             ))}
 
-            <div className="grid grid-cols-2 gap-4 mt-8">
+            <blockquote className="border-l-2 border-cyan-400/60 bg-white/[0.02] pl-6 pr-5 py-5">
+              <p className="text-neutral-200 italic font-light leading-relaxed">
+                &ldquo;Earth is the cradle of humanity, but one cannot live in the cradle forever.&rdquo;
+              </p>
+              <footer className="mt-3 text-cyan-300 text-[11px] uppercase tracking-[0.2em] font-mono">
+                &mdash; Konstantin Tsiolkovsky
+              </footer>
+            </blockquote>
+
+            <div className="grid sm:grid-cols-2 gap-4 pt-2">
               <div className="bg-white/[0.02] p-5 border border-white/10">
                 <h4 className="text-white text-[11px] uppercase tracking-[0.18em] font-light mb-3">{about.education.title}</h4>
                 {about.education.items.map((item, index) => (
@@ -84,37 +94,37 @@ const About = () => {
                 ))}
               </div>
             </div>
-
-            {/* Resume Download Button */}
-            {about.resume.href && (
-              <div className="flex justify-center py-6">
-                <a
-                  href={about.resume.href}
-                  download={about.resume.downloadName || undefined}
-                  className="group relative inline-flex items-center space-x-3 px-8 py-3.5 border border-white/20 text-white text-[13px] tracking-[0.12em] font-light transition-all duration-300 hover:border-white/50 hover:bg-white/5"
-                  style={{
-                    animation: 'subtle-pulse 3s ease-in-out infinite'
-                  }}
-                >
-                  <span>{about.resume.label}</span>
-                  <svg
-                    className="w-5 h-5 transition-transform group-hover:translate-y-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </a>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Resume Download Button — the focal call to action */}
+        {about.resume.href && (
+          <div className="flex justify-center mt-16">
+            <a
+              href={about.resume.href}
+              download={about.resume.downloadName || undefined}
+              className="group relative inline-flex items-center gap-3 px-14 py-5 border border-cyan-400/40 text-white text-base tracking-[0.18em] uppercase font-light shadow-[0_0_25px_rgba(34,211,238,0.12)] transition-all duration-300 hover:border-cyan-400/80 hover:bg-cyan-400/[0.08] hover:shadow-[0_0_38px_rgba(34,211,238,0.28)]"
+              style={{
+                animation: 'subtle-pulse 3s ease-in-out infinite'
+              }}
+            >
+              <span>{about.resume.label}</span>
+              <svg
+                className="w-6 h-6 transition-transform group-hover:translate-y-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );
