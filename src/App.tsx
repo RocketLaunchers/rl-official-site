@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { useEffect } from 'react';
 import HomePage from './components/HomePage';
 import BlogPost from './components/BlogPost';
-import SpaceBackground from './components/SpaceBackground';
+import SpaceBackground from './components/SpaceBackgroundLazy';
 import Header from './components/Header';
 import { ImageModalProvider } from './components/ImageModalProvider';
 

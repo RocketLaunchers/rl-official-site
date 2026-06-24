@@ -12,6 +12,12 @@ const Gallery = () => {
           <div className="h-px flex-1 bg-white/10" />
         </div>
 
+        <div className="mb-12 max-w-3xl">
+          <p className="text-neutral-400 font-light leading-relaxed text-[15px]">
+            As Avionics Lead for the UTRGV Rocket Launchers Club, I actively participate in aerospace competitions, hackathons, and educational events. These experiences have shaped my technical skills while fostering collaboration and innovation within the aerospace community.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {galleryItems.map((image) => (
             <div
@@ -36,12 +42,6 @@ const Gallery = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-14 text-center">
-          <p className="text-neutral-400 font-light leading-relaxed max-w-3xl mx-auto text-[15px]">
-            As Avionics Lead for the UTRGV Rocket Launchers Club, I actively participate in aerospace competitions, hackathons, and educational events. These experiences have shaped my technical skills while fostering collaboration and innovation within the aerospace community.
-          </p>
         </div>
       </div>
     </section>

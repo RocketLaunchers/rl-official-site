@@ -1,4 +1,4 @@
-import SpaceBackground from './SpaceBackground';
+import SpaceBackground from './SpaceBackgroundLazy';
 import Header from './Header';
 import Hero from './Hero';
 import Blog from './Blog';

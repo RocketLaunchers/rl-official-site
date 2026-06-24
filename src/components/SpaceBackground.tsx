@@ -227,9 +227,13 @@ const SpaceBackground = () => {
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+
     // --- Renderer / scene / camera ---
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    const pixelRatio = Math.min(window.devicePixelRatio, 2);
+    // No MSAA: stars are soft sprites and gas quads fade at their edges, so
+    // multisampling buys nothing here while costing memory + fill rate.
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
+    const pixelRatio = Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2);
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 1);
@@ -502,7 +506,10 @@ const SpaceBackground = () => {
       for (let k = 0; k < CLUSTER_COUNT; k++) {
         const c = clusters[k];
         gasMeshes[k].position.set(c.x, c.y, c.z);
-        gasMats[k].uniforms.uOpacity.value = GAS_OPACITY * fadeAt(c.z);
+        const op = GAS_OPACITY * fadeAt(c.z);
+        gasMats[k].uniforms.uOpacity.value = op;
+        // Skip the heavy gas shader entirely while a nebula is faded out.
+        gasMeshes[k].visible = op > 0.003;
         for (let j = 0; j < STARS_PER_CLUSTER; j++) {
           const gi = k * STARS_PER_CLUSTER + j;
           clusterPos[gi * 3] = c.x + clusterOffset[gi * 3];
@@ -537,8 +544,19 @@ const SpaceBackground = () => {
     // --- Animation ---
     const clock = new THREE.Clock();
     let raf = 0;
+    // Cap the frame rate on mobile to save battery/GPU; the slow cruise looks
+    // identical at 30fps. Desktop runs uncapped for the smoothest parallax.
+    const minDelta = isMobile ? 1 / 30 : 0;
+    let acc = 0;
     const renderFrame = () => {
-      const dt = Math.min(clock.getDelta(), 0.05);
+      raf = requestAnimationFrame(renderFrame);
+      const delta = clock.getDelta();
+      if (minDelta > 0) {
+        acc += delta;
+        if (acc < minDelta) return;
+      }
+      const dt = Math.min(minDelta > 0 ? acc : delta, 0.05);
+      acc = 0;
       const step = CRUISE_SPEED * dt;
 
       for (let i = 0; i < FIELD_STARS; i++) {
@@ -569,7 +587,6 @@ const SpaceBackground = () => {
       camera.lookAt(0, 0, -600);
 
       renderer.render(scene, camera);
-      raf = requestAnimationFrame(renderFrame);
     };
 
     if (prefersReducedMotion) {
@@ -585,6 +602,7 @@ const SpaceBackground = () => {
         raf = 0;
       } else if (!raf && !prefersReducedMotion) {
         clock.getDelta();
+        acc = 0;
         raf = requestAnimationFrame(renderFrame);
       }
     };

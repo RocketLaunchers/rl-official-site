@@ -1,25 +1,25 @@
 {
   "items": [
     {
-      "id": 1,
-      "src": "/avionics.jpg",
-      "alt": "2024-2025 Avionics Team",
-      "title": "2024-2025 Avionics Team",
-      "description": "Team picture of the 2024-2025 avionics team with Disparado (our rocket)"
-    },
-    {
-      "id": 2,
-      "src": "/lonestar-rocket.JPG",
-      "alt": "Disparado Launch at Lone Star 2025",
-      "title": "Disparado Launch",
-      "description": "Picture of Disparado launching at Lone Star 2025"
-    },
-    {
       "id": 3,
       "src": "/fronterahacks2024.JPG",
       "alt": "Frontera Hacks 2024",
       "title": "Frontera Hacks 2024",
       "description": "Participating in the annual hackathon at UTRGV"
+    },
+    {
+      "id": 6,
+      "src": "/starbase.jpg",
+      "alt": "SpaceX Starbase Visit",
+      "title": "SpaceX Starbase Visit",
+      "description": "Educational visit to SpaceX facilities"
+    },
+    {
+      "id": 1,
+      "src": "/avionics.jpg",
+      "alt": "2024-2025 Avionics Team",
+      "title": "2024-2025 Avionics Team",
+      "description": "Team picture of the 2024-2025 avionics team with Disparado "
     },
     {
       "id": 4,
@@ -29,18 +29,18 @@
       "description": "Rocket competition event"
     },
     {
+      "id": 2,
+      "src": "/lonestar-rocket.JPG",
+      "alt": "Disparado Launch at Lone Star 2025",
+      "title": "Disparado Launch",
+      "description": "Picture of Disparado launching at Lone Star 2025"
+    },
+    {
       "id": 5,
       "src": "/disparado-irec.png",
       "alt": "Disparado at IREC in Midland, TX",
       "title": "Disparado at IREC 2025",
       "description": "Picture of Disparado (our rocket) at IREC 2025"
-    },
-    {
-      "id": 6,
-      "src": "/starbase.jpg",
-      "alt": "SpaceX Starbase Visit",
-      "title": "SpaceX Starbase Visit",
-      "description": "Educational visit to SpaceX facilities"
     },
     {
       "id": "928b6c8a-4847-4039-ad80-2c8164637a66",

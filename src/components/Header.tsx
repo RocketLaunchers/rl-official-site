@@ -28,7 +28,8 @@ const Header = () => {
     { label: 'ABOUT', onClick: () => scrollToSection('about') },
   ];
 
-  const iconClass = 'text-neutral-500 hover:text-white transition-colors';
+  const iconClass =
+    'text-neutral-500 hover:text-white hover:scale-110 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] transition-all duration-300 ease-out';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-md border-b border-white/10">
@@ -39,7 +40,7 @@ const Header = () => {
               <button
                 key={item.label}
                 onClick={item.onClick}
-                className="text-[13px] tracking-[0.18em] text-neutral-400 hover:text-white transition-colors font-light"
+                className="inline-block text-[13px] tracking-[0.18em] text-neutral-400 hover:text-white hover:scale-105 hover:[text-shadow:0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out font-light"
               >
                 {item.label}
               </button>

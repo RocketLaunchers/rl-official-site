@@ -5,7 +5,7 @@ const Hero = () => {
     <section id="hero" className="min-h-screen flex items-center justify-center pt-20">
       <div className="max-w-6xl mx-auto px-6 w-full">
         <div className="flex flex-col items-center text-center">
-          <p className="text-xs md:text-sm tracking-[0.35em] text-neutral-400 font-light uppercase mb-6">
+          <p className="text-base md:text-xl tracking-[0.3em] text-neutral-300 font-light uppercase mb-6">
             {site.name}
           </p>
 
@@ -26,8 +26,8 @@ const Hero = () => {
                 onClick={() => document.getElementById(cta.target)?.scrollIntoView({ behavior: 'smooth' })}
                 className={
                   index === 0
-                    ? 'bg-white text-black px-8 py-3.5 text-[13px] tracking-[0.12em] font-medium hover:bg-neutral-200 transition-colors'
-                    : 'border border-white/20 text-white px-8 py-3.5 text-[13px] tracking-[0.12em] font-light hover:border-white/50 hover:bg-white/5 transition-colors'
+                    ? 'bg-white text-black px-8 py-3.5 text-[13px] tracking-[0.12em] font-medium hover:bg-neutral-200 hover:scale-[1.03] hover:shadow-[0_0_22px_rgba(255,255,255,0.28)] transition-all duration-300 ease-out'
+                    : 'border border-white/20 text-white px-8 py-3.5 text-[13px] tracking-[0.12em] font-light hover:border-white/50 hover:bg-white/5 hover:scale-[1.03] hover:shadow-[0_0_18px_rgba(255,255,255,0.12)] transition-all duration-300 ease-out'
                 }
               >
                 {cta.label}

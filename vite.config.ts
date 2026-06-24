@@ -87,9 +87,18 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   build: {
+    // three.js is an intentional, lazily-loaded chunk; don't warn on its size.
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       input: {
         main: './index.html',
+      },
+      output: {
+        // Split the heavy 3D libs into their own chunk so they're cached
+        // independently and shared between the lazy starfield + model viewer.
+        manualChunks: {
+          three: ['three'],
+        },
       },
     },
   },
