@@ -77,7 +77,6 @@ const NEB_VERT = /* glsl */ `
 `;
 
 const NEB_FRAG = /* glsl */ `
-  precision highp float;
   varying vec2 vUv;
   uniform vec3 uPaletteA[5];
   uniform vec3 uPaletteB[5];
@@ -86,24 +85,26 @@ const NEB_FRAG = /* glsl */ `
   uniform float uRot, uScale, uWarp, uVoidLow, uVoidHigh, uFilPow, uFilMix;
   uniform float uContrast, uIntensity, uOpacity, uEnvScale, uEnvThreshold;
 
-  float hash(vec2 p) {
-    p = fract(p * vec2(123.34, 456.21));
-    p += dot(p, p + 45.32);
-    return fract(p.x * p.y);
+  // Dave Hoskins "hash without sine": all intermediates stay small and bounded,
+  // so it survives lower-precision mobile GPU floats (no blocky breakdown).
+  float hash12(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
   }
   float noise(vec2 x) {
     vec2 p = floor(x);
     vec2 f = fract(x);
     vec2 u = f * f * (3.0 - 2.0 * f);
-    float a = hash(p);
-    float b = hash(p + vec2(1.0, 0.0));
-    float c = hash(p + vec2(0.0, 1.0));
-    float d = hash(p + vec2(1.0, 1.0));
+    float a = hash12(p);
+    float b = hash12(p + vec2(1.0, 0.0));
+    float c = hash12(p + vec2(0.0, 1.0));
+    float d = hash12(p + vec2(1.0, 1.0));
     return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
   }
   float fbm(vec2 p) {
     float s = 0.0, a = 0.5, n = 0.0;
-    for (int i = 0; i < 5; i++) { s += a * noise(p); n += a; p *= 2.0; a *= 0.5; }
+    for (int i = 0; i < 4; i++) { s += a * noise(p); n += a; p *= 2.0; a *= 0.5; }
     return s / n;
   }
   float warped(vec2 p, float w) {
@@ -132,8 +133,8 @@ const NEB_FRAG = /* glsl */ `
   }
   void main() {
     vec2 c = vUv * 2.0 - 1.0;
-    // Box edge fade -> gas dissolves before the quad border (no square edges).
-    vec2 ef = 1.0 - smoothstep(0.62, 1.0, abs(c));
+    // Box edge fade -> gas dissolves well before the quad border (no square edges).
+    vec2 ef = 1.0 - smoothstep(0.45, 0.95, abs(c));
     float edge = ef.x * ef.y;
     if (edge <= 0.002) discard;
 
@@ -292,6 +293,7 @@ const SpaceBackground = () => {
         depthWrite: false,
         blending: blend,
         side: THREE.DoubleSide,
+        precision: 'highp', // inject one clean highp declaration (mobile-safe)
       });
 
     const applyParams = (mat: THREE.ShaderMaterial, P: NebulaParams) => {
@@ -323,8 +325,9 @@ const SpaceBackground = () => {
         palA: palettes[a],
         palB: palettes[b],
         st: STRUCTURES[Math.floor(Math.random() * STRUCTURES.length)],
-        seedX: Math.random() * 80,
-        seedY: Math.random() * 80,
+        // Keep noise coords small so floor()/fract() stay precise on mobile GPUs.
+        seedX: Math.random() * 6,
+        seedY: Math.random() * 6,
         rot: Math.random() * Math.PI,
         anisoX: 0.6 + Math.random() * 0.9,
         anisoY: 0.6 + Math.random() * 0.9,
