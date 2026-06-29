@@ -1,11 +1,18 @@
 {
   "items": [
     {
-      "id": 3,
-      "src": "/fronterahacks2024.JPG",
-      "alt": "Frontera Hacks 2024",
-      "title": "Frontera Hacks 2024",
-      "description": "Participating in the annual hackathon at UTRGV"
+      "id": "928b6c8a-4847-4039-ad80-2c8164637a66",
+      "src": "/IREC2026.jpeg",
+      "alt": "IREC 2026 Team Photo",
+      "title": "IREC 2026",
+      "description": "Team picture with ITZAMNA, our rocket for IREC 2026"
+    },
+    {
+      "id": 5,
+      "src": "/disparado-irec.png",
+      "alt": "Disparado at IREC in Midland, TX",
+      "title": "Disparado at IREC 2025",
+      "description": "Picture of Disparado at IREC 2025"
     },
     {
       "id": 6,
@@ -36,18 +43,11 @@
       "description": "Picture of Disparado launching at Lone Star 2025"
     },
     {
-      "id": 5,
-      "src": "/disparado-irec.png",
-      "alt": "Disparado at IREC in Midland, TX",
-      "title": "Disparado at IREC 2025",
-      "description": "Picture of Disparado (our rocket) at IREC 2025"
-    },
-    {
-      "id": "928b6c8a-4847-4039-ad80-2c8164637a66",
-      "src": "/IREC2026.jpeg",
-      "alt": "IREC 2026 Team Photo",
-      "title": "IREC 2026",
-      "description": "Team picture with ITZAMNA, our rocket for IREC 2026"
+      "id": 3,
+      "src": "/fronterahacks2024.JPG",
+      "alt": "Frontera Hacks 2024",
+      "title": "Frontera Hacks 2024",
+      "description": "Participating in the annual hackathon at UTRGV"
     }
   ]
 }

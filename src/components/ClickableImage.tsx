@@ -27,7 +27,7 @@ const ClickableImage: React.FC<ClickableImageProps> = ({
     <img
       src={src}
       alt={alt}
-      className={`cursor-pointer transition-transform hover:scale-105 ${className}`}
+      className={`cursor-pointer ${className}`}
       onClick={handleClick}
     />
   );
