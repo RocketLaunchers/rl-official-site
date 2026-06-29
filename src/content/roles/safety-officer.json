@@ -1,0 +1,1 @@
+{ "type": "role", "id": "safety-officer", "name": "Safety Officer", "category": "Operations", "description": "Owns range safety, hazardous-operation procedures, and certifications.", "displayOrder": 70, "isLeadership": true, "isSubteamRole": false, "active": true }

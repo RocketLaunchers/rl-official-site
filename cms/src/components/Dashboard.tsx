@@ -1,155 +1,118 @@
-import { useCallback, useEffect, useState } from 'react';
-import { listPosts, createPost, deletePost, type PostSummary } from '../api';
+import { useEffect, useState } from 'react';
+import {
+  seasonsApi, rocketsApi, peopleApi, sponsorsApi, subteamsApi, constitutionApi,
+  type Season, type Rocket, type Person, type Sponsor, type Subteam, type Constitution,
+} from '../api';
 
-function slugify(s: string): string {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+type Data = {
+  seasons: Season[];
+  rockets: Rocket[];
+  people: Person[];
+  sponsors: Sponsor[];
+  subteams: Subteam[];
+  constitutions: Constitution[];
+};
+
+/** Compute "missing content" warnings for the current season, like the spec asks. */
+function computeWarnings(d: Data): string[] {
+  const w: string[] = [];
+  const current = d.seasons.find((s) => s.status === 'current');
+  if (!current) {
+    w.push('No season is marked “current”.');
+    return w;
+  }
+  const byId = <T extends { id: string }>(xs: T[], id: string) => xs.find((x) => x.id === id);
+
+  if (!current.currentRocket) w.push(`${current.name} has no current rocket set.`);
+  else {
+    const rocket = byId(d.rockets, current.currentRocket);
+    if (!rocket) w.push(`Current rocket "${current.currentRocket}" has no rocket record.`);
+    else if ((rocket.status === 'Launched' || rocket.status === 'Retired') && !rocket.results.trim())
+      w.push(`${rocket.name} has no launch result recorded.`);
+  }
+
+  if (!current.advisors.some((a) => a.category === 'Faculty Advisor'))
+    w.push(`${current.name} has no faculty advisor assigned.`);
+  if (current.roster.length === 0) w.push(`${current.name} has an empty roster.`);
+
+  if (!d.constitutions.some((c) => c.status === 'current')) w.push('No constitution is marked “current”.');
+
+  // Sponsor logos missing (current season).
+  for (const entry of current.sponsors) {
+    const sp = byId(d.sponsors, entry.sponsor);
+    if (sp && !sp.logo) w.push(`Sponsor “${sp.name}” has no logo.`);
+  }
+
+  // Active subteams missing a description.
+  for (const id of current.subteams) {
+    const st = byId(d.subteams, id);
+    if (st && !st.shortDescription.trim()) w.push(`Subteam “${st.name}” has no description yet.`);
+  }
+
+  // Roster members missing photos (consent-aware).
+  const missingPhotos = current.roster
+    .map((r) => byId(d.people, r.person))
+    .filter((p): p is Person => !!p && p.privacy.showPhoto && !p.photo);
+  if (missingPhotos.length) w.push(`${missingPhotos.length} team member(s) missing a photo.`);
+
+  return w;
 }
 
-export default function Dashboard({
-  repo,
-  onOpenPost,
-}: {
-  repo: string;
-  onOpenPost: (slug: string) => void;
-}) {
-  const [posts, setPosts] = useState<PostSummary[] | null>(null);
+export default function Dashboard({ repo }: { repo: string }) {
+  const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showNew, setShowNew] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newSlug, setNewSlug] = useState('');
-  const [creating, setCreating] = useState(false);
-
-  const refresh = useCallback(async () => {
-    setError(null);
-    try {
-      setPosts(await listPosts(repo));
-    } catch (e) {
-      setError(String(e));
-    }
-  }, [repo]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    Promise.all([
+      seasonsApi.list(repo), rocketsApi.list(repo), peopleApi.list(repo),
+      sponsorsApi.list(repo), subteamsApi.list(repo), constitutionApi.list(repo),
+    ])
+      .then(([seasons, rockets, people, sponsors, subteams, constitutions]) =>
+        setData({ seasons, rockets, people, sponsors, subteams, constitutions }))
+      .catch((e) => setError(String(e)));
+  }, [repo]);
 
-  async function create() {
-    setCreating(true);
-    setError(null);
-    try {
-      const slug = newSlug || slugify(newTitle);
-      await createPost(repo, slug, newTitle.trim());
-      setShowNew(false);
-      setNewTitle('');
-      setNewSlug('');
-      onOpenPost(slug);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setCreating(false);
-    }
-  }
-
-  async function remove(p: PostSummary) {
-    if (!confirm(`Delete blog post “${p.title}”? This removes its folder and assets.`)) return;
-    setError(null);
-    try {
-      await deletePost(repo, p.slug);
-      await refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  }
+  const current = data?.seasons.find((s) => s.status === 'current');
+  const rocket = current && data ? data.rockets.find((r) => r.id === current.currentRocket) : undefined;
+  const warnings = data ? computeWarnings(data) : [];
 
   return (
     <div className="app">
-      <div className="topbar">
-        <h1 style={{ fontWeight: 400 }}>Blog</h1>
-        <div className="spacer" />
-        <button className="small ghost" onClick={refresh}>Refresh</button>
-      </div>
-
+      <div className="topbar"><h1 style={{ fontWeight: 400 }}>Dashboard</h1></div>
       <div className="content">
         <div className="container">
-          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 18 }}>
-            <h2 style={{ fontWeight: 400, margin: 0 }}>Blog posts</h2>
-            <button className="primary small" onClick={() => setShowNew((v) => !v)}>＋ New post</button>
-          </div>
-
-          {showNew && (
-            <div className="inline-form">
-              <div>
-                <label>Title</label>
-                <input
-                  value={newTitle}
-                  onChange={(e) => {
-                    setNewTitle(e.target.value);
-                    setNewSlug(slugify(e.target.value));
-                  }}
-                  placeholder="My New Post"
-                />
-              </div>
-              <div>
-                <label>Slug (folder name)</label>
-                <input value={newSlug} onChange={(e) => setNewSlug(e.target.value)} placeholder="my-new-post" />
-              </div>
-              <div className="row">
-                <button className="primary" disabled={creating || !newTitle.trim() || !newSlug} onClick={create}>
-                  Create draft
-                </button>
-                <button className="ghost" onClick={() => setShowNew(false)}>Cancel</button>
-              </div>
-            </div>
-          )}
-
           {error && <div className="notice error">{error}</div>}
-
-          {posts === null ? (
+          {!data ? (
             <div className="empty">Loading…</div>
-          ) : posts.length === 0 ? (
-            <div className="empty">No posts yet. Create your first draft.</div>
           ) : (
-            <table className="posts">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Blocks</th>
-                  <th>Tags</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {posts.map((p) => (
-                  <tr key={p.slug}>
-                    <td className="title">
-                      {p.title}
-                      <div className="muted" style={{ fontSize: 11, fontFamily: 'ui-monospace, monospace' }}>{p.slug}</div>
-                    </td>
-                    <td>
-                      {p.valid ? (
-                        <span className={`badge ${p.status}`}>{p.status}</span>
-                      ) : (
-                        <span className="badge invalid" title={p.error}>invalid</span>
-                      )}
-                    </td>
-                    <td className="muted">{p.displayDate || p.date || '—'}</td>
-                    <td className="muted">{p.blockCount}</td>
-                    <td>
-                      <div className="tags">
-                        {p.tags.slice(0, 4).map((t) => <span key={t} className="tag">{t}</span>)}
-                      </div>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div className="item-tools" style={{ justifyContent: 'flex-end' }}>
-                        <button className="small" onClick={() => onOpenPost(p.slug)}>Open</button>
-                        <button className="small danger" onClick={() => remove(p)}>Delete</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <>
+              <div className="section-title">Current season</div>
+              {current ? (
+                <div className="tile">
+                  <div className="tile-head">
+                    <span className="tile-title">{current.name}</span>
+                    <span className="block-id">{current.theme}</span>
+                  </div>
+                  <div className="grid2">
+                    <div><label>Current rocket</label><div>{rocket ? `${rocket.name} (${rocket.status})` : '—'}</div></div>
+                    <div><label>Roster</label><div>{current.roster.length} member(s)</div></div>
+                    <div><label>Subteams</label><div>{current.subteams.length} active</div></div>
+                    <div><label>Sponsors</label><div>{current.sponsors.length}</div></div>
+                    <div><label>Advisors &amp; mentors</label><div>{current.advisors.length}</div></div>
+                    <div><label>Content totals</label><div>{data.people.length} people · {data.rockets.length} rockets</div></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="empty">No current season. Create one in the Seasons editor.</div>
+              )}
+
+              <div className="section-title">Needs attention ({warnings.length})</div>
+              {warnings.length === 0 ? (
+                <div className="notice ok">Everything looks complete for the current season. ✓</div>
+              ) : (
+                warnings.map((msg, i) => <div className="notice error" key={i} style={{ whiteSpace: 'normal' }}>{msg}</div>)
+              )}
+            </>
           )}
         </div>
       </div>

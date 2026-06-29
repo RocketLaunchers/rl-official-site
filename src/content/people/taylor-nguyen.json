@@ -1,0 +1,8 @@
+{
+  "type": "person", "id": "taylor-nguyen", "name": "Taylor Nguyen",
+  "photo": "", "major": "Mechanical Engineering", "gradYear": 2026,
+  "bio": "Vice President and Airframe Lead. Loves composites and anything that flies.",
+  "links": { "email": "", "linkedin": "https://www.linkedin.com/", "github": "", "website": "" },
+  "isAlumni": false, "company": "",
+  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+}

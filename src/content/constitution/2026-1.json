@@ -1,0 +1,19 @@
+{
+  "type": "constitution", "id": "2026-1", "title": "Rocket Launchers Constitution",
+  "version": "2026.1", "effectiveSeason": "2025-2026",
+  "dateApproved": "2025-08-20", "displayDate": "August 20, 2025",
+  "approvedBy": "General membership vote",
+  "pdf": "",
+  "body": [
+    { "id": "h1", "type": "heading", "level": 2, "text": "Article I — Purpose" },
+    { "id": "p1", "type": "paragraph", "text": "Rocket Launchers is a student organization dedicated to designing, building, and launching high-power rockets and competing in intercollegiate engineering competitions." },
+    { "id": "h2", "type": "heading", "level": 2, "text": "Article II — Membership" },
+    { "id": "p2", "type": "paragraph", "text": "Membership is open to all currently enrolled students in good standing. Members are expected to participate in at least one subteam." }
+  ],
+  "summaryOfChanges": [
+    "Added the Director of Engineering officer role",
+    "Established the Flight Dynamics subteam",
+    "Updated the officer election process"
+  ],
+  "status": "current"
+}

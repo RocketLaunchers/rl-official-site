@@ -1,0 +1,8 @@
+{
+  "type": "person", "id": "olivia-brooks", "name": "Olivia Brooks",
+  "photo": "", "major": "Communication Studies", "gradYear": 2028,
+  "bio": "Media Officer documenting builds and launches and running the club's social channels.",
+  "links": { "email": "", "linkedin": "", "github": "", "website": "" },
+  "isAlumni": false, "company": "",
+  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+}

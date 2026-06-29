@@ -1,0 +1,8 @@
+{
+  "type": "person", "id": "diego-hernandez", "name": "Diego Hernandez",
+  "photo": "", "major": "Computer Science", "gradYear": 2027,
+  "bio": "Treasurer keeping the budget and sponsorship funds on track.",
+  "links": { "email": "", "linkedin": "", "github": "", "website": "" },
+  "isAlumni": false, "company": "",
+  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+}

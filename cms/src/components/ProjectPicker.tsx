@@ -40,8 +40,8 @@ export default function ProjectPicker({
   return (
     <div className="center">
       <div className="card">
-        <h2>Portfolio CMS</h2>
-        <p className="sub">Open your portfolio repository to manage its content.</p>
+        <h2>Rocket Launchers CMS</h2>
+        <p className="sub">Open the Rocket Launchers site repository to manage its content.</p>
 
         <div className="row">
           <button className="primary" onClick={choose}>Choose folder…</button>

@@ -1,0 +1,8 @@
+{
+  "type": "person", "id": "john-smith", "name": "John Smith",
+  "photo": "", "major": "Aerospace Engineering", "gradYear": 2026,
+  "bio": "Director of Engineering coordinating the technical subteams toward IREC 2026.",
+  "links": { "email": "", "linkedin": "https://www.linkedin.com/", "github": "https://github.com/", "website": "" },
+  "isAlumni": false, "company": "",
+  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+}

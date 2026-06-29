@@ -1,0 +1,1 @@
+{ "type": "role", "id": "project-manager", "name": "Project Manager", "category": "Operations", "description": "Tracks schedule, milestones, and competition deliverables.", "displayOrder": 60, "isLeadership": true, "isSubteamRole": false, "active": true }

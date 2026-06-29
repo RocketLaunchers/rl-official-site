@@ -1,22 +1,15 @@
-import { GallerySchema, type GalleryItem } from '../content/schema';
+import { AlbumSchema, type Album } from '../content/schema';
+import { loadCollection } from './_load';
 
-export type { GalleryItem };
+export type { Album };
 
-/**
- * Loads the community-involvement gallery from a single JSON list and validates
- * it against the shared Zod schema (invalid content fails the build).
- */
+const modules = import.meta.glob('../content/gallery/*.json', { eager: true });
 
-function loadGallery(): GalleryItem[] {
-  const modules = import.meta.glob('../content/gallery/index.json', { eager: true });
-  for (const mod of Object.values(modules)) {
-    const result = GallerySchema.safeParse((mod as { default: unknown }).default);
-    if (result.success) return result.data.items;
-    const message = `[content] Invalid gallery/index.json:\n${result.error.message}`;
-    if (import.meta.env.PROD) throw new Error(message);
-    console.error(message);
-  }
-  return [];
-}
+export const albums: Album[] = loadCollection(modules, AlbumSchema, 'album').sort(
+  (a, b) => a.displayOrder - b.displayOrder,
+);
 
-export const galleryItems: GalleryItem[] = loadGallery();
+export const albumById = (id: string): Album | undefined => albums.find((a) => a.id === id);
+
+export const albumsForSeason = (seasonId: string): Album[] =>
+  albums.filter((a) => a.season === seasonId);

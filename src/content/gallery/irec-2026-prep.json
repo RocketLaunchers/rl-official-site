@@ -1,0 +1,11 @@
+{
+  "type": "album", "id": "irec-2026-prep", "title": "IREC 2026 Preparation",
+  "season": "2025-2026",
+  "description": "Behind the scenes of the MARV build season.",
+  "items": [
+    { "id": "a1", "src": "/avionics.jpg", "alt": "Avionics testing", "title": "Avionics bench", "description": "Validating the flight computer before integration." },
+    { "id": "a2", "src": "/disparado-irec.png", "alt": "IREC", "title": "Competition prep", "description": "Getting ready for Spaceport America." },
+    { "id": "a3", "src": "/starbase.jpg", "alt": "Starbase visit", "title": "Inspiration", "description": "A team trip to Starbase." }
+  ],
+  "displayOrder": 10
+}

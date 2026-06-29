@@ -1,0 +1,10 @@
+{
+  "type": "sponsor",
+  "id": "acme-aerospace",
+  "name": "Acme Aerospace",
+  "logo": "",
+  "website": "https://example.com",
+  "description": "Aerospace components manufacturer supporting student rocketry with funding and hardware.",
+  "industry": "Aerospace",
+  "contact": ""
+}

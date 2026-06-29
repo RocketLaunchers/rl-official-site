@@ -1,6 +1,6 @@
-# Portfolio CMS
+# Rocket Launchers CMS
 
-A local desktop CMS (Tauri v2 + React) for editing the portfolio's JSON content.
+A local desktop CMS (Tauri v2 + React) for editing the Rocket Launchers site's JSON content.
 It edits the same `src/content/**` files the website builds from, validated by the
 **shared Zod schema** (`src/content/schema.ts`) — so the CMS can never save content
 the site would reject.
@@ -28,40 +28,41 @@ From the repo root:
 
 ```bash
 pnpm install                              # links the cms workspace package
-pnpm --filter portfolio-cms tauri dev     # launches the desktop app (needs a display)
+pnpm --filter rocket-launchers-cms tauri dev     # launches the desktop app (needs a display)
 ```
 
 or from this folder: `cd cms && pnpm tauri dev`.
 
-In the app: **Choose folder…** → select this repo → **Open**. The Dashboard lists
-posts from `src/content/blog/*/index.json`; open one to edit its metadata and block
-text, then **Save** (writes the validated JSON back to disk). Use git to publish.
+In the app: **Choose folder…** → select this repo → **Open**. The Dashboard shows the
+current season and any "missing content" warnings; the sidebar groups the editors
+(Seasons, People, Roles, Subteams, Rockets, Sponsors, Events, Constitution, News,
+Gallery, Site, About). Edit, then **Save** (writes the validated JSON back to disk).
+Use **Publish** to commit + push.
 
 ## Build a distributable
 
 ```bash
-pnpm --filter portfolio-cms tauri build
+pnpm --filter rocket-launchers-cms tauri build
 ```
 
 ## Scope
 
-**Implemented:** content CRUD for every page —
-- **Blog:** list/create posts, edit metadata, add/move/duplicate/delete blocks,
-  edit every block type, live image/video previews + import, and a
-  website-faithful **Preview** toggle.
-- **Projects:** create/edit/delete tiles (text, links, image, tags, order).
-- **Community:** create/edit/remove gallery tiles (image, title, alt, description).
-- **About:** traits CRUD (icon picker, title, description), bio paragraphs,
-  profile image, education & focus lists, resume PDF — all with import + preview.
+**Implemented:** content CRUD for the season-based org model —
+- **Seasons:** the centerpiece. Edit a season's details and its embedded roster /
+  sponsors / advisors using dropdowns populated from the other collections, plus
+  the active subteams and per-season sponsor tiers. "New season" starts a year.
+- **People / Roles / Subteams / Sponsors / Rockets / Events / Constitution:** create,
+  edit, and delete reusable records (one JSON file each), validated on save.
+- **News:** list/create posts, edit metadata, add/move/duplicate/delete blocks, edit
+  every block type, live image/video previews + import, and a **Preview** toggle.
+- **Gallery:** photo albums (optionally tied to a season).
+- **Site / About:** the hero/links/footer and the mission/highlights/join singletons.
 - **Preview:** a switch that starts/stops the site's own Vite dev server and shows
   the live website in an iframe (port 4321). The switch only flips off once the
   port is free; a **Kill port** button force-frees it otherwise.
 - **Publish:** commit changes under "content update" and push so the site redeploys.
 
 All saves are validated against the shared schema before writing.
-
-**Next:** full-page live preview is already covered by the Preview tab; remaining
-polish — extract `schema.ts` to `packages/content-schema`. See `../CMS_PLAN.md`.
 
 ## Media handling
 

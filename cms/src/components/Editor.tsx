@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BLOG_REL, readPost, savePost, importPublicMedia, type BlogPost } from '../api';
+import { NEWS_REL, readNews, saveNews, importPublicMedia, type NewsPost } from '../api';
 import type { Block } from '@portfolio/content-schema';
 import Preview from './Preview';
 import { Field, ImageField, ItemToolbar, TagsField, TextArea, TextField } from './fields';
@@ -21,7 +21,7 @@ function newBlock(type: Block['type']): Block {
   }
 }
 
-function normalize(draft: BlogPost): BlogPost {
+function normalize(draft: NewsPost): NewsPost {
   return {
     ...draft,
     tags: draft.tags.map((t) => t.trim()).filter(Boolean),
@@ -30,26 +30,26 @@ function normalize(draft: BlogPost): BlogPost {
 }
 
 export default function Editor({ repo, slug, onBack }: { repo: string; slug: string; onBack: () => void }) {
-  const [draft, setDraft] = useState<BlogPost | null>(null);
+  const [draft, setDraft] = useState<NewsPost | null>(null);
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [addType, setAddType] = useState<Block['type']>('paragraph');
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveMsg, setSaveMsg] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const baseDir = `${BLOG_REL}/${slug}`;
+  const baseDir = `${NEWS_REL}/${slug}`;
 
   useEffect(() => {
     let alive = true;
     setDraft(null);
     setLoadError(null);
-    readPost(repo, slug)
+    readNews(repo, slug)
       .then((p) => alive && setDraft(p))
       .catch((e) => alive && setLoadError(String(e)));
     return () => { alive = false; };
   }, [repo, slug]);
 
-  function patch(p: Partial<BlogPost>) {
+  function patch(p: Partial<NewsPost>) {
     setDraft((d) => (d ? { ...d, ...p } : d));
     setSaveMsg(null);
   }
@@ -83,7 +83,7 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
     setSaving(true);
     setSaveMsg(null);
     try {
-      const saved = await savePost(repo, slug, normalize(draft));
+      const saved = await saveNews(repo, slug, normalize(draft));
       setDraft(saved);
       setSaveMsg({ kind: 'ok', text: 'Saved ✓' });
     } catch (e) {
@@ -122,7 +122,7 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
               <div className="grid2">
                 <TextField label="Slug (folder — read only)" value={slug} readOnly mono />
                 <Field label="Status">
-                  <select value={draft.status} onChange={(e) => patch({ status: e.target.value as BlogPost['status'] })}>
+                  <select value={draft.status} onChange={(e) => patch({ status: e.target.value as NewsPost['status'] })}>
                     <option value="draft">draft</option>
                     <option value="published">published</option>
                   </select>
@@ -130,6 +130,7 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
                 <TextField label="Date (YYYY-MM-DD)" value={draft.date ?? ''} placeholder="2026-06-23" onChange={(v) => patch({ date: v || undefined })} />
                 <TextField label="Display date" value={draft.displayDate ?? ''} placeholder="June 23, 2026" onChange={(v) => patch({ displayDate: v || undefined })} />
                 <TextField label="Read time" value={draft.readTime ?? ''} placeholder="4 min read" onChange={(v) => patch({ readTime: v })} />
+                <TextField label="Season id (optional)" value={draft.season} placeholder="2025-2026" onChange={(v) => patch({ season: v })} />
               </div>
               <TextArea label="Excerpt" value={draft.excerpt} onChange={(v) => patch({ excerpt: v })} />
               <TagsField label="Tags (comma-separated)" value={draft.tags} onChange={(v) => patch({ tags: v })} />

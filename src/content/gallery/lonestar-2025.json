@@ -1,0 +1,11 @@
+{
+  "type": "album", "id": "lonestar-2025", "title": "LoneStar 2025",
+  "season": "2024-2025",
+  "description": "Brunito's first launch.",
+  "items": [
+    { "id": "b1", "src": "/lonestar2025.jpg", "alt": "LoneStar launch", "title": "On the rail", "description": "Brunito ready to fly." },
+    { "id": "b2", "src": "/lonestar-rocket.JPG", "alt": "Recovered rocket", "title": "Recovered", "description": "Back on the ground in one piece." },
+    { "id": "b3", "src": "/brunito.jpg", "alt": "Brunito", "title": "Brunito", "description": "The team's first high-power rocket." }
+  ],
+  "displayOrder": 20
+}

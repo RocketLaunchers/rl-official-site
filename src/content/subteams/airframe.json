@@ -1,0 +1,11 @@
+{
+  "type": "subteam", "id": "airframe", "name": "Airframe",
+  "shortDescription": "Structures, fins, and the body that holds it all together.",
+  "longDescription": "The Airframe subteam builds the composite body tubes, fin can, nose cone, and bulkheads — the load-bearing structure that survives launch and recovery.",
+  "icon": "rocket", "image": "",
+  "skills": ["Composites", "Machining", "Structural analysis"],
+  "tools": ["Carbon fiber layup", "CNC", "FEA"],
+  "status": "active", "createdSeason": "2024-2025",
+  "relatedRockets": ["brunito", "marv"],
+  "media": [], "displayOrder": 30
+}

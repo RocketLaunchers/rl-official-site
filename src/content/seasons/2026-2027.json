@@ -1,0 +1,14 @@
+{
+  "type": "season", "id": "2026-2027", "name": "2026–2027 Season",
+  "startDate": "2026-08-24", "endDate": "2027-05-15",
+  "status": "upcoming",
+  "theme": "",
+  "currentRocket": "",
+  "subteams": [],
+  "sponsorTiers": ["Platinum", "Gold", "Silver", "Bronze", "In-kind", "Partner"],
+  "roster": [],
+  "sponsors": [],
+  "advisors": [],
+  "endOfYearSummary": "",
+  "displayOrder": 30
+}

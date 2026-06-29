@@ -1,0 +1,8 @@
+{
+  "type": "person", "id": "robert-lee", "name": "Robert Lee",
+  "photo": "", "major": "NAR Level 3 Certified Mentor", "gradYear": null,
+  "bio": "Launch Mentor providing high-power rocketry guidance, launch operations, and safety mentorship.",
+  "links": { "email": "", "linkedin": "", "github": "", "website": "" },
+  "isAlumni": false, "company": "",
+  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+}

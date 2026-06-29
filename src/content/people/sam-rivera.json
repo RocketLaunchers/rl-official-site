@@ -1,0 +1,8 @@
+{
+  "type": "person", "id": "sam-rivera", "name": "Sam Rivera",
+  "photo": "", "major": "Mechanical Engineering", "gradYear": 2028,
+  "bio": "Recovery Lead working on dual-deployment parachute systems.",
+  "links": { "email": "", "linkedin": "", "github": "", "website": "" },
+  "isAlumni": false, "company": "",
+  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+}

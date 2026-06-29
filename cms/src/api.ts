@@ -1,14 +1,29 @@
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
+import type { ZodType } from 'zod';
 import {
-  BlogPostSchema,
-  ProjectSchema,
-  GallerySchema,
+  NewsPostSchema,
+  PersonSchema,
+  RoleSchema,
+  SubteamSchema,
+  SponsorSchema,
+  RocketSchema,
+  EventSchema,
+  ConstitutionSchema,
+  SeasonSchema,
+  AlbumSchema,
   AboutSchema,
   SiteSchema,
-  type BlogPost,
-  type Project,
-  type Gallery,
+  type NewsPost,
+  type Person,
+  type Role,
+  type Subteam,
+  type Sponsor,
+  type Rocket,
+  type EventItem,
+  type Constitution,
+  type Season,
+  type Album,
   type About,
   type Site,
 } from '@portfolio/content-schema';
@@ -16,13 +31,17 @@ import {
 /**
  * API layer over the Tauri backend (generic fs + copy commands, dialog plugin,
  * asset protocol) and the shared content schema. Every content type is read,
- * validated, and written here so the React screens stay declarative. Content
- * is validated with the same Zod schema the website uses.
+ * validated, and written here so the React screens stay declarative. Content is
+ * validated with the same Zod schema the website uses.
+ *
+ * The org content model is mostly "one JSON file per record in a folder", so a
+ * single generic `makeCollection` factory powers people / roles / subteams /
+ * sponsors / rockets / events / constitution / seasons / gallery. News posts
+ * (folder + index.json + colocated media) and the site/about singletons keep
+ * dedicated helpers.
  */
 
-export const BLOG_REL = 'src/content/blog';
-export const PROJECTS_REL = 'src/content/projects';
-export const GALLERY_REL = 'src/content/gallery/index.json';
+export const NEWS_REL = 'src/content/news';
 export const ABOUT_REL = 'src/content/about/index.json';
 export const SITE_REL = 'src/content/site/index.json';
 
@@ -43,7 +62,7 @@ const isExternal = (s: string) => /^(?:[a-z]+:)?\/\//i.test(s) || s.startsWith('
 /* --------------------------------------------------------------- repo / picker */
 
 export async function pickRepo(): Promise<string | null> {
-  const result = await open({ directory: true, multiple: false, title: 'Select your portfolio repo' });
+  const result = await open({ directory: true, multiple: false, title: 'Select the Rocket Launchers site repo' });
   return typeof result === 'string' ? result : null;
 }
 
@@ -56,7 +75,7 @@ export async function validateRepo(root: string): Promise<RepoValidation> {
   const wanted = [
     { label: 'package.json', rel: 'package.json', required: true },
     { label: 'content root', rel: 'src/content', required: true },
-    { label: 'blog content', rel: 'src/content/blog', required: true },
+    { label: 'seasons', rel: 'src/content/seasons', required: true },
     { label: 'shared schema', rel: 'src/content/schema.ts', required: false },
   ];
   const checks = await Promise.all(
@@ -168,7 +187,7 @@ export async function importPublicModel(root: string): Promise<string | null> {
   throw new Error('Converting STEP/OBJ needs Node.js. Import a .glb instead, or run the CMS where Node is available.');
 }
 
-/** Import any file into public/ unchanged (e.g. a PDF resume). */
+/** Import any file into public/ unchanged (e.g. a PDF constitution). */
 export async function importPublicFile(root: string, extensions: string[]): Promise<string | null> {
   const src = await pickFile('File', extensions);
   if (!src) return null;
@@ -177,134 +196,135 @@ export async function importPublicFile(root: string, extensions: string[]): Prom
   return '/' + name;
 }
 
-/* ------------------------------------------------------------------- blog */
+/* ------------------------------------------------------- generic collections */
 
-export type PostSummary = {
+export type Collection<T extends { id: string }> = {
+  REL: string;
+  label: string;
+  /** Valid records only (invalid files are logged and skipped). */
+  list: (root: string) => Promise<T[]>;
+  read: (root: string, id: string) => Promise<T>;
+  save: (root: string, item: unknown) => Promise<T>;
+  create: (root: string, seed: unknown) => Promise<T>;
+  remove: (root: string, id: string) => Promise<void>;
+};
+
+/** Build a CRUD wrapper for a "one JSON file per record" content folder. */
+function makeCollection<T extends { id: string }>(rel: string, schema: ZodType<T>, label: string): Collection<T> {
+  const dirOf = (root: string) => join(root, rel);
+  const fileOf = (root: string, id: string) => join(root, rel, `${id}.json`);
+  return {
+    REL: rel,
+    label,
+    async list(root) {
+      const entries = await listDir(dirOf(root)).catch(() => [] as DirEntry[]);
+      const items: T[] = [];
+      for (const entry of entries) {
+        if (entry.is_dir || !entry.name.endsWith('.json')) continue;
+        try {
+          const parsed = schema.safeParse(JSON.parse(await readTextFile(join(dirOf(root), entry.name))));
+          if (parsed.success) items.push(parsed.data);
+          else console.error(`Invalid ${label} ${entry.name}:`, parsed.error.message);
+        } catch (err) {
+          console.error(`Could not read ${label} ${entry.name}:`, err);
+        }
+      }
+      return items;
+    },
+    async read(root, id) {
+      return schema.parse(JSON.parse(await readTextFile(fileOf(root, id))));
+    },
+    async save(root, item) {
+      const validated = schema.parse(item);
+      await writeTextFile(fileOf(root, validated.id), JSON.stringify(validated, null, 2) + '\n');
+      return validated;
+    },
+    async create(root, seed) {
+      const validated = schema.parse(seed);
+      const file = fileOf(root, validated.id);
+      if (await pathExists(file)) throw new Error(`A ${label} with id "${validated.id}" already exists.`);
+      await writeTextFile(file, JSON.stringify(validated, null, 2) + '\n');
+      return validated;
+    },
+    async remove(root, id) {
+      await removeFile(fileOf(root, id));
+    },
+  };
+}
+
+export const seasonsApi = makeCollection<Season>('src/content/seasons', SeasonSchema, 'season');
+export const peopleApi = makeCollection<Person>('src/content/people', PersonSchema, 'person');
+export const rolesApi = makeCollection<Role>('src/content/roles', RoleSchema, 'role');
+export const subteamsApi = makeCollection<Subteam>('src/content/subteams', SubteamSchema, 'subteam');
+export const sponsorsApi = makeCollection<Sponsor>('src/content/sponsors', SponsorSchema, 'sponsor');
+export const rocketsApi = makeCollection<Rocket>('src/content/rockets', RocketSchema, 'rocket');
+export const eventsApi = makeCollection<EventItem>('src/content/events', EventSchema, 'event');
+export const constitutionApi = makeCollection<Constitution>('src/content/constitution', ConstitutionSchema, 'constitution');
+export const albumsApi = makeCollection<Album>('src/content/gallery', AlbumSchema, 'album');
+
+/* ------------------------------------------------------------------- news */
+
+export type NewsSummary = {
   slug: string;
   title: string;
   status: string;
   date?: string;
   displayDate?: string;
+  season: string;
   tags: string[];
   blockCount: number;
   valid: boolean;
   error?: string;
 };
 
-export async function listPosts(root: string): Promise<PostSummary[]> {
-  const dir = join(root, BLOG_REL);
+export async function listNews(root: string): Promise<NewsSummary[]> {
+  const dir = join(root, NEWS_REL);
   const entries = await listDir(dir).catch(() => [] as DirEntry[]);
-  const posts: PostSummary[] = [];
+  const posts: NewsSummary[] = [];
   for (const entry of entries) {
     if (!entry.is_dir) continue;
     const file = join(dir, entry.name, 'index.json');
     if (!(await pathExists(file))) continue;
     try {
       const raw = JSON.parse(await readTextFile(file)) as Record<string, unknown>;
-      const parsed = BlogPostSchema.safeParse(raw);
+      const parsed = NewsPostSchema.safeParse(raw);
       if (parsed.success) {
         const p = parsed.data;
-        posts.push({ slug: entry.name, title: p.title, status: p.status, date: p.date, displayDate: p.displayDate, tags: p.tags, blockCount: p.blocks.length, valid: true });
+        posts.push({ slug: entry.name, title: p.title, status: p.status, date: p.date, displayDate: p.displayDate, season: p.season, tags: p.tags, blockCount: p.blocks.length, valid: true });
       } else {
-        posts.push({ slug: entry.name, title: typeof raw.title === 'string' ? raw.title : entry.name, status: typeof raw.status === 'string' ? raw.status : 'unknown', tags: Array.isArray(raw.tags) ? (raw.tags as string[]) : [], blockCount: Array.isArray(raw.blocks) ? raw.blocks.length : 0, valid: false, error: parsed.error.message });
+        posts.push({ slug: entry.name, title: typeof raw.title === 'string' ? raw.title : entry.name, status: typeof raw.status === 'string' ? raw.status : 'unknown', season: typeof raw.season === 'string' ? raw.season : '', tags: Array.isArray(raw.tags) ? (raw.tags as string[]) : [], blockCount: Array.isArray(raw.blocks) ? raw.blocks.length : 0, valid: false, error: parsed.error.message });
       }
     } catch (err) {
-      posts.push({ slug: entry.name, title: entry.name, status: 'unknown', tags: [], blockCount: 0, valid: false, error: String(err) });
+      posts.push({ slug: entry.name, title: entry.name, status: 'unknown', season: '', tags: [], blockCount: 0, valid: false, error: String(err) });
     }
   }
   posts.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
   return posts;
 }
 
-export async function readPost(root: string, slug: string): Promise<BlogPost> {
-  return BlogPostSchema.parse(JSON.parse(await readTextFile(join(root, BLOG_REL, slug, 'index.json'))));
+export async function readNews(root: string, slug: string): Promise<NewsPost> {
+  return NewsPostSchema.parse(JSON.parse(await readTextFile(join(root, NEWS_REL, slug, 'index.json'))));
 }
 
-export async function savePost(root: string, slug: string, data: unknown): Promise<BlogPost> {
-  const validated = BlogPostSchema.parse(data);
-  await writeTextFile(join(root, BLOG_REL, slug, 'index.json'), JSON.stringify(validated, null, 2) + '\n');
+export async function saveNews(root: string, slug: string, data: unknown): Promise<NewsPost> {
+  const validated = NewsPostSchema.parse(data);
+  await writeTextFile(join(root, NEWS_REL, slug, 'index.json'), JSON.stringify(validated, null, 2) + '\n');
   return validated;
 }
 
-export async function createPost(root: string, slug: string, title: string): Promise<BlogPost> {
-  const file = join(root, BLOG_REL, slug, 'index.json');
+export async function createNews(root: string, slug: string, title: string): Promise<NewsPost> {
+  const file = join(root, NEWS_REL, slug, 'index.json');
   if (await pathExists(file)) throw new Error(`A post with slug "${slug}" already exists.`);
-  const draft = BlogPostSchema.parse({ type: 'blog', id: slug, title, status: 'draft', blocks: [] });
+  const draft = NewsPostSchema.parse({ type: 'news', id: slug, title, status: 'draft', blocks: [] });
   await writeTextFile(file, JSON.stringify(draft, null, 2) + '\n');
   return draft;
 }
 
-export async function deletePost(root: string, slug: string): Promise<void> {
-  await removeDir(join(root, BLOG_REL, slug));
+export async function deleteNews(root: string, slug: string): Promise<void> {
+  await removeDir(join(root, NEWS_REL, slug));
 }
 
-/* --------------------------------------------------------------- projects */
-
-export async function listProjects(root: string): Promise<Project[]> {
-  const dir = join(root, PROJECTS_REL);
-  const entries = await listDir(dir).catch(() => [] as DirEntry[]);
-  const projects: Project[] = [];
-  for (const entry of entries) {
-    if (entry.is_dir || !entry.name.endsWith('.json')) continue;
-    try {
-      const parsed = ProjectSchema.safeParse(JSON.parse(await readTextFile(join(dir, entry.name))));
-      if (parsed.success) projects.push(parsed.data);
-      else console.error(`Invalid project ${entry.name}:`, parsed.error.message);
-    } catch (err) {
-      console.error(`Could not read project ${entry.name}:`, err);
-    }
-  }
-  projects.sort((a, b) => a.order - b.order);
-  return projects;
-}
-
-export async function saveProject(root: string, project: unknown): Promise<Project> {
-  const validated = ProjectSchema.parse(project);
-  await writeTextFile(join(root, PROJECTS_REL, `${validated.id}.json`), JSON.stringify(validated, null, 2) + '\n');
-  return validated;
-}
-
-export async function createProject(root: string, slug: string, title: string, order: number): Promise<Project> {
-  const file = join(root, PROJECTS_REL, `${slug}.json`);
-  if (await pathExists(file)) throw new Error(`A project with slug "${slug}" already exists.`);
-  const project = ProjectSchema.parse({ type: 'project', id: slug, title, status: 'Completed', order, image: '', description: '', tags: [] });
-  await writeTextFile(file, JSON.stringify(project, null, 2) + '\n');
-  return project;
-}
-
-export async function deleteProject(root: string, slug: string): Promise<void> {
-  await removeFile(join(root, PROJECTS_REL, `${slug}.json`));
-}
-
-/* ---------------------------------------------------------------- gallery */
-
-export async function readGallery(root: string): Promise<Gallery> {
-  const file = join(root, GALLERY_REL);
-  if (!(await pathExists(file))) return GallerySchema.parse({});
-  return GallerySchema.parse(JSON.parse(await readTextFile(file)));
-}
-
-export async function saveGallery(root: string, data: unknown): Promise<Gallery> {
-  const validated = GallerySchema.parse(data);
-  await writeTextFile(join(root, GALLERY_REL), JSON.stringify(validated, null, 2) + '\n');
-  return validated;
-}
-
-/* ------------------------------------------------------------------ about */
-
-export async function readAbout(root: string): Promise<About> {
-  const file = join(root, ABOUT_REL);
-  if (!(await pathExists(file))) return AboutSchema.parse({});
-  return AboutSchema.parse(JSON.parse(await readTextFile(file)));
-}
-
-export async function saveAbout(root: string, data: unknown): Promise<About> {
-  const validated = AboutSchema.parse(data);
-  await writeTextFile(join(root, ABOUT_REL), JSON.stringify(validated, null, 2) + '\n');
-  return validated;
-}
-
-/* ------------------------------------------------------------------- site */
+/* --------------------------------------------------------------- singletons */
 
 export async function readSite(root: string): Promise<Site> {
   const file = join(root, SITE_REL);
@@ -315,6 +335,18 @@ export async function readSite(root: string): Promise<Site> {
 export async function saveSite(root: string, data: unknown): Promise<Site> {
   const validated = SiteSchema.parse(data);
   await writeTextFile(join(root, SITE_REL), JSON.stringify(validated, null, 2) + '\n');
+  return validated;
+}
+
+export async function readAbout(root: string): Promise<About> {
+  const file = join(root, ABOUT_REL);
+  if (!(await pathExists(file))) return AboutSchema.parse({});
+  return AboutSchema.parse(JSON.parse(await readTextFile(file)));
+}
+
+export async function saveAbout(root: string, data: unknown): Promise<About> {
+  const validated = AboutSchema.parse(data);
+  await writeTextFile(join(root, ABOUT_REL), JSON.stringify(validated, null, 2) + '\n');
   return validated;
 }
 
@@ -339,4 +371,4 @@ export const gitStatus = (root: string) => invoke<GitStatus>('git_status', { roo
 export const gitCommit = (root: string, message: string) => invoke<string>('git_commit', { root, message });
 export const gitPush = (root: string) => invoke<string>('git_push', { root });
 
-export type { BlogPost, Project, Gallery, About, Site };
+export type { NewsPost, Person, Role, Subteam, Sponsor, Rocket, EventItem, Constitution, Season, Album, About, Site };

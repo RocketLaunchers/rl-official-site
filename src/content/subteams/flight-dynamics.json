@@ -1,0 +1,11 @@
+{
+  "type": "subteam", "id": "flight-dynamics", "name": "Flight Dynamics",
+  "shortDescription": "Simulation, stability, and trajectory — created this season.",
+  "longDescription": "New for the 2025–2026 season, the Flight Dynamics subteam owns 6-DOF simulation, stability margin analysis, and trajectory optimization, feeding requirements to every other subteam.",
+  "icon": "bolt", "image": "",
+  "skills": ["Flight simulation", "Aerodynamics", "Controls", "Python"],
+  "tools": ["OpenRocket", "RASAero", "Python / NumPy"],
+  "status": "active", "createdSeason": "2025-2026",
+  "relatedRockets": ["marv"],
+  "media": [], "displayOrder": 50
+}

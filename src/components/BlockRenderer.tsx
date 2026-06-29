@@ -6,11 +6,11 @@ import Video from './Video';
 /**
  * Renders an ordered list of content blocks. This is the single place that
  * turns structured JSON content into UI — shared by every block-based page
- * (blog posts today; projects/other docs later). The local CMS edits the
+ * (news posts and the constitution web version). The local CMS edits the
  * blocks; this component owns how they look.
  *
  * Media `src` values are expected to be already resolved to public URLs by the
- * content loader (see src/data/blogPosts.ts), so blocks here are render-ready.
+ * content loader (see src/data/news.ts), so blocks here are render-ready.
  */
 
 // Inline markdown (**bold**, *italic*, [links]) is rendered to HTML at render

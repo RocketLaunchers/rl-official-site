@@ -1,0 +1,11 @@
+{
+  "type": "subteam", "id": "manufacturing", "name": "Manufacturing",
+  "shortDescription": "Turning designs into real, flyable hardware.",
+  "longDescription": "The Manufacturing subteam runs the machine shop work, fabrication, and assembly that turn CAD into flight hardware.",
+  "icon": "star", "image": "",
+  "skills": ["Machining", "Fabrication", "Assembly"],
+  "tools": ["Lathe", "Mill", "3D printers"],
+  "status": "active", "createdSeason": "2024-2025",
+  "relatedRockets": ["brunito", "marv"],
+  "media": [], "displayOrder": 60
+}

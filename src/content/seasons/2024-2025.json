@@ -1,0 +1,26 @@
+{
+  "type": "season", "id": "2024-2025", "name": "2024–2025 Season",
+  "startDate": "2024-08-26", "endDate": "2025-05-15",
+  "status": "archived",
+  "theme": "First Flight",
+  "currentRocket": "brunito",
+  "subteams": ["avionics", "recovery", "airframe", "payload", "manufacturing", "media"],
+  "sponsorTiers": ["Platinum", "Gold", "Silver", "Bronze", "In-kind", "Partner"],
+  "roster": [
+    { "person": "priya-patel", "role": "president", "subteam": "", "displayOnTeam": true, "displayOrder": 10 },
+    { "person": "jane-doe", "role": "secretary", "subteam": "", "displayOnTeam": true, "displayOrder": 20 },
+    { "person": "chris-morgan", "role": "avionics-lead", "subteam": "avionics", "displayOnTeam": true, "displayOrder": 30 },
+    { "person": "taylor-nguyen", "role": "airframe-lead", "subteam": "airframe", "displayOnTeam": true, "displayOrder": 40 },
+    { "person": "sam-rivera", "role": "member", "subteam": "recovery", "displayOnTeam": true, "displayOrder": 50 }
+  ],
+  "sponsors": [
+    { "sponsor": "acme-aerospace", "tier": "Gold", "supportTypes": ["Money"], "publicDescription": "Funded motors and travel for LoneStar 2025.", "showOnHomepage": true, "displayOrder": 10 },
+    { "sponsor": "utrgv-cecs", "tier": "In-kind", "supportTypes": ["Workspace", "Tools"], "publicDescription": "Lab space and machine shop access.", "showOnHomepage": true, "displayOrder": 20 }
+  ],
+  "advisors": [
+    { "person": "dr-emily-carter", "category": "Faculty Advisor", "supportRole": "University coordination, lab access, departmental support.", "description": "", "featured": true, "displayOrder": 10 },
+    { "person": "robert-lee", "category": "Launch Mentor", "supportRole": "Launch operations and high-power safety mentorship.", "description": "", "featured": true, "displayOrder": 20 }
+  ],
+  "endOfYearSummary": "Founded the team's engineering program and launched Brunito at LoneStar 2025 — the first successful student-built, custom-avionics flight.",
+  "displayOrder": 10
+}

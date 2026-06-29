@@ -1,0 +1,11 @@
+{
+  "type": "subteam", "id": "recovery", "name": "Recovery",
+  "shortDescription": "Parachutes, deployment, and getting the rocket back in one piece.",
+  "longDescription": "The Recovery subteam designs the dual-deployment parachute system, ejection charges, and structural attachment that bring the rocket safely back to the ground for reuse.",
+  "icon": "bolt", "image": "",
+  "skills": ["Mechanical design", "Pyrotechnics", "Testing"],
+  "tools": ["SolidWorks", "Ground test stands"],
+  "status": "active", "createdSeason": "2024-2025",
+  "relatedRockets": ["brunito", "marv"],
+  "media": [], "displayOrder": 20
+}

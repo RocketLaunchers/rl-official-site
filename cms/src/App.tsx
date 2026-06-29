@@ -1,26 +1,53 @@
 import { useEffect, useState } from 'react';
 import ProjectPicker from './components/ProjectPicker';
 import Dashboard from './components/Dashboard';
+import SeasonsEditor from './components/SeasonsEditor';
+import PeopleEditor from './components/PeopleEditor';
+import RolesEditor from './components/RolesEditor';
+import SubteamsEditor from './components/SubteamsEditor';
+import RocketsEditor from './components/RocketsEditor';
+import SponsorsEditor from './components/SponsorsEditor';
+import EventsEditor from './components/EventsEditor';
+import ConstitutionEditor from './components/ConstitutionEditor';
+import NewsEditor from './components/NewsEditor';
 import Editor from './components/Editor';
-import ProjectsEditor from './components/ProjectsEditor';
 import GalleryEditor from './components/GalleryEditor';
+import SiteEditor from './components/SiteEditor';
 import AboutEditor from './components/AboutEditor';
-import HomeEditor from './components/HomeEditor';
 import PreviewServer from './components/PreviewServer';
 import Publish from './components/Publish';
 
-const STORAGE_KEY = 'portfolio-cms.repo';
+const STORAGE_KEY = 'rl-cms.repo';
 
-type Section = 'home' | 'blog' | 'projects' | 'community' | 'about' | 'preview' | 'publish';
+type Section =
+  | 'dashboard' | 'seasons' | 'people' | 'roles' | 'subteams' | 'rockets'
+  | 'sponsors' | 'events' | 'constitution' | 'news' | 'gallery' | 'site'
+  | 'about' | 'preview' | 'publish';
 
 const NAV_GROUPS: { label: string; items: { key: Section; label: string }[] }[] = [
   {
+    label: 'Overview',
+    items: [{ key: 'dashboard', label: 'Dashboard' }],
+  },
+  {
+    label: 'Organization',
+    items: [
+      { key: 'seasons', label: 'Seasons' },
+      { key: 'people', label: 'People' },
+      { key: 'roles', label: 'Roles' },
+      { key: 'subteams', label: 'Subteams' },
+      { key: 'rockets', label: 'Rockets' },
+      { key: 'sponsors', label: 'Sponsors' },
+      { key: 'events', label: 'Events' },
+      { key: 'constitution', label: 'Constitution' },
+    ],
+  },
+  {
     label: 'Content',
     items: [
-      { key: 'home', label: 'Home' },
-      { key: 'blog', label: 'Blog' },
-      { key: 'projects', label: 'Projects' },
-      { key: 'community', label: 'Community' },
+      { key: 'news', label: 'News' },
+      { key: 'gallery', label: 'Gallery' },
+      { key: 'site', label: 'Site' },
       { key: 'about', label: 'About' },
     ],
   },
@@ -35,7 +62,7 @@ const NAV_GROUPS: { label: string; items: { key: Section; label: string }[] }[] 
 
 export default function App() {
   const [repo, setRepo] = useState<string | null>(() => localStorage.getItem(STORAGE_KEY));
-  const [section, setSection] = useState<Section>('home');
+  const [section, setSection] = useState<Section>('dashboard');
   const [slug, setSlug] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,7 +76,7 @@ export default function App() {
   return (
     <div className="layout">
       <div className="sidebar">
-        <div className="brand">Portfolio CMS</div>
+        <div className="brand">Rocket Launchers CMS</div>
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="nav-group">
             <div className="nav-group-label">{group.label}</div>
@@ -69,12 +96,20 @@ export default function App() {
       </div>
 
       <div className="main">
-        {section === 'home' && <HomeEditor repo={repo} />}
-        {section === 'blog' && (slug
+        {section === 'dashboard' && <Dashboard repo={repo} />}
+        {section === 'seasons' && <SeasonsEditor repo={repo} />}
+        {section === 'people' && <PeopleEditor repo={repo} />}
+        {section === 'roles' && <RolesEditor repo={repo} />}
+        {section === 'subteams' && <SubteamsEditor repo={repo} />}
+        {section === 'rockets' && <RocketsEditor repo={repo} />}
+        {section === 'sponsors' && <SponsorsEditor repo={repo} />}
+        {section === 'events' && <EventsEditor repo={repo} />}
+        {section === 'constitution' && <ConstitutionEditor repo={repo} />}
+        {section === 'news' && (slug
           ? <Editor repo={repo} slug={slug} onBack={() => setSlug(null)} />
-          : <Dashboard repo={repo} onOpenPost={setSlug} />)}
-        {section === 'projects' && <ProjectsEditor repo={repo} />}
-        {section === 'community' && <GalleryEditor repo={repo} />}
+          : <NewsEditor repo={repo} onOpenPost={setSlug} />)}
+        {section === 'gallery' && <GalleryEditor repo={repo} />}
+        {section === 'site' && <SiteEditor repo={repo} />}
         {section === 'about' && <AboutEditor repo={repo} />}
         {section === 'preview' && <PreviewServer repo={repo} />}
         {section === 'publish' && <Publish repo={repo} />}

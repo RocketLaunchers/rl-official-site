@@ -1,0 +1,11 @@
+{
+  "type": "subteam", "id": "payload", "name": "Payload",
+  "shortDescription": "The scientific and engineering payload the rocket carries.",
+  "longDescription": "The Payload subteam designs the experiment the rocket carries to apogee — from deployable structures to onboard data collection that satisfies competition science requirements.",
+  "icon": "puzzle", "image": "",
+  "skills": ["Experiment design", "Data acquisition", "Mechanisms"],
+  "tools": ["3D printing", "Microcontrollers"],
+  "status": "active", "createdSeason": "2024-2025",
+  "relatedRockets": ["marv"],
+  "media": [], "displayOrder": 40
+}

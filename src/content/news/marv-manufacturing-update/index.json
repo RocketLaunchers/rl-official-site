@@ -1,0 +1,21 @@
+{
+  "type": "news", "id": "marv-manufacturing-update", "title": "MARV Manufacturing Update",
+  "status": "published", "date": "2026-02-15", "displayDate": "February 15, 2026",
+  "season": "2025-2026",
+  "excerpt": "Avionics boards are populated and the airframe is in layup as we close in on IREC 2026.",
+  "readTime": "3 min read",
+  "tags": ["marv", "avionics", "manufacturing", "irec"],
+  "coverImage": "/avionics.jpg",
+  "blocks": [
+    { "id": "h1", "type": "heading", "level": 2, "text": "Closing in on flight hardware" },
+    { "id": "p1", "type": "paragraph", "text": "With less than four months to IREC, MARV is moving from design into real hardware across every subteam." },
+    { "id": "img1", "type": "image", "src": "/avionics.jpg", "alt": "Avionics integration", "caption": "The MARV flight computer during integration testing." },
+    { "id": "l1", "type": "list", "ordered": false, "items": [
+      "Avionics: flight computer and radio boards populated and under test",
+      "Airframe: carbon-fiber body tubes in layup",
+      "Recovery: dual-deployment ground tests scheduled for March",
+      "Flight Dynamics: trajectory locked at a 2.1-caliber stability margin"
+    ] },
+    { "id": "p2", "type": "paragraph", "text": "Next up: full-stack integration and a test launch before the competition window." }
+  ]
+}

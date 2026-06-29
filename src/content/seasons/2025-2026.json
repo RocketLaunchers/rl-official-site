@@ -1,0 +1,31 @@
+{
+  "type": "season", "id": "2025-2026", "name": "2025–2026 Season",
+  "startDate": "2025-08-25", "endDate": "2026-05-15",
+  "status": "current",
+  "theme": "Reach for Apogee",
+  "currentRocket": "marv",
+  "subteams": ["avionics", "recovery", "airframe", "payload", "flight-dynamics", "manufacturing", "media"],
+  "sponsorTiers": ["Platinum", "Gold", "Silver", "Bronze", "In-kind", "Partner"],
+  "roster": [
+    { "person": "jane-doe", "role": "president", "subteam": "", "displayOnTeam": true, "displayOrder": 10 },
+    { "person": "taylor-nguyen", "role": "vice-president", "subteam": "", "displayOnTeam": true, "displayOrder": 20 },
+    { "person": "diego-hernandez", "role": "treasurer", "subteam": "", "displayOnTeam": true, "displayOrder": 30 },
+    { "person": "olivia-brooks", "role": "media-officer", "subteam": "media", "displayOnTeam": true, "displayOrder": 40 },
+    { "person": "john-smith", "role": "director-of-engineering", "subteam": "", "displayOnTeam": true, "displayOrder": 50 },
+    { "person": "maria-garcia", "role": "avionics-lead", "subteam": "avionics", "displayOnTeam": true, "displayOrder": 60 },
+    { "person": "sam-rivera", "role": "recovery-lead", "subteam": "recovery", "displayOnTeam": true, "displayOrder": 70 },
+    { "person": "taylor-nguyen", "role": "airframe-lead", "subteam": "airframe", "displayOnTeam": true, "displayOrder": 80 },
+    { "person": "alex-kim", "role": "flight-dynamics-lead", "subteam": "flight-dynamics", "displayOnTeam": true, "displayOrder": 90 }
+  ],
+  "sponsors": [
+    { "sponsor": "acme-aerospace", "tier": "Platinum", "supportTypes": ["Money", "Materials"], "publicDescription": "Title sponsor for the IREC 2026 campaign.", "showOnHomepage": true, "displayOrder": 10 },
+    { "sponsor": "rio-machining", "tier": "Gold", "supportTypes": ["Manufacturing", "Materials"], "publicDescription": "Discounted CNC machining and raw stock.", "showOnHomepage": true, "displayOrder": 20 },
+    { "sponsor": "utrgv-cecs", "tier": "In-kind", "supportTypes": ["Workspace", "Tools"], "publicDescription": "Lab space, machine shop, and travel support.", "showOnHomepage": true, "displayOrder": 30 }
+  ],
+  "advisors": [
+    { "person": "dr-emily-carter", "category": "Faculty Advisor", "supportRole": "University coordination, lab access, departmental support.", "description": "Has advised the team since its founding.", "featured": true, "displayOrder": 10 },
+    { "person": "robert-lee", "category": "Launch Mentor", "supportRole": "Launch operations, safety guidance, high-power rocketry mentorship.", "description": "", "featured": true, "displayOrder": 20 }
+  ],
+  "endOfYearSummary": "",
+  "displayOrder": 20
+}

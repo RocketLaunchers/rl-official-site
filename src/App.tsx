@@ -1,19 +1,23 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import HomePage from './components/HomePage';
-import BlogPost from './components/BlogPost';
-import SpaceBackground from './components/SpaceBackgroundLazy';
-import Header from './components/Header';
+import RocketsPage from './pages/RocketsPage';
+import RocketDetailPage from './pages/RocketDetailPage';
+import TeamPage from './pages/TeamPage';
+import SubteamDetailPage from './pages/SubteamDetailPage';
+import SponsorsPage from './pages/SponsorsPage';
+import AlumniPage from './pages/AlumniPage';
+import ConstitutionPage from './pages/ConstitutionPage';
+import NewsPostPage from './pages/NewsPostPage';
 import { ImageModalProvider } from './components/ImageModalProvider';
 
-// Component to handle scroll restoration
+/** Reset scroll on route change, except when navigating to an in-page hash. */
 function ScrollToTop() {
-  const { pathname } = useLocation();
-
+  const { pathname, hash } = useLocation();
   useEffect(() => {
+    if (hash) return;
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [pathname]);
-
+  }, [pathname, hash]);
   return null;
 }
 
@@ -25,15 +29,14 @@ function App() {
         <div className="min-h-screen bg-black text-white relative">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/blog/:id" element={
-              <div className="relative">
-                <SpaceBackground />
-                <div className="relative z-10">
-                  <Header />
-                  <BlogPost />
-                </div>
-              </div>
-            } />
+            <Route path="/rockets" element={<RocketsPage />} />
+            <Route path="/rockets/:id" element={<RocketDetailPage />} />
+            <Route path="/team" element={<TeamPage />} />
+            <Route path="/subteams/:id" element={<SubteamDetailPage />} />
+            <Route path="/sponsors" element={<SponsorsPage />} />
+            <Route path="/alumni" element={<AlumniPage />} />
+            <Route path="/constitution" element={<ConstitutionPage />} />
+            <Route path="/news/:id" element={<NewsPostPage />} />
           </Routes>
         </div>
       </ImageModalProvider>

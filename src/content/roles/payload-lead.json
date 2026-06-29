@@ -1,0 +1,1 @@
+{ "type": "role", "id": "payload-lead", "name": "Payload Lead", "category": "Subteam Lead", "description": "Leads the scientific/engineering payload.", "displayOrder": 140, "isLeadership": true, "isSubteamRole": true, "active": true }

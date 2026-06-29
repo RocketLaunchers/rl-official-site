@@ -2,12 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { gitStatus, gitCommit, gitPush, type GitStatus } from '../api';
 
 /**
- * Publish panel: commit content changes under "content update" and push so the
+ * Publish panel: commit content changes with a custom message and push so the
  * site redeploys. Git stays visible (branch, changed files, command output)
  * rather than fully hidden.
  */
+const DEFAULT_MESSAGE = 'content update';
+
 export default function Publish({ repo }: { repo: string }) {
   const [status, setStatus] = useState<GitStatus | null>(null);
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE);
   const [log, setLog] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<null | 'commit' | 'push' | 'refresh'>(null);
@@ -30,7 +33,7 @@ export default function Publish({ repo }: { repo: string }) {
     setBusy('commit');
     setError(null);
     try {
-      setLog(await gitCommit(repo, 'content update') || 'Committed.');
+      setLog(await gitCommit(repo, message.trim() || DEFAULT_MESSAGE) || 'Committed.');
       await refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -67,9 +70,21 @@ export default function Publish({ repo }: { repo: string }) {
             {status && <> Branch: <code>{status.branch || '—'}</code>.</>}
           </p>
 
+          <div className="field" style={{ marginBottom: 12 }}>
+            <label>Commit message</label>
+            <input
+              value={message}
+              placeholder={DEFAULT_MESSAGE}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !busy && !(status?.clean ?? true)) commit();
+              }}
+            />
+          </div>
+
           <div className="row" style={{ marginBottom: 18 }}>
             <button className="primary" disabled={!!busy || (status?.clean ?? true)} onClick={commit}>
-              {busy === 'commit' ? 'Committing…' : 'Commit “content update”'}
+              {busy === 'commit' ? 'Committing…' : 'Commit'}
             </button>
             <button className="primary" disabled={!!busy} onClick={push}>
               {busy === 'push' ? 'Pushing…' : 'Push'}

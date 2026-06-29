@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { readAbout, saveAbout, importPublicImage, importPublicFile, type About } from '../api';
+import { readAbout, saveAbout, importPublicImage, type About } from '../api';
 import { TRAIT_ICON_NAMES } from '@portfolio/content-schema';
 import { Field, ImageField, ItemToolbar, StringListEditor, TextArea, TextField } from './fields';
 
-type Trait = About['traits'][number];
+type Highlight = About['highlights'][number];
 
 export default function AboutEditor({ repo }: { repo: string }) {
   const [data, setData] = useState<About | null>(null);
@@ -44,7 +44,6 @@ export default function AboutEditor({ repo }: { repo: string }) {
     );
   }
 
-  // paragraph helpers
   const setParas = (paragraphs: string[]) => patch({ paragraphs });
   const moveItem = <T,>(arr: T[], i: number, dir: -1 | 1): T[] => {
     const j = i + dir;
@@ -53,12 +52,8 @@ export default function AboutEditor({ repo }: { repo: string }) {
     [next[i], next[j]] = [next[j], next[i]];
     return next;
   };
-  const updateTrait = (i: number, p: Partial<Trait>) => patch({ traits: data.traits.map((t, j) => (j === i ? { ...t, ...p } : t)) });
-
-  async function pickResume() {
-    const href = await importPublicFile(repo, ['pdf']);
-    if (href) patch({ resume: { ...data!.resume, href } });
-  }
+  const updateHighlight = (i: number, p: Partial<Highlight>) =>
+    patch({ highlights: data.highlights.map((t, j) => (j === i ? { ...t, ...p } : t)) });
 
   return (
     <div className="app">
@@ -70,16 +65,16 @@ export default function AboutEditor({ repo }: { repo: string }) {
 
       <div className="content">
         <div className="container">
-          <p className="screen-hint">Your About section: profile, bio, traits, education, focus, and resume.</p>
+          <p className="screen-hint">The “about the club” section: mission, highlights, stats, and the join CTA.</p>
           {error && <div className="notice error">{error}</div>}
           {msg && <div className="notice ok">{msg}</div>}
 
-          <div className="section-title">Header & profile</div>
+          <div className="section-title">Header & image</div>
           <TextField label="Section title" value={data.sectionTitle} onChange={(v) => patch({ sectionTitle: v })} />
-          <ImageField label="Profile image" root={repo} value={data.profileImage} onChange={(src) => patch({ profileImage: src })} onImport={() => importPublicImage(repo)} />
-          <TextField label="Profile image alt" value={data.profileAlt} onChange={(v) => patch({ profileAlt: v })} />
+          <ImageField label="Image" root={repo} value={data.image} onChange={(src) => patch({ image: src })} onImport={() => importPublicImage(repo)} />
+          <TextField label="Image alt text" value={data.imageAlt} onChange={(v) => patch({ imageAlt: v })} />
 
-          <div className="section-title">Bio paragraphs</div>
+          <div className="section-title">Mission paragraphs</div>
           <div style={{ display: 'grid', gap: 12 }}>
             {data.paragraphs.map((p, i) => (
               <div key={i} style={{ display: 'grid', gap: 6 }}>
@@ -94,52 +89,40 @@ export default function AboutEditor({ repo }: { repo: string }) {
             <button className="small ghost" style={{ justifySelf: 'start' }} onClick={() => setParas([...data.paragraphs, ''])}>＋ Add paragraph</button>
           </div>
 
-          <div className="section-title">Personality traits</div>
-          {data.traits.map((t, i) => (
+          <div className="section-title">Highlights (“what we do” cards)</div>
+          {data.highlights.map((t, i) => (
             <div className="tile" key={i}>
               <div className="tile-head">
-                <span className="tile-title">{t.title || `Trait ${i + 1}`}</span>
+                <span className="tile-title">{t.title || `Highlight ${i + 1}`}</span>
                 <ItemToolbar
-                  onUp={() => patch({ traits: moveItem(data.traits, i, -1) })}
-                  onDown={() => patch({ traits: moveItem(data.traits, i, 1) })}
-                  onDelete={() => patch({ traits: data.traits.filter((_, j) => j !== i) })}
+                  onUp={() => patch({ highlights: moveItem(data.highlights, i, -1) })}
+                  onDown={() => patch({ highlights: moveItem(data.highlights, i, 1) })}
+                  onDelete={() => patch({ highlights: data.highlights.filter((_, j) => j !== i) })}
                 />
               </div>
               <div className="grid2">
                 <Field label="Icon">
-                  <select value={t.icon} onChange={(e) => updateTrait(i, { icon: e.target.value })}>
+                  <select value={t.icon} onChange={(e) => updateHighlight(i, { icon: e.target.value })}>
                     {TRAIT_ICON_NAMES.map((n) => <option key={n} value={n}>{n}</option>)}
                   </select>
                 </Field>
-                <TextField label="Title" value={t.title} onChange={(v) => updateTrait(i, { title: v })} />
+                <TextField label="Title" value={t.title} onChange={(v) => updateHighlight(i, { title: v })} />
               </div>
-              <TextArea label="Description" value={t.description} onChange={(v) => updateTrait(i, { description: v })} />
+              <TextArea label="Description" value={t.description} onChange={(v) => updateHighlight(i, { description: v })} />
             </div>
           ))}
-          <button className="small ghost" onClick={() => patch({ traits: [...data.traits, { icon: 'star', title: '', description: '' }] })}>＋ Add trait</button>
+          <button className="small ghost" onClick={() => patch({ highlights: [...data.highlights, { icon: 'rocket', title: '', description: '' }] })}>＋ Add highlight</button>
 
-          <div className="section-title">Education & focus</div>
-          <div className="grid2">
-            <div>
-              <TextField label="Education heading" value={data.education.title} onChange={(v) => patch({ education: { ...data.education, title: v } })} />
-              <StringListEditor label="Education items" items={data.education.items} onChange={(items) => patch({ education: { ...data.education, items } })} />
-            </div>
-            <div>
-              <TextField label="Focus heading" value={data.focus.title} onChange={(v) => patch({ focus: { ...data.focus, title: v } })} />
-              <StringListEditor label="Focus items" items={data.focus.items} onChange={(items) => patch({ focus: { ...data.focus, items } })} />
-            </div>
-          </div>
+          <div className="section-title">At a glance (stats)</div>
+          <TextField label="Stats heading" value={data.stats.title} onChange={(v) => patch({ stats: { ...data.stats, title: v } })} />
+          <StringListEditor label="Stats items" items={data.stats.items} onChange={(items) => patch({ stats: { ...data.stats, items } })} placeholder="Founded 2024" />
 
-          <div className="section-title">Resume</div>
-          <Field label="Resume file (public path)">
-            <div className="row">
-              <input value={data.resume.href} placeholder="/resume.pdf" onChange={(e) => patch({ resume: { ...data.resume, href: e.target.value } })} />
-              <button className="small" onClick={pickResume}>Import PDF…</button>
-            </div>
-          </Field>
+          <div className="section-title">Join / get involved</div>
+          <TextField label="Heading" value={data.join.title} onChange={(v) => patch({ join: { ...data.join, title: v } })} />
+          <TextArea label="Body" value={data.join.body} onChange={(v) => patch({ join: { ...data.join, body: v } })} />
           <div className="grid2">
-            <TextField label="Download filename" value={data.resume.downloadName} onChange={(v) => patch({ resume: { ...data.resume, downloadName: v } })} />
-            <TextField label="Button label" value={data.resume.label} onChange={(v) => patch({ resume: { ...data.resume, label: v } })} />
+            <TextField label="Button label" value={data.join.ctaLabel} onChange={(v) => patch({ join: { ...data.join, ctaLabel: v } })} />
+            <TextField label="Button link" value={data.join.ctaHref} placeholder="mailto:club@example.edu" onChange={(v) => patch({ join: { ...data.join, ctaHref: v } })} />
           </div>
         </div>
       </div>

@@ -1,0 +1,8 @@
+{
+  "type": "event", "id": "lonestar-2025", "title": "LoneStar Launch 2025",
+  "season": "2024-2025", "date": "2025-04-12", "displayDate": "April 12, 2025",
+  "location": "Lometa, Texas",
+  "category": "launch",
+  "description": "Brunito's maiden high-power launch — the team's first successful custom-avionics flight.",
+  "media": [{ "type": "image", "src": "/lonestar2025.jpg", "caption": "LoneStar 2025" }]
+}

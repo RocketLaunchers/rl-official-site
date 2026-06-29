@@ -1,0 +1,1 @@
+{ "type": "role", "id": "president", "name": "President", "category": "Executive", "description": "Leads the organization, sets direction, and represents the club to the university and partners.", "displayOrder": 10, "isLeadership": true, "isSubteamRole": false, "active": true }

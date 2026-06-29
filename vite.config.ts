@@ -10,7 +10,7 @@ import path from 'path';
 // /content/blog/<slug>/... — by a dev middleware while running `vite dev`, and
 // copied into dist/ by vite-plugin-static-copy for production builds.
 function makeStaticCopyPlugin() {
-  const blogsDir = path.resolve(process.cwd(), 'src', 'content', 'blog');
+  const blogsDir = path.resolve(process.cwd(), 'src', 'content', 'news');
   let targets: any[] = [];
   const hasFiles = (dir: string): boolean => {
     if (!fs.existsSync(dir)) return false;
@@ -36,14 +36,14 @@ function makeStaticCopyPlugin() {
       if (hasFiles(assetsDir)) {
         // Copy preserving slug/assets relative structure
         targets.push({
-          src: `src/content/blog/${slug}/assets/**/*`,
-          dest: `content/blog/${slug}/assets`
+          src: `src/content/news/${slug}/assets/**/*`,
+          dest: `content/news/${slug}/assets`
         });
       }
       if (hasFiles(videosDir)) {
         targets.push({
-          src: `src/content/blog/${slug}/videos/**/*`,
-          dest: `content/blog/${slug}/videos`
+          src: `src/content/news/${slug}/videos/**/*`,
+          dest: `content/news/${slug}/videos`
         });
       }
     }
@@ -59,12 +59,12 @@ function devBlogsMiddleware(): Plugin {
       server.middlewares.use((req, res, next) => {
         try {
           const url = req.url || '';
-          const m = url.match(/^\/content\/blog\/([^/]+)\/(assets|videos)\/(.*)$/);
+          const m = url.match(/^\/content\/news\/([^/]+)\/(assets|videos)\/(.*)$/);
           if (!m) return next();
           const slug = m[1];
           const kind = m[2];
           const rest = m[3];
-          const filePath = path.join(process.cwd(), 'src', 'content', 'blog', slug, kind, rest);
+          const filePath = path.join(process.cwd(), 'src', 'content', 'news', slug, kind, rest);
           if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
             fs.createReadStream(filePath).pipe(res);
             return;

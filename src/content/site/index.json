@@ -1,29 +1,21 @@
 {
-  "name": "LUIS MARTINEZ",
-  "role": "Computer Science Student & Software Engineer",
-  "headlines": [
-    "DEVELOPER.",
-    "AVIONICS ENTHUSIAST.",
-    "INNOVATOR."
-  ],
+  "name": "ROCKET LAUNCHERS",
+  "tagline": "Student-built high-power rocketry at UT Rio Grande Valley",
+  "headlines": ["DESIGN.", "BUILD.", "LAUNCH."],
   "ctas": [
-    {
-      "label": "VIEW BLOG",
-      "target": "blog"
-    },
-    {
-      "label": "PROJECTS",
-      "target": "projects"
-    }
+    { "label": "JOIN THE TEAM", "target": "join" },
+    { "label": "OUR ROCKETS", "target": "/rockets" }
   ],
   "links": {
-    "github": "https://github.com/Lmx154",
-    "linkedin": "https://www.linkedin.com/in/luismtz-2b54f/",
-    "twitter": "https://x.com/Lmx154",
-    "email": "Luis_Mtz907@live.com"
+    "github": "https://github.com/",
+    "linkedin": "https://www.linkedin.com/",
+    "instagram": "https://www.instagram.com/",
+    "youtube": "",
+    "discord": "",
+    "email": "rocketlaunchers@example.edu"
   },
   "footer": {
-    "copyright": "© 2025 Luis Martinez",
-    "rights": "All rights reserved."
+    "copyright": "© 2026 Rocket Launchers — UTRGV",
+    "rights": "A student organization. All rights reserved."
   }
 }
