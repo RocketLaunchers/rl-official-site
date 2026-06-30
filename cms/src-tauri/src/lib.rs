@@ -163,12 +163,39 @@ fn port_in_use(port: u16) -> bool {
 /// Surgically free a single TCP port. Only ever targets the specific processes
 /// holding that port (never a process group / negative PID), so it cannot
 /// cascade to the editor, the terminal session, or the login session.
+#[cfg(not(windows))]
 fn free_port(port: u16) {
     let _ = Command::new("fuser").arg("-k").arg(format!("{port}/tcp")).status();
     if let Ok(out) = Command::new("lsof").args(["-ti", &format!("tcp:{port}")]).output() {
         for pid in String::from_utf8_lossy(&out.stdout).split_whitespace() {
             // A specific positive PID only — no negative/group targets.
             let _ = Command::new("kill").arg("-TERM").arg(pid).status();
+        }
+    }
+}
+
+/// Windows equivalent of the above: resolve the PID(s) whose *local* endpoint is
+/// this exact port via `netstat -ano`, then `taskkill` them. Still port-scoped —
+/// it only targets processes bound to `port`, never a process group.
+#[cfg(windows)]
+fn free_port(port: u16) {
+    if let Ok(out) = Command::new("netstat").args(["-ano", "-p", "tcp"]).output() {
+        let text = String::from_utf8_lossy(&out.stdout);
+        let needle = format!(":{port}");
+        let mut pids = std::collections::HashSet::new();
+        for line in text.lines() {
+            // Columns: Proto  Local Address  Foreign Address  State  PID
+            let cols: Vec<&str> = line.split_whitespace().collect();
+            if cols.len() >= 5 && cols[0].eq_ignore_ascii_case("tcp") && cols[1].ends_with(needle.as_str()) {
+                if let Ok(pid) = cols[cols.len() - 1].parse::<u32>() {
+                    if pid != 0 {
+                        pids.insert(pid);
+                    }
+                }
+            }
+        }
+        for pid in pids {
+            let _ = Command::new("taskkill").args(["/F", "/PID"]).arg(pid.to_string()).status();
         }
     }
 }
@@ -184,12 +211,18 @@ fn start_preview(state: tauri::State<PreviewState>, root: String, port: u16) -> 
     if guard.is_some() || port_in_use(port) {
         return Ok(()); // already running
     }
-    let vite = format!("{root}/node_modules/.bin/vite");
-    if !Path::new(&vite).exists() {
-        return Err("Could not find node_modules/.bin/vite in the repo — run `pnpm install` there first.".into());
+    // Launch Vite via `node <vite.js>` rather than the launcher in
+    // node_modules/.bin. On Windows that .bin entry is a POSIX shell script (and
+    // the .cmd sibling is a batch file) — neither is a PE executable, so spawning
+    // it directly fails with "%1 is not a valid Win32 application" (os error 193).
+    // Invoking node with the package's JS entry point is correct on every OS.
+    let vite_js = format!("{root}/node_modules/vite/bin/vite.js");
+    if !Path::new(&vite_js).exists() {
+        return Err("Could not find node_modules/vite/bin/vite.js in the repo — run `pnpm install` there first.".into());
     }
-    let mut cmd = Command::new(&vite);
+    let mut cmd = Command::new("node");
     cmd.current_dir(&root)
+        .arg(&vite_js)
         .args(["--port", &port.to_string(), "--strictPort"])
         .stdin(Stdio::null())
         .stdout(Stdio::null())
@@ -223,7 +256,7 @@ fn kill_port(port: u16) -> Result<(), String> {
     free_port(port);
     std::thread::sleep(Duration::from_millis(300));
     if port_in_use(port) {
-        Err("Could not free the port (fuser/lsof unavailable, or nothing to kill).".into())
+        Err("Could not free the port — nothing was listening, or the OS tool to free it is unavailable.".into())
     } else {
         Ok(())
     }
