@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "emmanuel-jones",
+  "name": "Emmanuel Jones",
+  "photo": "",
+  "major": "Mechanical Engineering",
+  "gradYear": 2028,
+  "bio": "",
+  "links": {
+    "email": "",
+    "linkedin": "",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

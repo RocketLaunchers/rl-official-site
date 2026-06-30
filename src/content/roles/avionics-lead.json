@@ -1,1 +1,0 @@
-{ "type": "role", "id": "avionics-lead", "name": "Avionics Lead", "category": "Subteam Lead", "description": "Leads flight computer, telemetry, and electronics development.", "displayOrder": 100, "isLeadership": true, "isSubteamRole": true, "active": true }

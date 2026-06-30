@@ -1,4 +1,4 @@
-import { eventsApi, importPublicImage, type EventItem } from '../api';
+import { eventsApi, type EventItem } from '../api';
 import CollectionEditor from './CollectionEditor';
 import { Field, ImageField, StringListEditor, Switch, TextArea, TextField } from './fields';
 
@@ -40,13 +40,13 @@ export default function EventsEditor({ repo }: { repo: string }) {
           </div>
           <TextField label="Location" value={e.location} onChange={(v) => update({ location: v })} />
           <TextArea label="Description" value={e.description} onChange={(v) => update({ description: v })} />
-          <ImageField label="Logo (optional)" root={repo} value={e.logo} onChange={(src) => update({ logo: src })} onImport={() => importPublicImage(repo)} />
+          <ImageField label="Logo (optional)" root={repo} value={e.logo} onChange={(src) => update({ logo: src })} />
           <TextField label="Placement / result" value={e.placement} placeholder="2nd Place — 10,000 ft COTS" onChange={(v) => update({ placement: v })} />
           <StringListEditor label="Awards" items={e.awards ?? []} onChange={(awards) => update({ awards })} placeholder="Best Technical Report" />
           <Field label="Announcement">
             <Switch label="Feature as a homepage announcement" checked={!!e.featured} onChange={(v) => update({ featured: v })} />
           </Field>
-          <ImageField label="Flyer (for the announcement)" root={repo} value={e.flyer} onChange={(src) => update({ flyer: src })} onImport={() => importPublicImage(repo)} />
+          <ImageField label="Flyer (for the announcement)" root={repo} value={e.flyer} onChange={(src) => update({ flyer: src })} />
           <div className="grid2">
             <TextField label="CTA label" value={e.ctaLabel} placeholder="RSVP" onChange={(v) => update({ ctaLabel: v })} />
             <TextField label="CTA link" value={e.ctaHref} placeholder="#join, /events, or https://…" onChange={(v) => update({ ctaHref: v })} />

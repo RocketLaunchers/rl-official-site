@@ -77,6 +77,95 @@ fn remove_dir(path: String) -> Result<(), String> {
     fs::remove_dir_all(&path).map_err(|e| e.to_string())
 }
 
+/* ------------------------------------------------------ media library scan */
+
+#[derive(Serialize)]
+struct MediaFile {
+    /// Path under public/, with forward slashes (e.g. "images/foo.webp").
+    rel: String,
+    bytes: u64,
+}
+
+/// Recursively list every file under `path` with its size (rel paths are
+/// relative to `path`). Backs the asset library, which scans both the served
+/// public/ folder and the models/ source folder.
+#[tauri::command]
+fn scan_dir(path: String) -> Result<Vec<MediaFile>, String> {
+    fn walk(dir: &Path, base: &Path, out: &mut Vec<MediaFile>) -> std::io::Result<()> {
+        for entry in fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            let ft = entry.file_type()?;
+            if ft.is_dir() {
+                walk(&path, base, out)?;
+            } else if ft.is_file() {
+                let bytes = entry.metadata().map(|m| m.len()).unwrap_or(0);
+                let rel = path.strip_prefix(base).unwrap_or(&path).to_string_lossy().replace('\\', "/");
+                out.push(MediaFile { rel, bytes });
+            }
+        }
+        Ok(())
+    }
+    let base = Path::new(&path);
+    let mut out = Vec::new();
+    if base.exists() {
+        walk(base, base, &mut out).map_err(|e| e.to_string())?;
+    }
+    out.sort_by(|a, b| a.rel.to_lowercase().cmp(&b.rel.to_lowercase()));
+    Ok(out)
+}
+
+/// Of the given reference strings (e.g. "/images/foo.webp"), return those that
+/// actually appear in a repo text file (content JSON, components, index.html).
+/// Anything NOT returned is an orphan the media library can offer to delete.
+#[tauri::command]
+fn grep_refs(root: String, needles: Vec<String>) -> Result<Vec<String>, String> {
+    const SKIP_DIRS: &[&str] = &["node_modules", "dist", ".git", "target", "cms", "public"];
+    const TEXT_EXTS: &[&str] = &["json", "ts", "tsx", "js", "jsx", "mjs", "cjs", "html", "css", "md", "txt", "yaml", "yml"];
+    fn walk(dir: &Path, needles: &[String], found: &mut std::collections::HashSet<String>) {
+        let entries = match fs::read_dir(dir) {
+            Ok(e) => e,
+            Err(_) => return,
+        };
+        for entry in entries.flatten() {
+            if found.len() == needles.len() {
+                return; // every needle already located
+            }
+            let path = entry.path();
+            let ft = match entry.file_type() {
+                Ok(t) => t,
+                Err(_) => continue,
+            };
+            if ft.is_dir() {
+                let name = entry.file_name().to_string_lossy().to_string();
+                if SKIP_DIRS.contains(&name.as_str()) {
+                    continue;
+                }
+                walk(&path, needles, found);
+            } else if ft.is_file() {
+                let is_text = path
+                    .extension()
+                    .and_then(|e| e.to_str())
+                    .map(|e| TEXT_EXTS.contains(&e.to_lowercase().as_str()))
+                    .unwrap_or(true); // extensionless (e.g. _redirects) — try as text
+                if !is_text {
+                    continue;
+                }
+                if let Ok(text) = fs::read_to_string(&path) {
+                    for n in needles {
+                        if !found.contains(n) && text.contains(n.as_str()) {
+                            found.insert(n.clone());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    let mut found = std::collections::HashSet::new();
+    walk(Path::new(&root), &needles, &mut found);
+    Ok(found.into_iter().collect())
+}
+
 /* ----------------------------------------------- media convert + compress */
 
 fn has_tool(name: &str) -> bool {
@@ -350,6 +439,8 @@ pub fn run() {
             copy_file,
             remove_file,
             remove_dir,
+            scan_dir,
+            grep_refs,
             check_tools,
             process_image,
             process_video,

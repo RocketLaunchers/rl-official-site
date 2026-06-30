@@ -1,26 +1,56 @@
 {
-  "type": "rocket", "id": "marv", "name": "MARV",
-  "seasons": ["2025-2026"],
-  "status": "Manufacturing",
-  "mission": "Modular Avionics for Rockets and Vehicles — the team's IREC 2026 vehicle, targeting a 10,000 ft apogee on a commercial solid motor with a fully custom avionics stack.",
-  "competition": "IREC 2026",
-  "specs": { "targetAltitude": "10,000 ft", "motor": "Cesaroni L-class", "diameter": "6 in", "length": "108 in", "mass": "24 kg" },
-  "heroImage": "/IREC2026.jpeg",
-  "model3d": "/MARV-FC-PCB.glb",
-  "media": [
-    { "type": "model", "src": "/MARV-FC-PCB.glb", "caption": "MARV flight computer — main PCB" },
-    { "type": "model", "src": "/MARV-RADIO-PCB.glb", "caption": "MARV radio board" },
-    { "type": "image", "src": "/avionics.jpg", "caption": "Avionics integration testing" }
+  "type": "rocket",
+  "id": "marv",
+  "name": "Itzamna",
+  "seasons": [
+    "2025-2026"
   ],
+  "status": "Retired",
+  "mission": "Itzamna— the team's IREC 2026 vehicle, targeting a 10,000 ft apogee on a commercial solid motor with a fully custom avionics stack.",
+  "competition": "IREC 2026",
+  "specs": {
+    "targetAltitude": "10,000 ft",
+    "motor": "Aerotech M2500-T",
+    "diameter": "6 in",
+    "length": "108 in",
+    "mass": "24 kg"
+  },
+  "heroImage": "/images/IREC2026.jpeg",
+  "model3d": "/models/itzamna-2025-2026.glb",
+  "media": [],
   "subsystems": [
-    { "name": "Avionics", "summary": "Dual-core RP2350 flight computer with a custom sensor suite and long-range LoRa telemetry." },
-    { "name": "Recovery", "summary": "Dual-deployment with a drogue at apogee and main at 700 ft." },
-    { "name": "Airframe", "summary": "Carbon-fiber body with a fiberglass nose cone for RF transparency." },
-    { "name": "Flight Dynamics", "summary": "6-DOF simulation sized the fins for a 2.1-caliber stability margin." }
+    {
+      "name": "Avionics",
+      "summary": "Dual-core RP2350 flight computer with a custom sensor suite and long-range LoRa telemetry."
+    },
+    {
+      "name": "Recovery",
+      "summary": "Dual-deployment with a drogue at apogee and main at 700 ft."
+    },
+    {
+      "name": "Airframe",
+      "summary": "Carbon-fiber body with a fiberglass nose cone for RF transparency."
+    },
+    {
+      "name": "Flight Dynamics",
+      "summary": "6-DOF simulation sized the fins for a 2.1-caliber stability margin."
+    }
   ],
   "results": "",
   "lessonsLearned": "",
-  "relatedSubteams": ["avionics", "recovery", "airframe", "payload", "flight-dynamics"],
-  "credits": ["maria-garcia", "john-smith", "alex-kim", "sam-rivera", "taylor-nguyen"],
+  "relatedSubteams": [
+    "avionics",
+    "recovery",
+    "airframe",
+    "payload",
+    "flight-dynamics"
+  ],
+  "credits": [
+    "maria-garcia",
+    "john-smith",
+    "alex-kim",
+    "sam-rivera",
+    "taylor-nguyen"
+  ],
   "displayOrder": 10
 }

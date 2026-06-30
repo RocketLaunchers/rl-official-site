@@ -1,18 +1,18 @@
 {
   "type": "person",
   "id": "olivia-brooks",
-  "name": "Olivia Brooks",
+  "name": "Casandra Sauceda",
   "photo": "",
-  "major": "Communication Studies",
-  "gradYear": 2028,
-  "bio": "Media Officer documenting builds and launches and running the club's social channels.",
+  "major": "Mechanical Engineering",
+  "gradYear": 2026,
+  "bio": "",
   "links": {
     "email": "",
     "linkedin": "",
     "github": "",
     "website": ""
   },
-  "isAlumni": false,
+  "isAlumni": true,
   "company": "",
   "privacy": {
     "showPublicly": true,

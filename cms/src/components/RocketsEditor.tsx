@@ -1,4 +1,4 @@
-import { rocketsApi, importPublicImage, importPublicModel, type Rocket } from '../api';
+import { rocketsApi, type Rocket } from '../api';
 import type { RocketSubsystem } from '@portfolio/content-schema';
 import CollectionEditor from './CollectionEditor';
 import MediaListEditor from './MediaListEditor';
@@ -71,8 +71,8 @@ export default function RocketsEditor({ repo }: { repo: string }) {
             ))}
           </div>
 
-          <ImageField label="Hero image" root={repo} value={r.heroImage} onChange={(src) => update({ heroImage: src })} onImport={() => importPublicImage(repo)} />
-          <ImageField label="3D model (GLB)" root={repo} value={r.model3d} onChange={(src) => update({ model3d: src })} onImport={() => importPublicModel(repo)} />
+          <ImageField label="Hero image" root={repo} value={r.heroImage} onChange={(src) => update({ heroImage: src })} />
+          <ImageField label="3D model (GLB)" kind="model" root={repo} value={r.model3d} onChange={(src) => update({ model3d: src })} />
           <MediaListEditor repo={repo} media={r.media} onChange={(media) => update({ media })} />
 
           <SubsystemsEditor subsystems={r.subsystems} onChange={(subsystems) => update({ subsystems })} />

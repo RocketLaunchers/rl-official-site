@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "roy-rodriguez",
+  "name": "Roy Rodriguez",
+  "photo": "",
+  "major": "Mechanical Engineering",
+  "gradYear": 2025,
+  "bio": "",
+  "links": {
+    "email": "",
+    "linkedin": "",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

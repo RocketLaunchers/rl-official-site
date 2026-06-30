@@ -1,7 +1,7 @@
 import PersonCard from './PersonCard';
 import SectionHeading from './SectionHeading';
 import { currentSeason } from '../data/seasons';
-import { groupedRoster } from '../data/org';
+import { groupedRoster, roleTitle } from '../data/org';
 
 /** Homepage preview of the current season's leadership (officers + subteam leads). */
 const TeamStrip = () => {
@@ -25,8 +25,7 @@ const TeamStrip = () => {
             <PersonCard
               key={`${m.entry.person}-${m.entry.role}`}
               person={m.person}
-              subtitle={m.role.name}
-              meta={m.subteam ? m.subteam.name : undefined}
+              subtitle={roleTitle(m.role, m.subteam)}
             />
           ))}
         </div>

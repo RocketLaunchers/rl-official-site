@@ -30,6 +30,16 @@ export type ResolvedAdvisor = { entry: AdvisorEntry; person: Person };
 
 const bySeason = (id: string): Season | undefined => seasonById(id);
 
+/**
+ * Display title for a roster position. Subteam-scoped roles (Lead / Co-Lead /
+ * Member) compose with their subteam — "Avionics Lead", "Recovery Member" — while
+ * org-wide officer roles (President, …) show by name. Falls back to the bare role
+ * name when a subteam role somehow has no subteam attached.
+ */
+export function roleTitle(role: Role, subteam?: Subteam): string {
+  return role.scope === 'subteam' && subteam ? `${subteam.name} ${role.name}` : role.name;
+}
+
 /** Resolved roster for a season (only entries flagged to display), ordered. */
 export function rosterForSeason(seasonId: string): RosterMember[] {
   const season = bySeason(seasonId);

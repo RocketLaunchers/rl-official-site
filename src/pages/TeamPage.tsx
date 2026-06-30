@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PageShell from '../components/PageShell';
 import PersonCard from '../components/PersonCard';
 import { seasons, currentSeason } from '../data/seasons';
-import { groupedRoster, advisorsForSeason, type RosterMember } from '../data/org';
+import { groupedRoster, advisorsForSeason, roleTitle, type RosterMember } from '../data/org';
 
 function Group({ title, members }: { title: string; members: RosterMember[] }) {
   if (members.length === 0) return null;
@@ -14,8 +14,7 @@ function Group({ title, members }: { title: string; members: RosterMember[] }) {
           <PersonCard
             key={`${m.entry.person}-${m.entry.role}`}
             person={m.person}
-            subtitle={m.role.name}
-            meta={m.subteam ? m.subteam.name : undefined}
+            subtitle={roleTitle(m.role, m.subteam)}
           />
         ))}
       </div>

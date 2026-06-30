@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "santos-garcia",
+  "name": "Santos Garcia",
+  "photo": "",
+  "major": "Mechanical Engineering",
+  "gradYear": 2026,
+  "bio": "goat",
+  "links": {
+    "email": "",
+    "linkedin": "",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

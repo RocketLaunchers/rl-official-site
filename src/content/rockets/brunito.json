@@ -1,26 +1,49 @@
 {
-  "type": "rocket", "id": "brunito", "name": "Brunito",
-  "seasons": ["2024-2025"],
-  "status": "Retired",
-  "mission": "The team's first fully student-built high-power rocket and first custom avionics flight — the foundation everything since has been built on.",
-  "competition": "LoneStar 2025",
-  "specs": { "targetAltitude": "5,280 ft", "motor": "Cesaroni J-class", "diameter": "4 in", "length": "84 in", "mass": "11 kg" },
-  "heroImage": "/lonestar2025.jpg",
-  "model3d": "",
-  "media": [
-    { "type": "image", "src": "/brunito.jpg", "caption": "Brunito on the pad" },
-    { "type": "image", "src": "/brunitobay.jpg", "caption": "Avionics bay integration" },
-    { "type": "image", "src": "/brunito-proto.jpg", "caption": "Early prototype" },
-    { "type": "image", "src": "/lonestar-rocket.JPG", "caption": "Recovered after launch at LoneStar 2025" }
+  "type": "rocket",
+  "id": "brunito",
+  "name": "Disparado",
+  "seasons": [
+    "2024-2025"
   ],
+  "status": "Retired",
+  "mission": "The heaviest rocket we ever built idk",
+  "competition": "LoneStar 2025, IREC 2025",
+  "specs": {
+    "targetAltitude": "10,000 ft",
+    "motor": "Aerotech M6000",
+    "diameter": "6 in",
+    "length": "84 in",
+    "mass": "11 kg"
+  },
+  "heroImage": "/images/lonestar-rocket.JPG",
+  "model3d": "/models/disparado-2024-2025.glb",
+  "media": [],
   "subsystems": [
-    { "name": "Avionics", "summary": "First in-house flight computer and telemetry link." },
-    { "name": "Recovery", "summary": "Single-deployment parachute recovery." },
-    { "name": "Airframe", "summary": "Fiberglass body with plywood fin can." }
+    {
+      "name": "Avionics",
+      "summary": "First in-house flight computer and telemetry link."
+    },
+    {
+      "name": "Recovery",
+      "summary": "Single-deployment parachute recovery."
+    },
+    {
+      "name": "Airframe",
+      "summary": "Fiberglass body with plywood fin can."
+    }
   ],
   "results": "Successfully launched and recovered at LoneStar 2025, reaching 5,100 ft. First successful custom-avionics flight for the team.",
   "lessonsLearned": "Telemetry dropouts past 4,000 ft drove the move to LoRa on MARV. The single-deployment recovery landed the vehicle far downrange, motivating dual-deployment for future builds.",
-  "relatedSubteams": ["avionics", "recovery", "airframe", "manufacturing"],
-  "credits": ["chris-morgan", "priya-patel", "taylor-nguyen"],
+  "relatedSubteams": [
+    "avionics",
+    "recovery",
+    "airframe",
+    "manufacturing"
+  ],
+  "credits": [
+    "chris-morgan",
+    "priya-patel",
+    "taylor-nguyen"
+  ],
   "displayOrder": 20
 }

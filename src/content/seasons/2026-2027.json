@@ -1,12 +1,67 @@
 {
-  "type": "season", "id": "2026-2027", "name": "2026–2027 Season",
-  "startDate": "2026-08-24", "endDate": "2027-05-15",
-  "status": "upcoming",
+  "type": "season",
+  "id": "2026-2027",
+  "name": "2026–2027 Season",
+  "startDate": "2026-08-24",
+  "endDate": "2027-05-15",
+  "status": "current",
   "theme": "",
   "currentRocket": "",
-  "subteams": [],
-  "sponsorTiers": ["Platinum", "Gold", "Silver", "Bronze", "In-kind", "Partner"],
-  "roster": [],
+  "subteams": [
+    "flight-dynamics",
+    "payload",
+    "recovery",
+    "hybrid",
+    "avionics",
+    "media",
+    "propulsion",
+    "structures"
+  ],
+  "sponsorTiers": [
+    "Platinum",
+    "Gold",
+    "Silver",
+    "Bronze",
+    "In-kind",
+    "Partner"
+  ],
+  "roster": [
+    {
+      "person": "sam-rivera",
+      "role": "director-of-engineering",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 10
+    },
+    {
+      "person": "maria-garcia",
+      "role": "president",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 20
+    },
+    {
+      "person": "taylor-nguyen",
+      "role": "treasurer",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 30
+    },
+    {
+      "person": "jane-doe",
+      "role": "vice-president",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 40
+    },
+    {
+      "person": "john-smith",
+      "role": "chief-of-engineering",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 50
+    }
+  ],
   "sponsors": [],
   "advisors": [],
   "endOfYearSummary": "",

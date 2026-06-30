@@ -5,11 +5,11 @@
   "excerpt": "Avionics boards are populated and the airframe is in layup as we close in on IREC 2026.",
   "readTime": "3 min read",
   "tags": ["marv", "avionics", "manufacturing", "irec"],
-  "coverImage": "/avionics.jpg",
+  "coverImage": "/images/avionics.jpg",
   "blocks": [
     { "id": "h1", "type": "heading", "level": 2, "text": "Closing in on flight hardware" },
     { "id": "p1", "type": "paragraph", "text": "With less than four months to IREC, MARV is moving from design into real hardware across every subteam." },
-    { "id": "img1", "type": "image", "src": "/avionics.jpg", "alt": "Avionics integration", "caption": "The MARV flight computer during integration testing." },
+    { "id": "img1", "type": "image", "src": "/images/avionics.jpg", "alt": "Avionics integration", "caption": "The MARV flight computer during integration testing." },
     { "id": "l1", "type": "list", "ordered": false, "items": [
       "Avionics: flight computer and radio boards populated and under test",
       "Airframe: carbon-fiber body tubes in layup",

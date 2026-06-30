@@ -1,4 +1,4 @@
-import { sponsorsApi, importPublicImage, type Sponsor } from '../api';
+import { sponsorsApi, type Sponsor } from '../api';
 import CollectionEditor from './CollectionEditor';
 import { ImageField, TextArea, TextField } from './fields';
 
@@ -25,7 +25,7 @@ export default function SponsorsEditor({ repo }: { repo: string }) {
       renderItem={(s, update) => (
         <>
           <TextField label="Name" value={s.name} onChange={(v) => update({ name: v })} />
-          <ImageField label="Logo" root={repo} value={s.logo} onChange={(src) => update({ logo: src })} onImport={() => importPublicImage(repo)} />
+          <ImageField label="Logo" root={repo} value={s.logo} onChange={(src) => update({ logo: src })} />
           <div className="grid2">
             <TextField label="Website" value={s.website} placeholder="https://…" onChange={(v) => update({ website: v })} />
             <TextField label="Industry" value={s.industry} onChange={(v) => update({ industry: v })} />

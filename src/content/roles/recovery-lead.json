@@ -1,1 +1,0 @@
-{ "type": "role", "id": "recovery-lead", "name": "Recovery Lead", "category": "Subteam Lead", "description": "Leads parachute deployment and recovery systems.", "displayOrder": 110, "isLeadership": true, "isSubteamRole": true, "active": true }

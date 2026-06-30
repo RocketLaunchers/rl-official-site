@@ -233,6 +233,12 @@ export const RoleSchema = z.object({
   displayOrder: z.number().default(0),
   isLeadership: z.boolean().default(false),
   isSubteamRole: z.boolean().default(false),
+  /**
+   * 'subteam' = a position within a subteam (Lead / Co-Lead / Member): the roster
+   * must pick a subteam and the title shows as "<Subteam> <Role>" (e.g. "Avionics Lead").
+   * 'org' = an org-wide officer role (President, Treasurer, …): no subteam, shown by name.
+   */
+  scope: z.enum(['subteam', 'org']).default('org'),
   active: z.boolean().default(true),
 });
 

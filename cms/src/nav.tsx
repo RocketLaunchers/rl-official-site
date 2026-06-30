@@ -11,6 +11,7 @@ export type Section =
   | 'seasons' | 'people' | 'roles' | 'subteams' | 'rockets'
   | 'sponsors' | 'events' | 'constitution'
   | 'news' | 'gallery' | 'site' | 'about'
+  | 'assets'
   | 'preview' | 'publish';
 
 export type NavItem = { key: Section; label: string; icon: IconName };
@@ -51,6 +52,13 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: 'Tools',
+    color: '#2dd4bf', // teal
+    items: [
+      { key: 'assets', label: 'Assets', icon: 'media' },
+    ],
+  },
+  {
     label: 'Publish',
     color: '#4ade80', // green
     items: [
@@ -83,6 +91,18 @@ export type Guide = {
 };
 
 export const GUIDES: Guide[] = [
+  {
+    id: 'media-workflow',
+    title: 'How media works: upload once in Assets, pick anywhere',
+    tabs: ['assets'],
+    steps: [
+      'All photos, videos, 3D models, and PDFs live in one place: Tools → Assets.',
+      'To add a NEW file from your computer, open Tools → Assets and use an Import button. That is the ONLY place files come in.',
+      'Everywhere else (a person’s photo, a rocket’s model, a news image, the constitution PDF…), click “Choose…” and pick from the files already in Assets — you don’t upload from those screens.',
+      'If the file you need isn’t listed when you click “Choose…”, import it in Tools → Assets first, then come back and pick it.',
+      'Tip: clean out anything marked “not used” in Assets to keep the project tidy.',
+    ],
+  },
   {
     id: 'add-member',
     title: 'Add a new team member',
@@ -252,8 +272,21 @@ export const GUIDES: Guide[] = [
     tabs: ['gallery'],
     steps: [
       'Open the Gallery tab and click “＋ New” to create an album (optionally tie it to a season).',
-      'Inside the album, click “＋ Add photo” and Import each image, adding a title and alt text.',
+      'Inside the album, click “＋ Add photo”, then “Choose…” to pick an image (import new ones first in Tools → Assets), and add a title and alt text.',
       'Click Save, then Publish. The homepage shows the current season’s albums.',
+    ],
+  },
+  {
+    id: 'manage-assets',
+    title: 'Manage photos, videos, 3D models & files',
+    tabs: ['assets'],
+    steps: [
+      'Open Tools → Assets to see every file: “On the website” (public/) grouped into Images, Videos, 3D models, and Other, plus “Source files” (models/) like the raw rocket OBJ and STEP CAD.',
+      'Each file shows its size. A “not used” badge on a website file means nothing references it — safe to delete to keep the project lean.',
+      'Click any 3D model (GLB or OBJ) to open the viewer — drag to rotate, and toggle individual components on/off in the side panel.',
+      'Source files (raw OBJ/STEP) aren’t on the live site. To put a rocket on the website, click “Convert for web” to make a small optimized GLB in public/.',
+      'A “large” badge means the file is heavier than recommended. Before uploading, open “What should I upload?” for the right formats and sizes — avoid 4K photos and raw video.',
+      'Use the Import buttons to add new media; each file is sorted into the correct subfolder automatically.',
     ],
   },
   {

@@ -1,0 +1,16 @@
+{
+  "type": "subteam",
+  "id": "propulsion",
+  "name": "Propulsion",
+  "shortDescription": "",
+  "longDescription": "",
+  "icon": "rocket",
+  "image": "",
+  "skills": [],
+  "tools": [],
+  "status": "active",
+  "createdSeason": "",
+  "relatedRockets": [],
+  "media": [],
+  "displayOrder": 0
+}

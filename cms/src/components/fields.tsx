@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { mediaUrl } from '../api';
+import ModelPreview from './LazyModelPreview';
+import { useAssetPicker, type PickFilter } from './AssetPicker';
 
 /** Shared form-field primitives used across every content editor. */
 
@@ -140,30 +142,42 @@ export function ItemToolbar({
   );
 }
 
-/** Image/video field with a live preview (Tauri asset protocol) and import button. */
+/** Maps a field's `kind` to what the asset picker should show. */
+function pickFilterFor(kind: ImageFieldKind): PickFilter {
+  switch (kind) {
+    case 'file': return { exts: ['pdf'], title: 'Choose a PDF' };
+    case 'model': return { kinds: ['model'], title: 'Choose a 3D model' };
+    case 'video': return { kinds: ['video'], title: 'Choose a video' };
+    case 'media': return { kinds: ['image', 'video'], title: 'Choose an image or video' };
+    default: return { kinds: ['image'], title: 'Choose an image' };
+  }
+}
+
+type ImageFieldKind = 'image' | 'video' | 'media' | 'model' | 'file';
+
+/**
+ * Picks an asset that already lives in the repo (browse, don't import). New
+ * files only enter via Tools → Assets; this never opens the OS file dialog.
+ */
 export function ImageField({
-  label, root, value, baseDir, onChange, onImport, kind = 'image',
+  label, root, value, baseDir, onChange, kind = 'image',
 }: {
   label?: string;
   root: string;
   value: string;
   baseDir?: string;
   onChange: (src: string) => void;
-  onImport: () => Promise<string | null>;
-  kind?: 'image' | 'media';
+  kind?: ImageFieldKind;
 }) {
-  const [busy, setBusy] = useState(false);
+  const { pickAsset } = useAssetPicker();
   const url = mediaUrl(root, value, baseDir);
   const isVideo = /\.(mp4|webm|ogv|mov)$/i.test(value);
+  const isModel = kind === 'model' || /\.(glb|gltf|obj)$/i.test(value);
+  const valExt = (value.split('.').pop() || '').toLowerCase();
 
-  async function doImport() {
-    setBusy(true);
-    try {
-      const src = await onImport();
-      if (src) onChange(src);
-    } finally {
-      setBusy(false);
-    }
+  async function choose() {
+    const ref = await pickAsset(pickFilterFor(kind));
+    if (ref) onChange(ref);
   }
 
   return (
@@ -171,19 +185,17 @@ export function ImageField({
       <div className="media-field">
         <div className="media-preview">
           {url ? (
-            isVideo ? <video src={url} controls muted /> : <img src={url} alt="" />
+            isModel ? <ModelPreview url={url} ext={valExt} className="asset-3d" /> :
+            isVideo ? <video src={url} controls muted /> :
+            <img src={url} alt="" />
           ) : (
-            <div className="media-empty">no media</div>
+            <div className="media-empty">{isModel ? 'no model' : 'no media'}</div>
           )}
         </div>
         <div className="media-controls">
-          <input
-            value={value}
-            placeholder={kind === 'media' ? 'assets/img.jpg or /img.png' : '/img.png'}
-            onChange={(e) => onChange(e.target.value)}
-          />
+          <input value={value} readOnly placeholder="— none selected —" title={value} />
           <div className="row">
-            <button className="small" disabled={busy} onClick={doImport}>{busy ? 'Importing…' : 'Import…'}</button>
+            <button className="small" onClick={choose}>Choose…</button>
             {value && <button className="small ghost" onClick={() => onChange('')}>Clear</button>}
           </div>
         </div>

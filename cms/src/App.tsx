@@ -13,10 +13,12 @@ import ConstitutionEditor from './components/ConstitutionEditor';
 import NewsEditor from './components/NewsEditor';
 import Editor from './components/Editor';
 import GalleryEditor from './components/GalleryEditor';
+import MediaLibrary from './components/MediaLibrary';
 import SiteEditor from './components/SiteEditor';
 import AboutEditor from './components/AboutEditor';
 import PreviewServer from './components/PreviewServer';
 import Publish from './components/Publish';
+import { AssetPickerProvider } from './components/AssetPicker';
 import { Icon } from './components/icons';
 import { NAV_GROUPS, SECTION_COLOR, type Section } from './nav';
 
@@ -49,6 +51,7 @@ export default function App() {
   }
 
   return (
+    <AssetPickerProvider repo={repo}>
     <div className="layout">
       <div className="sidebar">
         <div className="brand">Rocket Launchers CMS</div>
@@ -96,11 +99,13 @@ export default function App() {
           ? <Editor repo={repo} slug={slug} onBack={() => setSlug(null)} />
           : <NewsEditor repo={repo} onOpenPost={setSlug} />)}
         {section === 'gallery' && <GalleryEditor repo={repo} />}
+        {section === 'assets' && <MediaLibrary repo={repo} />}
         {section === 'site' && <SiteEditor repo={repo} />}
         {section === 'about' && <AboutEditor repo={repo} />}
         {section === 'preview' && <PreviewServer repo={repo} />}
         {section === 'publish' && <Publish repo={repo} />}
       </div>
     </div>
+    </AssetPickerProvider>
   );
 }

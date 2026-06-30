@@ -9,11 +9,11 @@ export default function RolesEditor({ repo }: { repo: string }) {
       title="Roles"
       hint="Officer and subteam role definitions — not hardcoded, so the org structure can change every year. Assign roles to people per-season in the Seasons editor."
       guide={{
-        intro: 'This is the list of role definitions (President, Avionics Lead, …). Actually putting a person in a role happens per-season in the Seasons → Roster.',
+        intro: 'Roles come in two kinds: subteam position levels (Lead, Co-Lead, Member) that combine with a subteam in the roster to read “Avionics Lead”, and org-wide officer roles (President, Treasurer, …). Putting a person in a role happens per-season in Seasons → Roster.',
         steps: [
           'Click “＋ New”, type the role name, and Create.',
-          'Set its Category and Description.',
-          'Tick the flags: Leadership, Subteam role, Active.',
+          'Set Scope: “Subteam role” for Lead / Co-Lead / Member, or “Org-wide officer”.',
+          'Set its Category and Description, and tick the flags (Leadership, Subteam role, Active).',
           'Use Display order to control where it appears (lower = first).',
           'Click Save, then Publish.',
         ],
@@ -34,14 +34,20 @@ export default function RolesEditor({ repo }: { repo: string }) {
             <Field label="Display order (lower = first)">
               <input type="number" value={r.displayOrder} onChange={(e) => update({ displayOrder: Number(e.target.value) })} />
             </Field>
-            <Field label="Flags">
-              <div className="checkboxes">
-                <label><input type="checkbox" checked={r.isLeadership} onChange={(e) => update({ isLeadership: e.target.checked })} /> Leadership</label>
-                <label><input type="checkbox" checked={r.isSubteamRole} onChange={(e) => update({ isSubteamRole: e.target.checked })} /> Subteam role</label>
-                <label><input type="checkbox" checked={r.active} onChange={(e) => update({ active: e.target.checked })} /> Active</label>
-              </div>
+            <Field label="Scope">
+              <select value={r.scope ?? 'org'} onChange={(e) => update({ scope: e.target.value as Role['scope'] })}>
+                <option value="subteam">Subteam role (combines with a subteam)</option>
+                <option value="org">Org-wide officer (no subteam)</option>
+              </select>
             </Field>
           </div>
+          <Field label="Flags">
+            <div className="checkboxes">
+              <label><input type="checkbox" checked={r.isLeadership} onChange={(e) => update({ isLeadership: e.target.checked })} /> Leadership</label>
+              <label><input type="checkbox" checked={r.isSubteamRole} onChange={(e) => update({ isSubteamRole: e.target.checked })} /> Subteam role</label>
+              <label><input type="checkbox" checked={r.active} onChange={(e) => update({ active: e.target.checked })} /> Active</label>
+            </div>
+          </Field>
         </>
       )}
     />

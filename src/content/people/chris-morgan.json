@@ -1,19 +1,19 @@
 {
   "type": "person",
   "id": "chris-morgan",
-  "name": "Chris Morgan",
+  "name": "John Hinojosa",
   "photo": "",
-  "major": "Computer Engineering",
-  "gradYear": 2025,
-  "bio": "Founding Avionics Lead. Built the first telemetry system that flew on Brunito.",
+  "major": "Electrical Engineering",
+  "gradYear": 2026,
+  "bio": "",
   "links": {
     "email": "",
-    "linkedin": "https://www.linkedin.com/",
-    "github": "https://github.com/",
+    "linkedin": "",
+    "github": "",
     "website": ""
   },
   "isAlumni": true,
-  "company": "Blue Origin",
+  "company": "",
   "privacy": {
     "showPublicly": true,
     "showPhoto": true,

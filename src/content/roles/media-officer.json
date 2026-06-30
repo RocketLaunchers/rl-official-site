@@ -1,1 +1,12 @@
-{ "type": "role", "id": "media-officer", "name": "Media Officer", "category": "Operations", "description": "Runs photography, social media, and outreach content.", "displayOrder": 80, "isLeadership": true, "isSubteamRole": false, "active": true }
+{
+  "type": "role",
+  "id": "media-officer",
+  "name": "Media Officer",
+  "category": "Operations",
+  "description": "Runs photography, social media, and outreach content.",
+  "displayOrder": 80,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

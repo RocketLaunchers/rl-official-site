@@ -1,4 +1,4 @@
-import { albumsApi, importPublicImage, type Album } from '../api';
+import { albumsApi, type Album } from '../api';
 import type { GalleryItem } from '@portfolio/content-schema';
 import CollectionEditor from './CollectionEditor';
 import { Field, ImageField, TextArea, TextField } from './fields';
@@ -26,7 +26,7 @@ function AlbumItems({ repo, items, onChange }: { repo: string; items: GalleryIte
               <button className="small ghost" title="Move down" onClick={() => move(i, 1)}>↓</button>
               <button className="small danger" title="Remove" onClick={() => onChange(items.filter((_, j) => j !== i))}>✕</button>
             </div>
-            <ImageField label="Image" root={repo} value={item.src} onChange={(src) => set(i, { src })} onImport={() => importPublicImage(repo)} />
+            <ImageField label="Image" root={repo} value={item.src} onChange={(src) => set(i, { src })} />
             <div className="grid2">
               <TextField label="Title" value={item.title} onChange={(v) => set(i, { title: v })} />
               <TextField label="Alt text" value={item.alt} onChange={(v) => set(i, { alt: v })} />

@@ -1,6 +1,6 @@
 import PageShell from '../components/PageShell';
 import PersonCard from '../components/PersonCard';
-import { alumni, pastRolesForPerson } from '../data/org';
+import { alumni, pastRolesForPerson, roleTitle } from '../data/org';
 
 /** Group alumni by graduation year (newest first). */
 function byGradYear(people: typeof alumni) {
@@ -32,7 +32,7 @@ export default function AlumniPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {people.map((p) => {
                 const past = pastRolesForPerson(p.id)[0];
-                const role = past ? `${past.role.name}, ${past.season.name}` : undefined;
+                const role = past ? `${roleTitle(past.role, past.subteam)}, ${past.season.name}` : undefined;
                 const company = p.privacy.showCompany && p.company ? `Now at ${p.company}` : undefined;
                 return <PersonCard key={p.id} person={p} subtitle={role} meta={company} />;
               })}

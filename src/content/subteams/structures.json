@@ -1,0 +1,25 @@
+{
+  "type": "subteam",
+  "id": "structures",
+  "name": "Structures",
+  "shortDescription": "Structures, fins, and the body that holds it all together.",
+  "longDescription": "The Structures subteam builds the composite body tubes and the nose cone. ",
+  "icon": "rocket",
+  "image": "",
+  "skills": [
+    "Composites",
+    "Machining",
+    "Structural analysis"
+  ],
+  "tools": [
+    "Carbon fiber layup",
+    "CNC",
+    "FEA",
+    "Lathe"
+  ],
+  "status": "active",
+  "createdSeason": "",
+  "relatedRockets": [],
+  "media": [],
+  "displayOrder": 0
+}

@@ -1,0 +1,16 @@
+{
+  "type": "subteam",
+  "id": "srad",
+  "name": "SRAD",
+  "shortDescription": "Student Researched and Developed propulsion and in-house systems.",
+  "longDescription": "",
+  "icon": "rocket",
+  "image": "",
+  "skills": [],
+  "tools": [],
+  "status": "archived",
+  "createdSeason": "",
+  "relatedRockets": [],
+  "media": [],
+  "displayOrder": 900
+}

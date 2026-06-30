@@ -1,1 +1,12 @@
-{ "type": "role", "id": "vice-president", "name": "Vice President", "category": "Executive", "description": "Supports the President and coordinates across subteams and operations.", "displayOrder": 20, "isLeadership": true, "isSubteamRole": false, "active": true }
+{
+  "type": "role",
+  "id": "vice-president",
+  "name": "Vice President",
+  "category": "Executive",
+  "description": "Supports the President and coordinates across subteams and operations.",
+  "displayOrder": 20,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

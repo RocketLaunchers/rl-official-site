@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NEWS_REL, readNews, saveNews, importPublicMedia, type NewsPost } from '../api';
+import { NEWS_REL, readNews, saveNews, type NewsPost } from '../api';
 import type { Block } from '@portfolio/content-schema';
 import Preview from './Preview';
 import { Field, ImageField, ItemToolbar, TagsField, TextArea, TextField } from './fields';
@@ -141,7 +141,6 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
                 baseDir={baseDir}
                 kind="image"
                 onChange={(src) => patch({ coverImage: src || undefined })}
-                onImport={() => importPublicMedia(repo)}
               />
 
               <div className="section-title">Content blocks ({draft.blocks.length})</div>
@@ -161,7 +160,6 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
                     block={block}
                     root={repo}
                     baseDir={baseDir}
-                    onImport={() => importPublicMedia(repo)}
                     onChange={(c) => patchBlock(block.id, c)}
                   />
                 </div>
@@ -182,12 +180,11 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
 }
 
 function BlockFields({
-  block, root, baseDir, onImport, onChange,
+  block, root, baseDir, onChange,
 }: {
   block: Block;
   root: string;
   baseDir: string;
-  onImport: () => Promise<string | null>;
   onChange: (changes: Record<string, unknown>) => void;
 }) {
   switch (block.type) {
@@ -238,7 +235,7 @@ function BlockFields({
     case 'image':
       return (
         <>
-          <ImageField label="Image" root={root} value={block.src} baseDir={baseDir} kind="media" onChange={(src) => onChange({ src })} onImport={onImport} />
+          <ImageField label="Image" root={root} value={block.src} baseDir={baseDir} kind="image" onChange={(src) => onChange({ src })} />
           <div className="grid2">
             <TextField label="Alt" value={block.alt ?? ''} onChange={(v) => onChange({ alt: v || undefined })} />
             <TextField label="Caption" value={block.caption ?? ''} onChange={(v) => onChange({ caption: v || undefined })} />
@@ -248,7 +245,7 @@ function BlockFields({
     case 'video':
       return (
         <>
-          <ImageField label="Video" root={root} value={block.src} baseDir={baseDir} kind="media" onChange={(src) => onChange({ src })} onImport={onImport} />
+          <ImageField label="Video" root={root} value={block.src} baseDir={baseDir} kind="video" onChange={(src) => onChange({ src })} />
           <TextField label="Caption" value={block.caption ?? ''} onChange={(v) => onChange({ caption: v || undefined })} />
           <div className="checkboxes">
             {(['controls', 'muted', 'autoplay', 'loop'] as const).map((flag) => (

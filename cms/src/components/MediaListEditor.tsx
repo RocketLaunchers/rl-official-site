@@ -1,10 +1,10 @@
-import { importPublicImage, importPublicVideo, importPublicModel } from '../api';
 import type { MediaItem } from '@portfolio/content-schema';
 import { Field } from './fields';
+import { useAssetPicker } from './AssetPicker';
 
-/** Editor for a media gallery (images / videos / 3D models) — shared by rockets and subteams. */
+/** Editor for a media gallery (images / videos / 3D models) — shared by rockets and subteams.
+ *  Picks from assets already in the repo; new files are imported in Tools → Assets. */
 export default function MediaListEditor({
-  repo,
   media,
   onChange,
   label = 'Media gallery — images / videos / 3D models',
@@ -14,6 +14,7 @@ export default function MediaListEditor({
   onChange: (m: MediaItem[]) => void;
   label?: string;
 }) {
+  const { pickAsset } = useAssetPicker();
   const set = (i: number, patch: Partial<MediaItem>) => onChange(media.map((it, j) => (j === i ? { ...it, ...patch } : it)));
   const move = (i: number, dir: -1 | 1) => {
     const j = i + dir;
@@ -22,10 +23,9 @@ export default function MediaListEditor({
     [next[i], next[j]] = [next[j], next[i]];
     onChange(next);
   };
-  const importFor = (type: MediaItem['type']) => {
-    if (type === 'image') return importPublicImage(repo);
-    if (type === 'video') return importPublicVideo(repo);
-    return importPublicModel(repo);
+  const chooseFor = async (i: number, type: MediaItem['type']) => {
+    const ref = await pickAsset({ kinds: [type], title: `Choose a ${type}` });
+    if (ref) set(i, { src: ref });
   };
 
   return (
@@ -39,8 +39,8 @@ export default function MediaListEditor({
                 <option value="video">video</option>
                 <option value="model">model</option>
               </select>
-              <input value={item.src} placeholder="/file.png · /file.glb" onChange={(e) => set(i, { src: e.target.value })} />
-              <button className="small" onClick={async () => { const href = await importFor(item.type); if (href) set(i, { src: href }); }}>Import…</button>
+              <input value={item.src} readOnly placeholder="— none selected —" title={item.src} />
+              <button className="small" onClick={() => chooseFor(i, item.type)}>Choose…</button>
               <button className="small ghost" title="Move up" onClick={() => move(i, -1)}>↑</button>
               <button className="small ghost" title="Move down" onClick={() => move(i, 1)}>↓</button>
               <button className="small danger" title="Remove" onClick={() => onChange(media.filter((_, j) => j !== i))}>✕</button>

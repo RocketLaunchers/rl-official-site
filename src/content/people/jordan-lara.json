@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "jordan-lara",
+  "name": "Jordan Lara",
+  "photo": "",
+  "major": "Electrical Engineering",
+  "gradYear": 2026,
+  "bio": "",
+  "links": {
+    "email": "",
+    "linkedin": "",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": true,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

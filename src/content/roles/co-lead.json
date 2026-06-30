@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "co-lead",
+  "name": "Co-Lead",
+  "category": "Subteam Lead",
+  "description": "Shares leadership of a subteam alongside the Lead.",
+  "displayOrder": 110,
+  "isLeadership": true,
+  "isSubteamRole": true,
+  "scope": "subteam",
+  "active": true
+}

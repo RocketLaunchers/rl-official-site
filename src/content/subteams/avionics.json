@@ -1,12 +1,35 @@
 {
-  "type": "subteam", "id": "avionics", "name": "Avionics",
+  "type": "subteam",
+  "id": "avionics",
+  "name": "Avionics",
   "shortDescription": "Flight computers, telemetry, and the electronics that fly the rocket.",
   "longDescription": "The Avionics subteam designs the flight computer, sensor suite, and radio telemetry that track the vehicle through powered flight, coast, and recovery. We build custom PCBs and write embedded firmware, then validate everything on the bench and in the field.",
-  "icon": "cpu", "image": "/avionics.jpg",
-  "skills": ["Embedded C/Rust", "PCB design", "Sensor fusion", "RF telemetry"],
-  "tools": ["KiCad", "Rust / RTIC", "Oscilloscopes", "Logic analyzers"],
-  "status": "active", "createdSeason": "2024-2025",
-  "relatedRockets": ["brunito", "marv"],
-  "media": [{ "type": "image", "src": "/avionics.jpg", "caption": "Avionics bench testing" }],
+  "icon": "cpu",
+  "image": "/images/avionics.jpg",
+  "skills": [
+    "Embedded C/Rust",
+    "PCB design",
+    "Sensor fusion",
+    "RF telemetry"
+  ],
+  "tools": [
+    "KiCad",
+    "Rust / RTIC",
+    "Oscilloscopes",
+    "Logic analyzers"
+  ],
+  "status": "active",
+  "createdSeason": "2024-2025",
+  "relatedRockets": [
+    "brunito",
+    "marv"
+  ],
+  "media": [
+    {
+      "type": "image",
+      "src": "/images/avionics.jpg",
+      "caption": "Avionics bench testing"
+    }
+  ],
   "displayOrder": 10
 }

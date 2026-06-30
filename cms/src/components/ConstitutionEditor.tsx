@@ -1,4 +1,4 @@
-import { constitutionApi, importPublicFile, type Constitution } from '../api';
+import { constitutionApi, type Constitution } from '../api';
 import CollectionEditor from './CollectionEditor';
 import { Field, ImageField, StringListEditor, TextField } from './fields';
 
@@ -14,7 +14,7 @@ export default function ConstitutionEditor({ repo }: { repo: string }) {
         intro: 'Each amendment is a new version. Keep older versions for history, but make sure exactly one is marked “current”.',
         steps: [
           'Click “＋ New” to start a new version (title “Constitution”, id like 2026-1).',
-          'Set the Version, Effective season, and Date approved, then Import the PDF.',
+          'Set the Version, Effective season, and Date approved, then Choose the PDF (upload it first in Tools → Assets).',
           'List what changed under “Summary of changes”.',
           'Set this version’s Status to “current”, and set the previous one to “archived”.',
           'Click Save, then Publish.',
@@ -42,10 +42,10 @@ export default function ConstitutionEditor({ repo }: { repo: string }) {
           <TextField label="Approved by" value={c.approvedBy} onChange={(v) => update({ approvedBy: v })} />
           <ImageField
             label="PDF"
+            kind="file"
             root={repo}
             value={c.pdf}
             onChange={(src) => update({ pdf: src })}
-            onImport={() => importPublicFile(repo, ['pdf'])}
           />
           <StringListEditor label="Summary of changes" items={c.summaryOfChanges} onChange={(summaryOfChanges) => update({ summaryOfChanges })} placeholder="Added the Director of Engineering role" />
         </>

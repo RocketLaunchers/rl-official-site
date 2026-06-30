@@ -1,1 +1,0 @@
-{ "type": "role", "id": "flight-dynamics-lead", "name": "Flight Dynamics Lead", "category": "Subteam Lead", "description": "Leads simulation, stability, and trajectory analysis.", "displayOrder": 130, "isLeadership": true, "isSubteamRole": true, "active": true }

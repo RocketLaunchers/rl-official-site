@@ -1,1 +1,0 @@
-{ "type": "role", "id": "airframe-lead", "name": "Airframe Lead", "category": "Subteam Lead", "description": "Leads structures, fins, and the rocket body.", "displayOrder": 120, "isLeadership": true, "isSubteamRole": true, "active": true }

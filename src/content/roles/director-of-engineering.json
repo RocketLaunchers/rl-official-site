@@ -1,1 +1,12 @@
-{ "type": "role", "id": "director-of-engineering", "name": "Director of Engineering", "category": "Engineering", "description": "Owns the overall vehicle architecture and coordinates the technical subteams.", "displayOrder": 50, "isLeadership": true, "isSubteamRole": false, "active": true }
+{
+  "type": "role",
+  "id": "director-of-engineering",
+  "name": "Director of Engineering",
+  "category": "Engineering",
+  "description": "Owns the overall vehicle architecture and coordinates the technical subteams.",
+  "displayOrder": 50,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

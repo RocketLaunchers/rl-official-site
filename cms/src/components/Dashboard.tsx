@@ -116,6 +116,14 @@ export default function Dashboard({ repo, onNavigate }: { repo: string; onNaviga
             <span className="hc-go"><Icon name="arrow" size={16} /></span>
           </button>
 
+          <button className="help-cta media-cta" onClick={() => onNavigate('assets')}>
+            <span className="hc-ico"><Icon name="media" size={20} /></span>
+            <span className="hc-text">
+              <b>One home for media.</b> Photos, videos, 3D models, and PDFs are uploaded once in <b>Tools → Assets</b> — then you pick them from any editor. New files only come in there, so the project stays organized.
+            </span>
+            <span className="hc-go"><Icon name="arrow" size={16} /></span>
+          </button>
+
           {error && <div className="notice error">{error}</div>}
           {!data ? (
             <div className="empty">Loading…</div>

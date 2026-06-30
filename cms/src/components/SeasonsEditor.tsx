@@ -88,6 +88,12 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
   if (error && !seasons) return <div className="app"><div className="content"><div className="container"><div className="notice error">{error}</div></div></div></div>;
   if (!seasons || !refs) return <div className="app"><div className="content"><div className="container"><div className="empty">Loading…</div></div></div></div>;
 
+  // Subteam-scoped leadership roles (Lead / Co-Lead) — used to flag active subteams with no lead.
+  const leadRoleIds = new Set(refs.roles.filter((r) => r.scope === 'subteam' && r.isLeadership).map((r) => r.id));
+  const coveredSubteams = new Set((draft?.roster ?? []).filter((e) => leadRoleIds.has(e.role) && e.subteam).map((e) => e.subteam));
+  const subteamsMissingLead = (draft?.subteams ?? []).filter((id) => !coveredSubteams.has(id));
+  const subteamName = (id: string) => refs.subteams.find((s) => s.id === id)?.name ?? id;
+
   return (
     <div className="app">
       <div className="topbar">
@@ -112,7 +118,7 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
               'Use the dropdown up top to pick a season, or click “＋ New season” to start a year.',
               'Set Status to “current” for the active year (set last year’s to “archived”).',
               'Tick which subteams are active under “Active subteams this season”.',
-              'Build the Roster: “＋ Add roster entry”, then choose a Person + Role (+ optional Subteam), and turn on “Show on team page”.',
+              'Build the Roster: “＋ Add roster entry”, choose a Person, a Role level (Lead / Co-Lead / Member, or an officer role), and — for subteam roles — the Subteam. The “Shows as:” line previews the title (e.g. “Avionics Lead”).',
               'Add Sponsors and Advisors the same way; the switches control homepage/team visibility.',
               'Click Save, then Publish.',
             ]}
@@ -170,19 +176,55 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
 
               {/* ---- Roster ---- */}
               <div className="section-title">Roster ({draft.roster.length})</div>
+              <p className="screen-hint">
+                Pick a position level (Lead / Co-Lead / Member) and the subteam — the team page shows them
+                combined, e.g. “Avionics Lead”. Officer roles (President, …) are org-wide and use no subteam.
+              </p>
+              {subteamsMissingLead.length > 0 && (
+                <div className="notice warn">
+                  No Lead assigned yet for: {subteamsMissingLead.map(subteamName).join(', ')}.
+                </div>
+              )}
               {draft.roster.map((entry, i) => {
                 const set = (p: Partial<RosterEntry>) => patch({ roster: draft.roster.map((e, j) => (j === i ? { ...e, ...p } : e)) });
+                const role = refs.roles.find((r) => r.id === entry.role);
+                const subteamScoped = role?.scope === 'subteam';
+                const subteam = refs.subteams.find((s) => s.id === entry.subteam);
+                const needsSubteam = subteamScoped && !entry.subteam;
+                const preview = role ? (subteamScoped && subteam ? `${subteam.name} ${role.name}` : role.name) : '';
                 return (
                   <div className="block" key={i}>
                     <div className="block-head">
-                      <span className="entry-title">Member {i + 1}</span>
+                      <span className="entry-title">Member {i + 1}{preview ? ` — ${preview}` : ''}</span>
                       <ItemToolbar onDelete={() => patch({ roster: draft.roster.filter((_, j) => j !== i) })} deleteLabel="Remove" />
                     </div>
                     <div className="grid3">
                       <Field label="Person"><Picker value={entry.person} onChange={(v) => set({ person: v })} options={refs.people} label={(p) => p.name} /></Field>
-                      <Field label="Role"><Picker value={entry.role} onChange={(v) => set({ role: v })} options={refs.roles} label={(r) => r.name} /></Field>
-                      <Field label="Subteam (optional)"><Picker value={entry.subteam} onChange={(v) => set({ subteam: v })} options={refs.subteams} label={(s) => s.name} allowBlank /></Field>
+                      <Field label="Role">
+                        <Picker
+                          value={entry.role}
+                          onChange={(v) => {
+                            const next = refs.roles.find((r) => r.id === v);
+                            // Org-wide roles use no subteam — clear any stale value when switching to one.
+                            set(next?.scope === 'subteam' ? { role: v } : { role: v, subteam: '' });
+                          }}
+                          options={refs.roles}
+                          label={(r) => r.name}
+                        />
+                      </Field>
+                      <Field label="Subteam">
+                        {subteamScoped ? (
+                          <Picker value={entry.subteam} onChange={(v) => set({ subteam: v })} options={refs.subteams} label={(s) => s.name} allowBlank />
+                        ) : (
+                          <div className="muted" style={{ fontSize: 13, padding: '8px 2px' }}>Org-wide role — no subteam</div>
+                        )}
+                      </Field>
                     </div>
+                    {needsSubteam ? (
+                      <div className="notice warn" style={{ margin: '0 0 10px' }}>⚠ Pick a subteam — this is a {role?.name} position.</div>
+                    ) : preview ? (
+                      <p className="muted" style={{ fontSize: 13, margin: '0 0 10px' }}>Shows as: <strong>{preview}</strong></p>
+                    ) : null}
                     <div className="checkboxes">
                       <Switch label="Show on team page" checked={entry.displayOnTeam} onChange={(v) => set({ displayOnTeam: v })} />
                       <label>Order <input type="number" value={entry.displayOrder} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>

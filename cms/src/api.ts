@@ -123,30 +123,35 @@ const convertModelCmd = (repo: string, src: string, dest: string) => invoke<void
 let toolsCache: Tools | null = null;
 const tools = async (): Promise<Tools> => (toolsCache ??= await checkTools());
 
-// Compress a picked image → WebP in public/ (copy fallback if ffmpeg is absent).
+// Imported media is organized into type subfolders under public/ so the asset
+// library stays browsable: /images, /videos, /models. The public path returned
+// is what gets stored in content (and resolved by `mediaUrl`).
+export const MEDIA_DIRS = { image: 'images', video: 'videos', model: 'models' } as const;
+
+// Compress a picked image → WebP in public/images (copy fallback if ffmpeg is absent).
 async function processImageFile(root: string, src: string): Promise<string> {
   const base = cleanBase(src);
   if ((await tools()).ffmpeg && extOf(src) !== 'svg') {
     const name = base + '.webp';
-    await processImageCmd(src, join(root, 'public', name));
-    return '/' + name;
+    await processImageCmd(src, join(root, 'public', MEDIA_DIRS.image, name));
+    return '/' + MEDIA_DIRS.image + '/' + name;
   }
   const name = base + '.' + extOf(src);
-  await copyFile(src, join(root, 'public', name));
-  return '/' + name;
+  await copyFile(src, join(root, 'public', MEDIA_DIRS.image, name));
+  return '/' + MEDIA_DIRS.image + '/' + name;
 }
 
-// Compress a picked video → MP4 in public/ (copy fallback if ffmpeg is absent).
+// Compress a picked video → MP4 in public/videos (copy fallback if ffmpeg is absent).
 async function processVideoFile(root: string, src: string): Promise<string> {
   const base = cleanBase(src);
   if ((await tools()).ffmpeg) {
     const name = base + '.mp4';
-    await processVideoCmd(src, join(root, 'public', name));
-    return '/' + name;
+    await processVideoCmd(src, join(root, 'public', MEDIA_DIRS.video, name));
+    return '/' + MEDIA_DIRS.video + '/' + name;
   }
   const name = base + '.' + extOf(src);
-  await copyFile(src, join(root, 'public', name));
-  return '/' + name;
+  await copyFile(src, join(root, 'public', MEDIA_DIRS.video, name));
+  return '/' + MEDIA_DIRS.video + '/' + name;
 }
 
 /** Pick + compress an image into public/. */
@@ -168,7 +173,7 @@ export async function importPublicMedia(root: string): Promise<string | null> {
   return isVideoExt(src) ? processVideoFile(root, src) : processImageFile(root, src);
 }
 
-/** Pick a 3D model (STEP/OBJ/GLB) and convert + optimize it to GLB in public/. */
+/** Pick a 3D model (STEP/OBJ/GLB) and convert + optimize it to GLB in public/models. */
 export async function importPublicModel(root: string): Promise<string | null> {
   const src = await pickFile('3D models', MODEL_EXTS);
   if (!src) return null;
@@ -176,24 +181,135 @@ export async function importPublicModel(root: string): Promise<string | null> {
   const ext = extOf(src);
   if ((await tools()).node) {
     const name = base + '.glb';
-    await convertModelCmd(root, src, join(root, 'public', name));
-    return '/' + name;
+    await convertModelCmd(root, src, join(root, 'public', MEDIA_DIRS.model, name));
+    return '/' + MEDIA_DIRS.model + '/' + name;
   }
   if (ext === 'glb' || ext === 'gltf') {
     const name = base + '.' + ext;
-    await copyFile(src, join(root, 'public', name));
-    return '/' + name;
+    await copyFile(src, join(root, 'public', MEDIA_DIRS.model, name));
+    return '/' + MEDIA_DIRS.model + '/' + name;
   }
   throw new Error('Converting STEP/OBJ needs Node.js. Import a .glb instead, or run the CMS where Node is available.');
 }
 
-/** Import any file into public/ unchanged (e.g. a PDF constitution). */
+/** Import a constrained file into public/docs unchanged (e.g. a PDF constitution). */
 export async function importPublicFile(root: string, extensions: string[]): Promise<string | null> {
   const src = await pickFile('File', extensions);
   if (!src) return null;
   const name = cleanBase(src) + '.' + extOf(src);
-  await copyFile(src, join(root, 'public', name));
-  return '/' + name;
+  await copyFile(src, join(root, 'public', 'docs', name));
+  return '/docs/' + name;
+}
+
+/** Import ANY file (no type filter) into public/files — for odds and ends like
+ *  .docx, .ork (OpenRocket), .zip, etc. that you just want available for download. */
+export async function importPublicAnyFile(root: string): Promise<string | null> {
+  const r = await open({ multiple: false, title: 'Select any file' });
+  const src = typeof r === 'string' ? r : null;
+  if (!src) return null;
+  const bn = basename(src);
+  const dot = bn.lastIndexOf('.');
+  const ext = dot > 0 ? bn.slice(dot + 1).toLowerCase() : '';
+  const name = cleanBase(src) + (ext ? '.' + ext : '');
+  await copyFile(src, join(root, 'public', 'files', name));
+  return '/files/' + name;
+}
+
+/* ----------------------------------------------------------- media library */
+
+export type MediaKind = 'image' | 'video' | 'model' | 'other';
+/** Where a file lives: served by the site (public/) or raw source (models/). */
+export type MediaArea = 'public' | 'models';
+
+export type MediaAsset = {
+  area: MediaArea;
+  /** Path under its area root, e.g. "images/foo.webp" or "Itzamna.obj". */
+  rel: string;
+  /** Absolute path on disk (for delete / convert). */
+  abs: string;
+  /** Public reference used in content ("/images/foo.webp"); '' for source files. */
+  ref: string;
+  name: string;
+  dir: string;
+  kind: MediaKind;
+  ext: string;
+  bytes: number;
+  /** Asset-protocol URL for previewing in the webview. */
+  url: string;
+  /** Can be shown directly in the 3D viewer (glb/gltf/obj — not step). */
+  viewable3d: boolean;
+  /** (public only) referenced somewhere in the repo — false = orphan. */
+  used: boolean;
+  /** Infrastructure/config file that should never be offered for deletion. */
+  system: boolean;
+};
+
+const MODEL_VIEW_EXTS = ['glb', 'gltf', 'obj'];
+
+const kindOf = (name: string): MediaKind => {
+  const e = extOf(name);
+  if (IMAGE_EXTS.includes(e)) return 'image';
+  if (VIDEO_EXTS.includes(e)) return 'video';
+  if (MODEL_EXTS.includes(e)) return 'model';
+  return 'other';
+};
+
+// Host/infra files that live in public/ but aren't deletable content.
+const isSystemFile = (name: string) =>
+  name.startsWith('_') || name === 'robots.txt' || name === 'sitemap.xml' || extOf(name) === 'ico';
+
+type Scan = { rel: string; bytes: number };
+
+function toAsset(root: string, area: MediaArea, f: Scan): MediaAsset {
+  const slash = f.rel.lastIndexOf('/');
+  const name = slash >= 0 ? f.rel.slice(slash + 1) : f.rel;
+  const ext = extOf(name);
+  const abs = `${root}/${area}/${f.rel}`;
+  return {
+    area,
+    rel: f.rel,
+    abs,
+    ref: area === 'public' ? '/' + f.rel : '',
+    name,
+    dir: slash >= 0 ? f.rel.slice(0, slash) : '',
+    kind: kindOf(name),
+    ext,
+    bytes: f.bytes,
+    url: convertFileSrc(abs),
+    viewable3d: MODEL_VIEW_EXTS.includes(ext),
+    used: false,
+    system: area === 'public' && isSystemFile(name),
+  };
+}
+
+/**
+ * Every file the project carries, in two areas:
+ *  - public/ — served by the website (orphan detection applies here)
+ *  - models/ — raw 3D source (STEP/OBJ); viewable in the CMS, not deployed
+ */
+export async function listMedia(root: string): Promise<MediaAsset[]> {
+  const [pub, src] = await Promise.all([
+    invoke<Scan[]>('scan_dir', { path: `${root}/public` }),
+    invoke<Scan[]>('scan_dir', { path: `${root}/models` }),
+  ]);
+  const publicAssets = pub.map((f) => toAsset(root, 'public', f));
+  const sourceAssets = src.map((f) => toAsset(root, 'models', f));
+  // "Used" only means something for served files; flag orphans in public/.
+  const found = new Set(await invoke<string[]>('grep_refs', { root, needles: publicAssets.map((a) => a.ref) }));
+  for (const a of publicAssets) a.used = found.has(a.ref);
+  return [...publicAssets, ...sourceAssets];
+}
+
+/** Delete any asset by its absolute path. */
+export async function deleteMedia(_root: string, abs: string): Promise<void> {
+  await removeFile(abs);
+}
+
+/** Convert a source model (OBJ/STEP/GLB) to an optimized GLB in public/models. */
+export async function convertSourceToWebGlb(root: string, abs: string): Promise<string> {
+  const name = cleanBase(abs) + '.glb';
+  await convertModelCmd(root, abs, join(root, 'public', MEDIA_DIRS.model, name));
+  return '/' + MEDIA_DIRS.model + '/' + name;
 }
 
 /* ------------------------------------------------------- generic collections */

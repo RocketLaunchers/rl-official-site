@@ -1,14 +1,14 @@
 {
   "type": "person",
   "id": "jane-doe",
-  "name": "Jane Doe",
+  "name": "Kevin Garza",
   "photo": "",
   "major": "Mechanical Engineering",
   "gradYear": 2027,
-  "bio": "President of Rocket Launchers and a mechanical engineering junior focused on propulsion and structures.",
+  "bio": "",
   "links": {
-    "email": "jane.doe@example.edu",
-    "linkedin": "https://www.linkedin.com/",
+    "email": "",
+    "linkedin": "",
     "github": "",
     "website": ""
   },

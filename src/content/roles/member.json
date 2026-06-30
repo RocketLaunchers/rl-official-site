@@ -1,1 +1,12 @@
-{ "type": "role", "id": "member", "name": "General Member", "category": "Member", "description": "Active contributing member of the club.", "displayOrder": 200, "isLeadership": false, "isSubteamRole": false, "active": true }
+{
+  "type": "role",
+  "id": "member",
+  "name": "Member",
+  "category": "Member",
+  "description": "A contributing member of a subteam.",
+  "displayOrder": 0,
+  "isLeadership": false,
+  "isSubteamRole": false,
+  "scope": "subteam",
+  "active": true
+}

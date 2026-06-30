@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { readAbout, saveAbout, importPublicImage, type About } from '../api';
+import { readAbout, saveAbout, type About } from '../api';
 import { TRAIT_ICON_NAMES } from '@portfolio/content-schema';
 import { Field, ImageField, ItemToolbar, StringListEditor, TextArea, TextField } from './fields';
 import HelpPanel from './HelpPanel';
@@ -82,7 +82,7 @@ export default function AboutEditor({ repo }: { repo: string }) {
 
           <div className="section-title">Header & image</div>
           <TextField label="Section title" value={data.sectionTitle} onChange={(v) => patch({ sectionTitle: v })} />
-          <ImageField label="Image" root={repo} value={data.image} onChange={(src) => patch({ image: src })} onImport={() => importPublicImage(repo)} />
+          <ImageField label="Image" root={repo} value={data.image} onChange={(src) => patch({ image: src })} />
           <TextField label="Image alt text" value={data.imageAlt} onChange={(v) => patch({ imageAlt: v })} />
 
           <div className="section-title">Mission paragraphs</div>

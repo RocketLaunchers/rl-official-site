@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "chief-of-engineering",
+  "name": "Chief of Engineering",
+  "category": "Engineering",
+  "description": "",
+  "displayOrder": 60,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "lead",
+  "name": "Lead",
+  "category": "Subteam Lead",
+  "description": "Leads a subteam — owns its technical direction and coordinates its members.",
+  "displayOrder": 100,
+  "isLeadership": true,
+  "isSubteamRole": true,
+  "scope": "subteam",
+  "active": true
+}

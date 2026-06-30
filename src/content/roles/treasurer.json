@@ -1,1 +1,12 @@
-{ "type": "role", "id": "treasurer", "name": "Treasurer", "category": "Executive", "description": "Manages the budget, reimbursements, and sponsorship funds.", "displayOrder": 30, "isLeadership": true, "isSubteamRole": false, "active": true }
+{
+  "type": "role",
+  "id": "treasurer",
+  "name": "Treasurer",
+  "category": "Executive",
+  "description": "Manages the budget, reimbursements, and sponsorship funds.",
+  "displayOrder": 30,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

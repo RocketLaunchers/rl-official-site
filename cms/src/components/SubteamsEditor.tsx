@@ -1,4 +1,4 @@
-import { subteamsApi, importPublicImage, type Subteam } from '../api';
+import { subteamsApi, type Subteam } from '../api';
 import CollectionEditor from './CollectionEditor';
 import MediaListEditor from './MediaListEditor';
 import { Field, ImageField, StringListEditor, TagsField, TextArea, TextField } from './fields';
@@ -48,7 +48,7 @@ export default function SubteamsEditor({ repo }: { repo: string }) {
               <input type="number" value={s.displayOrder} onChange={(e) => update({ displayOrder: Number(e.target.value) })} />
             </Field>
           </div>
-          <ImageField label="Image" root={repo} value={s.image} onChange={(src) => update({ image: src })} onImport={() => importPublicImage(repo)} />
+          <ImageField label="Image" root={repo} value={s.image} onChange={(src) => update({ image: src })} />
           <StringListEditor label="Skills" items={s.skills} onChange={(skills) => update({ skills })} placeholder="Embedded C/Rust" />
           <StringListEditor label="Tools" items={s.tools} onChange={(tools) => update({ tools })} placeholder="KiCad" />
           <TagsField label="Related rocket ids (comma-separated)" value={s.relatedRockets} onChange={(relatedRockets) => update({ relatedRockets })} />
