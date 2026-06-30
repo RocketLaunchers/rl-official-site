@@ -19,20 +19,20 @@ const GalleryStrip = () => {
           {items.map((image) => (
             <div
               key={String(image.id)}
-              className="group cursor-pointer border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden"
+              className="group cursor-pointer border border-line/10 bg-surface hover:border-line/25 hover:bg-surface transition-all duration-300 overflow-hidden"
             >
-              <div className="aspect-square bg-neutral-950 overflow-hidden">
+              <div className="aspect-square bg-well overflow-hidden">
                 <ClickableImage src={image.src} alt={image.alt} className="w-full h-full object-cover" />
               </div>
               {(image.title || image.description) && (
                 <div className="p-5">
                   {image.title && (
-                    <h3 className="font-display text-base font-light text-white mb-1.5 tracking-tight group-hover:text-neutral-300 transition-colors">
+                    <h3 className="font-display text-base font-light text-ink mb-1.5 tracking-tight group-hover:text-ink-soft transition-colors">
                       {image.title}
                     </h3>
                   )}
                   {image.description && (
-                    <p className="text-neutral-400 text-sm font-light leading-relaxed">{image.description}</p>
+                    <p className="text-ink-muted text-sm font-light leading-relaxed">{image.description}</p>
                   )}
                 </div>
               )}

@@ -8,8 +8,8 @@ const ModelViewer = lazy(() => import('./ModelViewer'));
 
 function Placeholder({ label }: { label: string }) {
   return (
-    <div className="w-full h-full grid place-items-center bg-neutral-950">
-      <span className="text-neutral-600 text-xs tracking-[0.15em] uppercase">{label}</span>
+    <div className="w-full h-full grid place-items-center bg-well">
+      <span className="text-ink-faint text-xs tracking-[0.15em] uppercase">{label}</span>
     </div>
   );
 }

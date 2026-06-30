@@ -16,6 +16,16 @@ export default function PeopleEditor({ repo }: { repo: string }) {
       repo={repo}
       title="People"
       hint="One reusable record per person — students, officers, advisors, mentors, alumni. Referenced by season rosters, advisor lists, and rocket credits."
+      guide={{
+        intro: 'A person is created once here, then referenced by season rosters, advisor lists, and rocket credits.',
+        steps: [
+          'Click “＋ New”, type the full name, and Create.',
+          'Add a photo, major, bio, and links.',
+          'Use the Privacy checkboxes to choose what shows publicly (e.g. hide their email).',
+          'Click Save.',
+          'To show them on the team page, add them to a season’s roster in the Seasons tab.',
+        ],
+      }}
       api={peopleApi}
       newTitleLabel="Full name"
       makeSeed={(id, name) => ({ type: 'person', id, name })}

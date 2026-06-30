@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import {
   seasonsApi, rocketsApi, peopleApi, sponsorsApi, subteamsApi, constitutionApi,
   type Season, type Rocket, type Person, type Sponsor, type Subteam, type Constitution,
 } from '../api';
+import { SECTION_COLOR, type Section } from '../nav';
+import { Icon, type IconName } from './icons';
 
 type Data = {
   seasons: Season[];
@@ -13,52 +15,62 @@ type Data = {
   constitutions: Constitution[];
 };
 
-/** Compute "missing content" warnings for the current season, like the spec asks. */
-function computeWarnings(d: Data): string[] {
-  const w: string[] = [];
+type Warning = { msg: string; section: Section };
+
+/** Quick links to the most common "I want to add something" tasks. */
+const QUICK_ACTIONS: { label: string; section: Section; icon: IconName }[] = [
+  { label: 'Add a member', section: 'people', icon: 'people' },
+  { label: 'Manage roles', section: 'roles', icon: 'roles' },
+  { label: 'Build the roster', section: 'seasons', icon: 'seasons' },
+  { label: 'Add an event', section: 'events', icon: 'events' },
+  { label: 'Write news', section: 'news', icon: 'news' },
+  { label: 'Add a sponsor', section: 'sponsors', icon: 'sponsors' },
+  { label: 'Publish changes', section: 'publish', icon: 'publish' },
+];
+
+/** Compute "missing content" warnings for the current season, each linked to the tab that fixes it. */
+function computeWarnings(d: Data): Warning[] {
+  const w: Warning[] = [];
   const current = d.seasons.find((s) => s.status === 'current');
   if (!current) {
-    w.push('No season is marked “current”.');
+    w.push({ msg: 'No season is marked “current”.', section: 'seasons' });
     return w;
   }
   const byId = <T extends { id: string }>(xs: T[], id: string) => xs.find((x) => x.id === id);
 
-  if (!current.currentRocket) w.push(`${current.name} has no current rocket set.`);
+  if (!current.currentRocket) w.push({ msg: `${current.name} has no current rocket set.`, section: 'seasons' });
   else {
     const rocket = byId(d.rockets, current.currentRocket);
-    if (!rocket) w.push(`Current rocket "${current.currentRocket}" has no rocket record.`);
+    if (!rocket) w.push({ msg: `Current rocket "${current.currentRocket}" has no rocket record.`, section: 'rockets' });
     else if ((rocket.status === 'Launched' || rocket.status === 'Retired') && !rocket.results.trim())
-      w.push(`${rocket.name} has no launch result recorded.`);
+      w.push({ msg: `${rocket.name} has no launch result recorded.`, section: 'rockets' });
   }
 
   if (!current.advisors.some((a) => a.category === 'Faculty Advisor'))
-    w.push(`${current.name} has no faculty advisor assigned.`);
-  if (current.roster.length === 0) w.push(`${current.name} has an empty roster.`);
+    w.push({ msg: `${current.name} has no faculty advisor assigned.`, section: 'seasons' });
+  if (current.roster.length === 0) w.push({ msg: `${current.name} has an empty roster.`, section: 'seasons' });
 
-  if (!d.constitutions.some((c) => c.status === 'current')) w.push('No constitution is marked “current”.');
+  if (!d.constitutions.some((c) => c.status === 'current')) w.push({ msg: 'No constitution is marked “current”.', section: 'constitution' });
 
-  // Sponsor logos missing (current season).
   for (const entry of current.sponsors) {
     const sp = byId(d.sponsors, entry.sponsor);
-    if (sp && !sp.logo) w.push(`Sponsor “${sp.name}” has no logo.`);
+    if (sp && !sp.logo) w.push({ msg: `Sponsor “${sp.name}” has no logo.`, section: 'sponsors' });
   }
 
-  // Active subteams missing a description.
   for (const id of current.subteams) {
     const st = byId(d.subteams, id);
-    if (st && !st.shortDescription.trim()) w.push(`Subteam “${st.name}” has no description yet.`);
+    if (st && !st.shortDescription.trim()) w.push({ msg: `Subteam “${st.name}” has no description yet.`, section: 'subteams' });
   }
 
-  // Roster members missing photos (consent-aware).
   const missingPhotos = current.roster
     .map((r) => byId(d.people, r.person))
     .filter((p): p is Person => !!p && p.privacy.showPhoto && !p.photo);
-  if (missingPhotos.length) w.push(`${missingPhotos.length} team member(s) missing a photo.`);
+  if (missingPhotos.length) w.push({ msg: `${missingPhotos.length} team member(s) missing a photo.`, section: 'people' });
 
   return w;
 }
 
-export default function Dashboard({ repo }: { repo: string }) {
+export default function Dashboard({ repo, onNavigate }: { repo: string; onNavigate: (s: Section) => void }) {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,6 +93,29 @@ export default function Dashboard({ repo }: { repo: string }) {
       <div className="topbar"><h1 style={{ fontWeight: 400 }}>Dashboard</h1></div>
       <div className="content">
         <div className="container">
+          <div className="section-title">Quick actions</div>
+          <div className="quick-actions">
+            {QUICK_ACTIONS.map((a) => (
+              <button
+                key={a.section + a.label}
+                className="quick-action"
+                style={{ '--c': SECTION_COLOR[a.section] } as CSSProperties}
+                onClick={() => onNavigate(a.section)}
+              >
+                <span className="qa-ico"><Icon name={a.icon} size={16} /></span>
+                {a.label}
+              </button>
+            ))}
+          </div>
+
+          <button className="help-cta" onClick={() => onNavigate('help')}>
+            <span className="hc-ico"><Icon name="help" size={20} /></span>
+            <span className="hc-text">
+              <b>New here?</b> Open the Help guide for step-by-step instructions on every common task.
+            </span>
+            <span className="hc-go"><Icon name="arrow" size={16} /></span>
+          </button>
+
           {error && <div className="notice error">{error}</div>}
           {!data ? (
             <div className="empty">Loading…</div>
@@ -110,7 +145,18 @@ export default function Dashboard({ repo }: { repo: string }) {
               {warnings.length === 0 ? (
                 <div className="notice ok">Everything looks complete for the current season. ✓</div>
               ) : (
-                warnings.map((msg, i) => <div className="notice error" key={i} style={{ whiteSpace: 'normal' }}>{msg}</div>)
+                warnings.map((wn, i) => (
+                  <button
+                    className="notice warn clickable"
+                    key={i}
+                    style={{ whiteSpace: 'normal' }}
+                    onClick={() => onNavigate(wn.section)}
+                    title={`Open ${wn.section} to fix this`}
+                  >
+                    {wn.msg}
+                    <span className="notice-go"><Icon name="arrow" size={15} /></span>
+                  </button>
+                ))
               )}
             </>
           )}

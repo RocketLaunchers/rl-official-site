@@ -11,25 +11,25 @@ const NewsList = () => {
         <SectionHeading title="NEWS" to="/news" />
 
         <div className="space-y-10">
-          {latest.length === 0 && <div className="text-neutral-500 font-light">No news yet.</div>}
+          {latest.length === 0 && <div className="text-ink-faint font-light">No news yet.</div>}
           {latest.map((post) => (
             <Link
               key={post.id}
               to={`/news/${post.id}`}
-              className="block border-l border-white/15 pl-6 hover:border-white transition-colors group cursor-pointer"
+              className="block border-l border-line/15 pl-6 hover:border-line transition-colors group cursor-pointer"
             >
-              <div className="text-neutral-500 text-xs mb-3 tracking-[0.15em] uppercase font-light">
+              <div className="text-ink-faint text-xs mb-3 tracking-[0.15em] uppercase font-light">
                 {post.displayDate || post.date}
               </div>
-              <h3 className="font-display text-2xl font-light text-white mb-3 tracking-tight group-hover:text-neutral-300 transition-colors">
+              <h3 className="font-display text-2xl font-light text-ink mb-3 tracking-tight group-hover:text-ink-soft transition-colors">
                 {post.title}
               </h3>
-              <p className="text-neutral-400 leading-relaxed font-light mb-4 text-[15px]">{post.excerpt}</p>
-              <div className="flex items-center gap-4 text-neutral-500">
+              <p className="text-ink-muted leading-relaxed font-light mb-4 text-[15px]">{post.excerpt}</p>
+              <div className="flex items-center gap-4 text-ink-faint">
                 <span className="text-xs tracking-wide">{post.readTime}</span>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.slice(0, 3).map((tag) => (
-                    <span key={tag} className="border border-white/10 text-neutral-400 text-[11px] tracking-wide px-2.5 py-1">
+                    <span key={tag} className="border border-line/10 text-ink-muted text-[11px] tracking-wide px-2.5 py-1">
                       {tag}
                     </span>
                   ))}

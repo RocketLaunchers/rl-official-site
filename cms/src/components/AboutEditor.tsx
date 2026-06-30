@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { readAbout, saveAbout, importPublicImage, type About } from '../api';
 import { TRAIT_ICON_NAMES } from '@portfolio/content-schema';
 import { Field, ImageField, ItemToolbar, StringListEditor, TextArea, TextField } from './fields';
+import HelpPanel from './HelpPanel';
 
 type Highlight = About['highlights'][number];
 
@@ -66,6 +67,16 @@ export default function AboutEditor({ repo }: { repo: string }) {
       <div className="content">
         <div className="container">
           <p className="screen-hint">The “about the club” section: mission, highlights, stats, and the join CTA.</p>
+          <HelpPanel
+            intro="This is the “about the club” section on the homepage — your mission, the “what we do” cards, the stats, and the join call-to-action."
+            steps={[
+              'Edit the mission paragraphs (use the ↑ ↓ buttons to reorder).',
+              'Add or edit the “what we do” highlight cards (icon + title + description).',
+              'Update the “at a glance” stats.',
+              'Edit the join / get-involved heading, body, and button.',
+              'Click Save, then Publish.',
+            ]}
+          />
           {error && <div className="notice error">{error}</div>}
           {msg && <div className="notice ok">{msg}</div>}
 

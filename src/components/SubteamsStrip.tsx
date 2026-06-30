@@ -21,10 +21,10 @@ const SubteamsStrip = () => {
             <Link
               key={st.id}
               to={`/subteams/${st.id}`}
-              className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300 flex flex-col overflow-hidden"
+              className="group border border-line/10 bg-surface hover:border-line/25 hover:bg-surface-2 transition-all duration-300 flex flex-col overflow-hidden"
             >
               {/* Visual banner: a photo of what the subteam does, with an icon fallback. */}
-              <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-neutral-950">
+              <div className="relative aspect-[16/9] overflow-hidden border-b border-line/10 bg-well">
                 {st.image ? (
                   <img
                     src={st.image}
@@ -33,12 +33,12 @@ const SubteamsStrip = () => {
                     className="w-full h-full object-cover opacity-85 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500 ease-out"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/[0.06] to-transparent text-white/40 group-hover:text-white/60 transition-colors">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-line/[0.06] to-transparent text-ink/40 group-hover:text-ink/60 transition-colors">
                     <Icon name={st.icon} className="w-14 h-14" />
                   </div>
                 )}
                 {st.createdSeason === season.id && (
-                  <span className="absolute top-3 right-3 text-[10px] uppercase tracking-[0.15em] text-cyan-200 bg-black/60 backdrop-blur-sm border border-cyan-400/40 px-2 py-0.5">
+                  <span className="absolute top-3 right-3 text-[10px] uppercase tracking-[0.15em] text-accent bg-black/60 backdrop-blur-sm border border-accent/40 px-2 py-0.5">
                     New this season
                   </span>
                 )}
@@ -46,14 +46,14 @@ const SubteamsStrip = () => {
 
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-white/5 border border-white/10 p-2.5 text-white">
+                  <div className="bg-surface-2 border border-line/10 p-2.5 text-ink">
                     <Icon name={st.icon} />
                   </div>
-                  <h3 className="font-display text-lg font-light text-white tracking-tight group-hover:text-neutral-300 transition-colors">
+                  <h3 className="font-display text-lg font-light text-ink tracking-tight group-hover:text-ink-soft transition-colors">
                     {st.name}
                   </h3>
                 </div>
-                <p className="text-neutral-400 text-sm font-light leading-relaxed flex-1">
+                <p className="text-ink-muted text-sm font-light leading-relaxed flex-1">
                   {st.shortDescription}
                 </p>
               </div>

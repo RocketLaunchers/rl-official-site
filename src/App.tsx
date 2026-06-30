@@ -29,7 +29,7 @@ function App() {
     <Router>
       <ImageModalProvider>
         <ScrollToTop />
-        <div className="min-h-screen bg-black text-white relative">
+        <div className="min-h-screen bg-canvas text-ink relative">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/rockets" element={<RocketsPage />} />

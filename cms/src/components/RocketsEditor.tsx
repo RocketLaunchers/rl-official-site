@@ -33,6 +33,16 @@ export default function RocketsEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Rockets"
       hint="Each rocket is a permanent archive entry. Reference subteam and person ids by their file names."
+      guide={{
+        intro: 'Each rocket is a permanent archive entry. Set which rocket is the current build per-season in the Seasons tab.',
+        steps: [
+          'Click “＋ New”, type the rocket name, and Create.',
+          'Set its status, competition, mission, and specs.',
+          'Add a hero image, a 3D model, and any media.',
+          'Record results and lessons learned once it has flown.',
+          'Click Save, then Publish.',
+        ],
+      }}
       api={rocketsApi}
       newTitleLabel="Rocket name"
       makeSeed={(id, name) => ({ type: 'rocket', id, name })}

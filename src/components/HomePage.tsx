@@ -24,7 +24,7 @@ const HomePage = () => {
   }, [hash]);
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
+    <div className="min-h-screen bg-canvas text-ink relative">
       <SpaceBackground />
       <Header />
       <main className="relative z-10">

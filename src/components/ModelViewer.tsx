@@ -214,13 +214,13 @@ export default function ModelViewer({
       <div ref={mountRef} className="w-full h-full" />
       {status !== 'ready' && (
         <div className="absolute inset-0 grid place-items-center text-center px-4 pointer-events-none">
-          <span className="text-neutral-500 text-xs tracking-[0.15em] uppercase">
+          <span className="text-ink-faint text-xs tracking-[0.15em] uppercase">
             {status === 'error' ? 'Could not load 3D model.' : 'Loading 3D…'}
           </span>
         </div>
       )}
       {status === 'ready' && interactive && (
-        <div className="absolute bottom-2 right-3 text-[10px] uppercase tracking-[0.15em] text-neutral-600 pointer-events-none">
+        <div className="absolute bottom-2 right-3 text-[10px] uppercase tracking-[0.15em] text-ink-faint pointer-events-none">
           drag to rotate
         </div>
       )}

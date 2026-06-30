@@ -12,6 +12,16 @@ export default function SubteamsEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Subteams"
       hint="Subteam identities persist across years. Their per-season lead comes from the season roster; this record holds the durable description."
+      guide={{
+        intro: 'A subteam (Avionics, Recovery, …) is defined once here. Which subteams are active each year, and who leads them, is set in the Seasons tab.',
+        steps: [
+          'Click “＋ New”, type the subteam name, and Create.',
+          'Add a short and long description, pick an icon, and set status to Active.',
+          'Optionally add an image, skills, and tools.',
+          'Click Save.',
+          'To activate it this year, tick it under Seasons → current season → “Active subteams this season”.',
+        ],
+      }}
       api={subteamsApi}
       newTitleLabel="Subteam name"
       makeSeed={(id, name) => ({ type: 'subteam', id, name })}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { readSite, saveSite, type Site } from '../api';
 import { Field, ItemToolbar, StringListEditor, TextField } from './fields';
+import HelpPanel from './HelpPanel';
 
 // Friendly homepage destinations a CTA button can scroll to, plus routed pages.
 const DESTINATIONS = [
@@ -88,6 +89,16 @@ export default function SiteEditor({ repo }: { repo: string }) {
       <div className="content">
         <div className="container">
           <p className="screen-hint">The hero/title section, external links, and footer for the whole site.</p>
+          <HelpPanel
+            intro="These settings appear across the whole site — the big hero text at the top, the call-to-action buttons, your social links, and the footer."
+            steps={[
+              'Edit the organization name, tagline, and headline lines for the hero.',
+              'Add or reorder call-to-action buttons; “Goes to” sets where each one scrolls/links.',
+              'Fill in your social links (anything left blank is hidden).',
+              'Update the footer text.',
+              'Click Save, then Publish.',
+            ]}
+          />
           {error && <div className="notice error">{error}</div>}
           {msg && <div className="notice ok">{msg}</div>}
 

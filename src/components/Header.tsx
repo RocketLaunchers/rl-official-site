@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { site } from '../data/site';
+import { useTheme } from '../theme';
 
 type NavItem = { label: string; to: string };
 type NavMenu = { label: string; items: NavItem[] };
@@ -45,6 +46,7 @@ const Chevron = ({ open }: { open: boolean }) => (
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -65,15 +67,15 @@ const Header = () => {
   };
 
   const iconClass =
-    'text-neutral-500 hover:text-white hover:scale-110 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] transition-all duration-300 ease-out';
+    'text-ink-faint hover:text-ink hover:scale-110 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] light:hover:drop-shadow-none transition-all duration-300 ease-out';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-md border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-canvas/70 backdrop-blur-md border-b border-line/10">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between gap-6">
           <Link to="/" className="flex items-center gap-2.5 whitespace-nowrap group">
-            <img src="/RL-Logo.png" alt="" className="h-8 w-auto shrink-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
-            <span className="font-display text-sm tracking-[0.2em] text-white font-light group-hover:text-neutral-300 transition-colors">
+            <img src="/RL-Logo.png" alt="" className="h-8 w-auto shrink-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] light:drop-shadow-none" />
+            <span className="font-display text-sm tracking-[0.2em] text-ink font-light group-hover:text-ink-soft transition-colors">
               {site.name || 'ROCKET LAUNCHERS'}
             </span>
           </Link>
@@ -82,7 +84,7 @@ const Header = () => {
           <nav className="hidden lg:flex items-center gap-8">
             <Link
               to="/"
-              className="text-[13px] tracking-[0.18em] text-neutral-400 hover:text-white hover:[text-shadow:0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 font-light"
+              className="text-[13px] tracking-[0.18em] text-ink-muted hover:text-ink hover:[text-shadow:0_0_10px_rgba(255,255,255,0.45)] light:hover:[text-shadow:none] transition-all duration-300 font-light"
             >
               HOME
             </Link>
@@ -102,8 +104,8 @@ const Header = () => {
                     aria-haspopup="true"
                     aria-expanded={open}
                     onClick={() => setOpenMenu(open ? null : menu.label)}
-                    className={`flex items-center gap-1.5 text-[13px] tracking-[0.18em] font-light transition-all duration-300 hover:text-white ${
-                      open || active ? 'text-white' : 'text-neutral-400'
+                    className={`flex items-center gap-1.5 text-[13px] tracking-[0.18em] font-light transition-all duration-300 hover:text-ink ${
+                      open || active ? 'text-ink' : 'text-ink-muted'
                     }`}
                   >
                     {menu.label}
@@ -112,7 +114,7 @@ const Header = () => {
 
                   <div className={`absolute left-0 top-full pt-3 ${open ? '' : 'pointer-events-none'}`}>
                     <div
-                      className={`min-w-[210px] bg-black/90 backdrop-blur-md border border-white/10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.85)] py-2 origin-top transition-all duration-200 ease-out ${
+                      className={`min-w-[210px] bg-canvas/90 backdrop-blur-md border border-line/10 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.85)] py-2 origin-top transition-all duration-200 ease-out ${
                         open ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-[0.98]'
                       }`}
                     >
@@ -120,8 +122,8 @@ const Header = () => {
                         <Link
                           key={item.to}
                           to={item.to}
-                          className={`block px-5 py-2.5 text-[13px] tracking-[0.1em] font-light transition-colors hover:bg-white/[0.06] hover:text-white ${
-                            item.to === location.pathname ? 'text-white' : 'text-neutral-400'
+                          className={`block px-5 py-2.5 text-[13px] tracking-[0.1em] font-light transition-colors hover:bg-surface-2 hover:text-ink ${
+                            item.to === location.pathname ? 'text-ink' : 'text-ink-muted'
                           }`}
                         >
                           {item.label}
@@ -135,7 +137,7 @@ const Header = () => {
 
             <button
               onClick={() => goToSection('join')}
-              className="text-[13px] tracking-[0.18em] text-cyan-300/90 hover:text-white hover:scale-105 transition-all duration-300 ease-out font-light"
+              className="text-[13px] tracking-[0.18em] text-accent/90 hover:text-ink hover:scale-105 transition-all duration-300 ease-out font-light"
             >
               JOIN
             </button>
@@ -165,13 +167,33 @@ const Header = () => {
               </a>
             )}
 
+            {/* Light / dark toggle (always visible) */}
+            <button
+              type="button"
+              onClick={toggle}
+              className={`${iconClass} inline-flex`}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            >
+              {theme === 'dark' ? (
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="4" />
+                  <path strokeLinecap="round" d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                </svg>
+              ) : (
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
+                </svg>
+              )}
+            </button>
+
             {/* Mobile hamburger */}
             <button
               type="button"
               aria-label="Menu"
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
-              className="lg:hidden text-neutral-300 hover:text-white transition-colors"
+              className="lg:hidden text-ink-soft hover:text-ink transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileOpen ? (
@@ -190,20 +212,20 @@ const Header = () => {
             mobileOpen ? 'max-h-[640px] opacity-100 mt-4' : 'max-h-0 opacity-0'
           }`}
         >
-          <nav className="border-t border-white/10 pt-4 pb-2 space-y-5">
-            <Link to="/" className="block text-sm tracking-[0.16em] text-neutral-200 font-light">
+          <nav className="border-t border-line/10 pt-4 pb-2 space-y-5">
+            <Link to="/" className="block text-sm tracking-[0.16em] text-ink font-light">
               HOME
             </Link>
             {MENUS.map((menu) => (
               <div key={menu.label}>
-                <div className="text-[11px] tracking-[0.2em] text-neutral-500 uppercase font-light mb-2">{menu.label}</div>
-                <div className="space-y-1 pl-3 border-l border-white/10">
+                <div className="text-[11px] tracking-[0.2em] text-ink-faint uppercase font-light mb-2">{menu.label}</div>
+                <div className="space-y-1 pl-3 border-l border-line/10">
                   {menu.items.map((item) => (
                     <Link
                       key={item.to}
                       to={item.to}
-                      className={`block py-1.5 text-sm tracking-[0.1em] font-light transition-colors hover:text-white ${
-                        item.to === location.pathname ? 'text-white' : 'text-neutral-400'
+                      className={`block py-1.5 text-sm tracking-[0.1em] font-light transition-colors hover:text-ink ${
+                        item.to === location.pathname ? 'text-ink' : 'text-ink-muted'
                       }`}
                     >
                       {item.label}
@@ -214,7 +236,7 @@ const Header = () => {
             ))}
             <button
               onClick={() => goToSection('join')}
-              className="block text-sm tracking-[0.16em] text-cyan-300/90 hover:text-white transition-colors font-light"
+              className="block text-sm tracking-[0.16em] text-accent/90 hover:text-ink transition-colors font-light"
             >
               JOIN
             </button>

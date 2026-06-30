@@ -8,7 +8,7 @@ function Group({ title, members }: { title: string; members: RosterMember[] }) {
   if (members.length === 0) return null;
   return (
     <section className="mb-14">
-      <h2 className="text-neutral-500 text-[11px] uppercase tracking-[0.2em] font-light mb-6">{title}</h2>
+      <h2 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-6">{title}</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {members.map((m) => (
           <PersonCard
@@ -42,20 +42,20 @@ export default function TeamPage() {
             onClick={() => setSeasonId(s.id)}
             className={`px-4 py-2 text-[13px] tracking-[0.1em] font-light border transition-all duration-200 ${
               s.id === seasonId
-                ? 'bg-white text-black border-white'
-                : 'border-white/15 text-neutral-300 hover:border-white/40 hover:text-white'
+                ? 'bg-solid text-on-solid border-line'
+                : 'border-line/15 text-ink-soft hover:border-line/40 hover:text-ink'
             }`}
           >
             {s.name}
             {s.status === 'current' && s.id !== seasonId && (
-              <span className="ml-2 text-cyan-300/80 text-[10px] uppercase">Current</span>
+              <span className="ml-2 text-accent/80 text-[10px] uppercase">Current</span>
             )}
           </button>
         ))}
       </div>
 
       {empty ? (
-        <p className="text-neutral-500 font-light">No roster has been assigned for this season yet.</p>
+        <p className="text-ink-faint font-light">No roster has been assigned for this season yet.</p>
       ) : (
         <>
           <Group title="Officers" members={officers} />
@@ -64,7 +64,7 @@ export default function TeamPage() {
 
           {advisors.length > 0 && (
             <section>
-              <h2 className="text-neutral-500 text-[11px] uppercase tracking-[0.2em] font-light mb-6">
+              <h2 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-6">
                 Advisors &amp; Mentors
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

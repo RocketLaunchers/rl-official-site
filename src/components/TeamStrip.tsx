@@ -15,7 +15,7 @@ const TeamStrip = () => {
       <div className="max-w-7xl mx-auto px-6">
         <SectionHeading title="THE TEAM" to="/team" linkLabel="Full roster" />
 
-        <p className="text-neutral-400 font-light leading-relaxed text-[15px] max-w-3xl mb-12">
+        <p className="text-ink-muted font-light leading-relaxed text-[15px] max-w-3xl mb-12">
           Meet the {currentSeason.name} leadership. Every rocket we fly is designed and built by
           students across our subteams.
         </p>

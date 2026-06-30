@@ -10,7 +10,7 @@ export default function NewsPostPage() {
   if (!post) {
     return (
       <PageShell title="Post not found" backTo="/" backLabel="Home">
-        <p className="text-neutral-400 font-light">That post doesn’t exist.</p>
+        <p className="text-ink-muted font-light">That post doesn’t exist.</p>
       </PageShell>
     );
   }
@@ -18,15 +18,15 @@ export default function NewsPostPage() {
   return (
     <PageShell title={post.title} backTo="/#news" backLabel="All news">
       <div className="max-w-3xl -mt-4">
-        <div className="flex items-center gap-3 text-neutral-500 font-light text-sm tracking-wide mb-2">
+        <div className="flex items-center gap-3 text-ink-faint font-light text-sm tracking-wide mb-2">
           <span>{post.displayDate || post.date}</span>
-          {post.readTime && <span className="text-neutral-700">•</span>}
+          {post.readTime && <span className="text-ink-faint">•</span>}
           {post.readTime && <span>{post.readTime}</span>}
         </div>
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-10">
             {post.tags.map((tag) => (
-              <span key={tag} className="border border-white/10 text-neutral-400 text-xs tracking-wide px-3 py-1 font-light">
+              <span key={tag} className="border border-line/10 text-ink-muted text-xs tracking-wide px-3 py-1 font-light">
                 {tag}
               </span>
             ))}

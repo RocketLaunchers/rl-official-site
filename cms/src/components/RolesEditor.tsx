@@ -8,6 +8,16 @@ export default function RolesEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Roles"
       hint="Officer and subteam role definitions — not hardcoded, so the org structure can change every year. Assign roles to people per-season in the Seasons editor."
+      guide={{
+        intro: 'This is the list of role definitions (President, Avionics Lead, …). Actually putting a person in a role happens per-season in the Seasons → Roster.',
+        steps: [
+          'Click “＋ New”, type the role name, and Create.',
+          'Set its Category and Description.',
+          'Tick the flags: Leadership, Subteam role, Active.',
+          'Use Display order to control where it appears (lower = first).',
+          'Click Save, then Publish.',
+        ],
+      }}
       api={rolesApi}
       newTitleLabel="Role name"
       makeSeed={(id, name) => ({ type: 'role', id, name })}

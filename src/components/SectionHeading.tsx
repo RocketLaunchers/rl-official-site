@@ -15,14 +15,14 @@ export default function SectionHeading({
 }) {
   return (
     <div className="flex items-center gap-6 mb-14">
-      <h2 className="font-display text-3xl md:text-4xl font-light tracking-[0.12em] text-white whitespace-nowrap">
+      <h2 className="font-display text-3xl md:text-4xl font-light tracking-[0.12em] text-ink whitespace-nowrap">
         {title}
       </h2>
-      <div className="h-px flex-1 bg-white/10" />
+      <div className="h-px flex-1 bg-line/10" />
       {to && (
         <Link
           to={to}
-          className="text-neutral-400 hover:text-white transition-colors text-xs tracking-[0.15em] uppercase font-light whitespace-nowrap"
+          className="text-ink-muted hover:text-ink transition-colors text-xs tracking-[0.15em] uppercase font-light whitespace-nowrap"
         >
           {linkLabel} →
         </Link>

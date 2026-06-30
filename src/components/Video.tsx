@@ -37,21 +37,21 @@ const Video: React.FC<VideoProps> = ({
           loop={false}
           muted={muted}
           controls={controls}
-          className="w-full h-auto border border-white/10 object-cover"
+          className="w-full h-auto border border-line/10 object-cover"
           aria-label={alt}
           preload="metadata"
         />
         {/* Play overlay */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-black bg-opacity-40 rounded-full p-3">
-            <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <div className="bg-canvas bg-opacity-40 rounded-full p-3">
+            <svg className="w-8 h-8 text-ink" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z" />
             </svg>
           </div>
         </div>
       </div>
       {caption && (
-        <p className="text-neutral-500 text-sm font-light mt-3 text-center">
+        <p className="text-ink-faint text-sm font-light mt-3 text-center">
           {caption}
         </p>
       )}

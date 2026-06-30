@@ -46,6 +46,15 @@ export default function GalleryEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Gallery"
       hint="Photo albums, optionally tied to a season. The homepage shows the current season's albums."
+      guide={{
+        intro: 'Group photos into albums. Tie an album to a season and it shows on the homepage while that season is current.',
+        steps: [
+          'Click “＋ New”, type the album title, and Create.',
+          'Optionally set a season id and a display order.',
+          'Click “＋ Add photo”, then Import each image and add a title and alt text.',
+          'Click Save, then Publish.',
+        ],
+      }}
       api={albumsApi}
       newTitleLabel="Album title"
       makeSeed={(id, title) => ({ type: 'album', id, title })}

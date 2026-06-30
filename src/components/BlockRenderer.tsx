@@ -21,16 +21,16 @@ const inline = (text: string): { __html: string } => ({
 });
 
 const HEADING_CLASS: Record<1 | 2 | 3, string> = {
-  1: 'font-display text-4xl font-light text-white mt-14 mb-6 tracking-tight',
-  2: 'font-display text-3xl font-light text-white mt-12 mb-5 tracking-tight',
-  3: 'font-display text-2xl font-light text-white mt-10 mb-4 tracking-tight',
+  1: 'font-display text-4xl font-light text-ink mt-14 mb-6 tracking-tight',
+  2: 'font-display text-3xl font-light text-ink mt-12 mb-5 tracking-tight',
+  3: 'font-display text-2xl font-light text-ink mt-10 mb-4 tracking-tight',
 };
 
 const CALLOUT_CLASS: Record<NonNullable<Extract<Block, { type: 'callout' }>['variant']>, string> = {
-  info: 'border-sky-800/60 bg-sky-950/30 text-sky-100',
-  note: 'border-white/15 bg-white/[0.03] text-neutral-200',
-  success: 'border-emerald-800/60 bg-emerald-950/30 text-emerald-100',
-  warning: 'border-amber-800/60 bg-amber-950/30 text-amber-100',
+  info: 'border-sky-800/60 bg-sky-950/30 text-sky-100 light:border-sky-300 light:bg-sky-50 light:text-sky-800',
+  note: 'border-line/15 bg-surface text-ink',
+  success: 'border-emerald-800/60 bg-emerald-950/30 text-emerald-100 light:border-emerald-300 light:bg-emerald-50 light:text-emerald-800',
+  warning: 'border-amber-800/60 bg-amber-950/30 text-amber-100 light:border-amber-300 light:bg-amber-50 light:text-amber-800',
 };
 
 function renderBlock(block: Block) {
@@ -44,7 +44,7 @@ function renderBlock(block: Block) {
       return (
         <p
           key={block.id}
-          className="text-neutral-300 leading-relaxed font-light mb-6 text-[17px]"
+          className="text-ink-soft leading-relaxed font-light mb-6 text-[17px]"
           dangerouslySetInnerHTML={inline(block.text)}
         />
       );
@@ -55,10 +55,10 @@ function renderBlock(block: Block) {
           <ClickableImage
             src={block.src}
             alt={block.alt || ''}
-            className="max-w-md w-full h-auto border border-white/10 mx-auto"
+            className="max-w-md w-full h-auto border border-line/10 mx-auto"
           />
           {(block.caption || block.alt) && (
-            <p className="text-neutral-500 text-sm font-light mt-3 text-center max-w-md">
+            <p className="text-ink-faint text-sm font-light mt-3 text-center max-w-md">
               {block.caption || block.alt}
             </p>
           )}
@@ -85,9 +85,9 @@ function renderBlock(block: Block) {
       return (
         <ListTag
           key={block.id}
-          className={`mb-6 space-y-2 text-neutral-300 font-light text-[17px] ${
+          className={`mb-6 space-y-2 text-ink-soft font-light text-[17px] ${
             block.ordered ? 'list-decimal' : 'list-disc'
-          } list-outside pl-6 marker:text-neutral-600`}
+          } list-outside pl-6 marker:text-ink-faint`}
         >
           {block.items.map((item, i) => (
             <li key={i} className="leading-relaxed" dangerouslySetInnerHTML={inline(item)} />
@@ -100,12 +100,12 @@ function renderBlock(block: Block) {
       return (
         <pre
           key={block.id}
-          className="my-8 overflow-x-auto border border-white/10 bg-neutral-950 p-4"
+          className="my-8 overflow-x-auto border border-line/10 bg-well p-4"
         >
           {block.language && (
-            <div className="mb-2 text-xs uppercase tracking-[0.15em] text-neutral-500">{block.language}</div>
+            <div className="mb-2 text-xs uppercase tracking-[0.15em] text-ink-faint">{block.language}</div>
           )}
-          <code className="font-mono text-sm text-neutral-200">{block.code}</code>
+          <code className="font-mono text-sm text-ink">{block.code}</code>
         </pre>
       );
 
@@ -113,13 +113,13 @@ function renderBlock(block: Block) {
       return (
         <blockquote
           key={block.id}
-          className="my-8 border-l-2 border-white/20 pl-6 italic text-neutral-300 font-light text-[17px]"
+          className="my-8 border-l-2 border-line/20 pl-6 italic text-ink-soft font-light text-[17px]"
           dangerouslySetInnerHTML={inline(block.text)}
         />
       );
 
     case 'divider':
-      return <hr key={block.id} className="my-12 border-white/10" />;
+      return <hr key={block.id} className="my-12 border-line/10" />;
 
     case 'callout':
       return (

@@ -5,7 +5,8 @@ import {
 } from '../api';
 import { ADVISOR_CATEGORIES, type RosterEntry, type SponsorEntry, type AdvisorEntry } from '@portfolio/content-schema';
 import { slugify } from '../util';
-import { Field, StringListEditor, TextArea, TextField } from './fields';
+import { Field, ItemToolbar, StringListEditor, Switch, TextArea, TextField } from './fields';
+import HelpPanel from './HelpPanel';
 
 const STATUSES = ['current', 'archived', 'upcoming'];
 
@@ -105,6 +106,17 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
             A season connects everything for one year. Pick records from the dropdowns — they come from the
             People, Roles, Subteams, Sponsors, and Rockets editors. Start a new year with “New season”.
           </p>
+          <HelpPanel
+            intro="A season ties everything together for one year: the roster (who is on the team and their roles), active subteams, sponsors, advisors, and the current rocket. The people, roles, sponsors, etc. must already exist in their own tabs first."
+            steps={[
+              'Use the dropdown up top to pick a season, or click “＋ New season” to start a year.',
+              'Set Status to “current” for the active year (set last year’s to “archived”).',
+              'Tick which subteams are active under “Active subteams this season”.',
+              'Build the Roster: “＋ Add roster entry”, then choose a Person + Role (+ optional Subteam), and turn on “Show on team page”.',
+              'Add Sponsors and Advisors the same way; the switches control homepage/team visibility.',
+              'Click Save, then Publish.',
+            ]}
+          />
 
           {showNew && (
             <div className="inline-form">
@@ -162,15 +174,18 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
                 const set = (p: Partial<RosterEntry>) => patch({ roster: draft.roster.map((e, j) => (j === i ? { ...e, ...p } : e)) });
                 return (
                   <div className="block" key={i}>
-                    <div className="row">
-                      <Picker value={entry.person} onChange={(v) => set({ person: v })} options={refs.people} label={(p) => p.name} />
-                      <Picker value={entry.role} onChange={(v) => set({ role: v })} options={refs.roles} label={(r) => r.name} />
-                      <Picker value={entry.subteam} onChange={(v) => set({ subteam: v })} options={refs.subteams} label={(s) => s.name} allowBlank />
-                      <button className="small danger" onClick={() => patch({ roster: draft.roster.filter((_, j) => j !== i) })}>✕</button>
+                    <div className="block-head">
+                      <span className="entry-title">Member {i + 1}</span>
+                      <ItemToolbar onDelete={() => patch({ roster: draft.roster.filter((_, j) => j !== i) })} deleteLabel="Remove" />
                     </div>
-                    <div className="checkboxes" style={{ marginTop: 8 }}>
-                      <label><input type="checkbox" checked={entry.displayOnTeam} onChange={(e) => set({ displayOnTeam: e.target.checked })} /> Show on team page</label>
-                      <label>Order <input type="number" value={entry.displayOrder} style={{ width: 70 }} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>
+                    <div className="grid3">
+                      <Field label="Person"><Picker value={entry.person} onChange={(v) => set({ person: v })} options={refs.people} label={(p) => p.name} /></Field>
+                      <Field label="Role"><Picker value={entry.role} onChange={(v) => set({ role: v })} options={refs.roles} label={(r) => r.name} /></Field>
+                      <Field label="Subteam (optional)"><Picker value={entry.subteam} onChange={(v) => set({ subteam: v })} options={refs.subteams} label={(s) => s.name} allowBlank /></Field>
+                    </div>
+                    <div className="checkboxes">
+                      <Switch label="Show on team page" checked={entry.displayOnTeam} onChange={(v) => set({ displayOnTeam: v })} />
+                      <label>Order <input type="number" value={entry.displayOrder} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>
                     </div>
                   </div>
                 );
@@ -183,19 +198,26 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
                 const set = (p: Partial<SponsorEntry>) => patch({ sponsors: draft.sponsors.map((e, j) => (j === i ? { ...e, ...p } : e)) });
                 return (
                   <div className="block" key={i}>
-                    <div className="row">
-                      <Picker value={entry.sponsor} onChange={(v) => set({ sponsor: v })} options={refs.sponsors} label={(s) => s.name} />
-                      <select value={entry.tier} onChange={(e) => set({ tier: e.target.value })} style={{ width: 140 }}>
-                        <option value="">— tier —</option>
-                        {draft.sponsorTiers.map((t) => <option key={t} value={t}>{t}</option>)}
-                      </select>
-                      <input value={entry.supportTypes.join(', ')} placeholder="Money, Materials" onChange={(e) => set({ supportTypes: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
-                      <button className="small danger" onClick={() => patch({ sponsors: draft.sponsors.filter((_, j) => j !== i) })}>✕</button>
+                    <div className="block-head">
+                      <span className="entry-title">Sponsor {i + 1}</span>
+                      <ItemToolbar onDelete={() => patch({ sponsors: draft.sponsors.filter((_, j) => j !== i) })} deleteLabel="Remove" />
                     </div>
-                    <input value={entry.publicDescription} placeholder="Public description" style={{ marginTop: 8 }} onChange={(e) => set({ publicDescription: e.target.value })} />
-                    <div className="checkboxes" style={{ marginTop: 8 }}>
-                      <label><input type="checkbox" checked={entry.showOnHomepage} onChange={(e) => set({ showOnHomepage: e.target.checked })} /> Show on homepage</label>
-                      <label>Order <input type="number" value={entry.displayOrder} style={{ width: 70 }} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>
+                    <div className="grid3">
+                      <Field label="Sponsor"><Picker value={entry.sponsor} onChange={(v) => set({ sponsor: v })} options={refs.sponsors} label={(s) => s.name} /></Field>
+                      <Field label="Tier">
+                        <select value={entry.tier} onChange={(e) => set({ tier: e.target.value })}>
+                          <option value="">— tier —</option>
+                          {draft.sponsorTiers.map((t) => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </Field>
+                      <Field label="Support types">
+                        <input value={entry.supportTypes.join(', ')} placeholder="Money, Materials" onChange={(e) => set({ supportTypes: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })} />
+                      </Field>
+                    </div>
+                    <TextField label="Public description" value={entry.publicDescription} onChange={(v) => set({ publicDescription: v })} />
+                    <div className="checkboxes">
+                      <Switch label="Show on homepage" checked={entry.showOnHomepage} onChange={(v) => set({ showOnHomepage: v })} />
+                      <label>Order <input type="number" value={entry.displayOrder} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>
                     </div>
                   </div>
                 );
@@ -208,18 +230,23 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
                 const set = (p: Partial<AdvisorEntry>) => patch({ advisors: draft.advisors.map((e, j) => (j === i ? { ...e, ...p } : e)) });
                 return (
                   <div className="block" key={i}>
-                    <div className="row">
-                      <Picker value={entry.person} onChange={(v) => set({ person: v })} options={refs.people} label={(p) => p.name} />
-                      <select value={entry.category} onChange={(e) => set({ category: e.target.value as AdvisorEntry['category'] })} style={{ width: 180 }}>
-                        {ADVISOR_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                      <button className="small danger" onClick={() => patch({ advisors: draft.advisors.filter((_, j) => j !== i) })}>✕</button>
+                    <div className="block-head">
+                      <span className="entry-title">Advisor / mentor {i + 1}</span>
+                      <ItemToolbar onDelete={() => patch({ advisors: draft.advisors.filter((_, j) => j !== i) })} deleteLabel="Remove" />
                     </div>
-                    <input value={entry.supportRole} placeholder="Support role" style={{ marginTop: 8 }} onChange={(e) => set({ supportRole: e.target.value })} />
-                    <TextArea value={entry.description} onChange={(v) => set({ description: v })} />
+                    <div className="grid2">
+                      <Field label="Person"><Picker value={entry.person} onChange={(v) => set({ person: v })} options={refs.people} label={(p) => p.name} /></Field>
+                      <Field label="Category">
+                        <select value={entry.category} onChange={(e) => set({ category: e.target.value as AdvisorEntry['category'] })}>
+                          {ADVISOR_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </Field>
+                    </div>
+                    <TextField label="Support role" value={entry.supportRole} onChange={(v) => set({ supportRole: v })} />
+                    <TextArea label="Description" value={entry.description} onChange={(v) => set({ description: v })} />
                     <div className="checkboxes">
-                      <label><input type="checkbox" checked={entry.featured} onChange={(e) => set({ featured: e.target.checked })} /> Featured</label>
-                      <label>Order <input type="number" value={entry.displayOrder} style={{ width: 70 }} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>
+                      <Switch label="Featured" checked={entry.featured} onChange={(v) => set({ featured: v })} />
+                      <label>Order <input type="number" value={entry.displayOrder} onChange={(e) => set({ displayOrder: Number(e.target.value) })} /></label>
                     </div>
                   </div>
                 );

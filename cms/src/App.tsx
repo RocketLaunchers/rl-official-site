@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import ProjectPicker from './components/ProjectPicker';
 import Dashboard from './components/Dashboard';
+import Help from './components/Help';
 import SeasonsEditor from './components/SeasonsEditor';
 import PeopleEditor from './components/PeopleEditor';
 import RolesEditor from './components/RolesEditor';
@@ -16,58 +17,32 @@ import SiteEditor from './components/SiteEditor';
 import AboutEditor from './components/AboutEditor';
 import PreviewServer from './components/PreviewServer';
 import Publish from './components/Publish';
+import { Icon } from './components/icons';
+import { NAV_GROUPS, SECTION_COLOR, type Section } from './nav';
 
 const STORAGE_KEY = 'rl-cms.repo';
-
-type Section =
-  | 'dashboard' | 'seasons' | 'people' | 'roles' | 'subteams' | 'rockets'
-  | 'sponsors' | 'events' | 'constitution' | 'news' | 'gallery' | 'site'
-  | 'about' | 'preview' | 'publish';
-
-const NAV_GROUPS: { label: string; items: { key: Section; label: string }[] }[] = [
-  {
-    label: 'Overview',
-    items: [{ key: 'dashboard', label: 'Dashboard' }],
-  },
-  {
-    label: 'Organization',
-    items: [
-      { key: 'seasons', label: 'Seasons' },
-      { key: 'people', label: 'People' },
-      { key: 'roles', label: 'Roles' },
-      { key: 'subteams', label: 'Subteams' },
-      { key: 'rockets', label: 'Rockets' },
-      { key: 'sponsors', label: 'Sponsors' },
-      { key: 'events', label: 'Events' },
-      { key: 'constitution', label: 'Constitution' },
-    ],
-  },
-  {
-    label: 'Content',
-    items: [
-      { key: 'news', label: 'News' },
-      { key: 'gallery', label: 'Gallery' },
-      { key: 'site', label: 'Site' },
-      { key: 'about', label: 'About' },
-    ],
-  },
-  {
-    label: 'Publish',
-    items: [
-      { key: 'preview', label: 'Preview' },
-      { key: 'publish', label: 'Publish' },
-    ],
-  },
-];
+const THEME_KEY = 'rl-cms.theme';
+type Theme = 'dark' | 'light';
 
 export default function App() {
   const [repo, setRepo] = useState<string | null>(() => localStorage.getItem(STORAGE_KEY));
   const [section, setSection] = useState<Section>('dashboard');
   const [slug, setSlug] = useState<string | null>(null);
+  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(THEME_KEY) as Theme) || 'dark');
 
   useEffect(() => {
     if (repo) localStorage.setItem(STORAGE_KEY, repo);
   }, [repo]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
+
+  function go(next: Section) {
+    setSection(next);
+    setSlug(null);
+  }
 
   if (!repo) {
     return <ProjectPicker recent={localStorage.getItem(STORAGE_KEY)} onOpen={setRepo} />;
@@ -78,25 +53,37 @@ export default function App() {
       <div className="sidebar">
         <div className="brand">Rocket Launchers CMS</div>
         {NAV_GROUPS.map((group) => (
-          <div key={group.label} className="nav-group">
+          <div key={group.label} className="nav-group" style={{ '--g': group.color } as CSSProperties}>
             <div className="nav-group-label">{group.label}</div>
             {group.items.map((item) => (
               <button
                 key={item.key}
                 className={`nav-item ${section === item.key ? 'active' : ''}`}
-                onClick={() => { setSection(item.key); setSlug(null); }}
+                onClick={() => go(item.key)}
               >
+                <span className="nav-ico"><Icon name={item.icon} size={16} /></span>
                 {item.label}
               </button>
             ))}
           </div>
         ))}
         <div className="repo" title={repo}>{repo}</div>
-        <button className="small ghost" onClick={() => { setRepo(null); setSlug(null); }}>Change repo</button>
+        <div className="sidebar-foot">
+          <button className="small ghost" onClick={() => { setRepo(null); setSlug(null); }}>Change repo</button>
+          <button
+            className="theme-toggle"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label="Toggle light/dark theme"
+            onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+          >
+            <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={17} />
+          </button>
+        </div>
       </div>
 
-      <div className="main">
-        {section === 'dashboard' && <Dashboard repo={repo} />}
+      <div className="main" style={{ '--section': SECTION_COLOR[section] } as CSSProperties}>
+        {section === 'dashboard' && <Dashboard repo={repo} onNavigate={go} />}
+        {section === 'help' && <Help onNavigate={go} />}
         {section === 'seasons' && <SeasonsEditor repo={repo} />}
         {section === 'people' && <PeopleEditor repo={repo} />}
         {section === 'roles' && <RolesEditor repo={repo} />}

@@ -37,7 +37,7 @@ function Arrow({ dir, onClick, big }: { dir: 'left' | 'right'; onClick: () => vo
       aria-label={dir === 'left' ? 'Previous' : 'Next'}
       className={`absolute top-1/2 -translate-y-1/2 z-20 ${dir === 'left' ? 'left-2' : 'right-2'} ${
         big ? 'p-3' : 'p-1.5'
-      } bg-black/50 hover:bg-black/80 border border-white/10 text-white/80 hover:text-white transition-colors`}
+      } bg-black/50 hover:bg-black/80 border border-line/10 text-ink/80 hover:text-ink transition-colors`}
     >
       <svg className={big ? 'w-6 h-6' : 'w-4 h-4'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={dir === 'left' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />
@@ -87,14 +87,14 @@ function MediaLightbox({
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm grid place-items-center p-4 sm:p-10" onClick={onClose}>
-      <div className="absolute top-5 left-6 text-white/40 text-xs tracking-[0.18em] uppercase pointer-events-none">{title}</div>
+      <div className="absolute top-5 left-6 text-ink/40 text-xs tracking-[0.18em] uppercase pointer-events-none">{title}</div>
       <button
         onClick={(e) => {
           e.stopPropagation();
           onClose();
         }}
         aria-label="Close"
-        className="absolute top-4 right-4 z-30 p-2 text-white/70 hover:text-white bg-black/40 border border-white/10 transition-colors"
+        className="absolute top-4 right-4 z-30 p-2 text-ink/70 hover:text-ink bg-black/40 border border-line/10 transition-colors"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -109,12 +109,12 @@ function MediaLightbox({
       {many && <Arrow dir="right" big onClick={() => go(1)} />}
 
       {item.caption && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm font-light bg-black/60 px-4 py-2 border border-white/10 max-w-2xl text-center pointer-events-none">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-ink/70 text-sm font-light bg-black/60 px-4 py-2 border border-line/10 max-w-2xl text-center pointer-events-none">
           {item.caption}
         </div>
       )}
       {many && (
-        <div className="absolute bottom-6 right-6 text-white/50 text-xs tracking-[0.15em] pointer-events-none">
+        <div className="absolute bottom-6 right-6 text-ink/50 text-xs tracking-[0.15em] pointer-events-none">
           {i + 1} / {items.length}
         </div>
       )}
@@ -129,7 +129,7 @@ export default function ProjectGallery({ items, title }: { items: MediaItem[]; t
   const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
 
-  if (!media.length) return <div className="w-full h-full bg-neutral-950" />;
+  if (!media.length) return <div className="w-full h-full bg-well" />;
 
   const clamped = Math.min(index, media.length - 1);
   const many = media.length > 1;
@@ -143,11 +143,11 @@ export default function ProjectGallery({ items, title }: { items: MediaItem[]; t
         {many && <Arrow dir="left" onClick={() => go(-1)} />}
         {many && <Arrow dir="right" onClick={() => go(1)} />}
         {many && (
-          <div className="absolute bottom-2 left-2 text-[10px] tracking-[0.15em] text-white/70 bg-black/50 px-2 py-0.5 border border-white/10 pointer-events-none">
+          <div className="absolute bottom-2 left-2 text-[10px] tracking-[0.15em] text-ink/70 bg-black/50 px-2 py-0.5 border border-line/10 pointer-events-none">
             {clamped + 1} / {media.length}
           </div>
         )}
-        <div className="absolute top-2 right-2 p-1.5 bg-black/40 border border-white/10 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <div className="absolute top-2 right-2 p-1.5 bg-black/40 border border-line/10 text-ink/60 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5h-4m4 0v-4m0 4l-5-5" />
           </svg>

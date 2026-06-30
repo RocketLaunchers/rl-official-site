@@ -29,23 +29,23 @@ export default function PersonCard({
   const showEmail = person.privacy.showEmail && person.links.email;
 
   return (
-    <div className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300">
-      <div className="aspect-square bg-neutral-950 overflow-hidden border-b border-white/10 flex items-center justify-center">
+    <div className="group border border-line/10 bg-surface hover:border-line/25 hover:bg-surface-2 transition-all duration-300">
+      <div className="aspect-square bg-well overflow-hidden border-b border-line/10 flex items-center justify-center">
         {showPhoto ? (
           <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
         ) : (
-          <span className="font-display text-4xl font-light text-neutral-700 tracking-wide select-none">
+          <span className="font-display text-4xl font-light text-ink-faint tracking-wide select-none">
             {initials(person.name)}
           </span>
         )}
       </div>
       <div className="p-5">
-        <h3 className="font-display text-base font-light text-white tracking-tight">{person.name}</h3>
+        <h3 className="font-display text-base font-light text-ink tracking-tight">{person.name}</h3>
         {subtitle && (
-          <p className="text-[11px] uppercase tracking-[0.15em] text-cyan-300/80 font-light mt-1">{subtitle}</p>
+          <p className="text-[11px] uppercase tracking-[0.15em] text-accent/80 font-light mt-1">{subtitle}</p>
         )}
-        {meta && <p className="text-neutral-500 text-[13px] font-light mt-1.5">{meta}</p>}
-        {person.major && <p className="text-neutral-500 text-[13px] font-light mt-0.5">{person.major}</p>}
+        {meta && <p className="text-ink-faint text-[13px] font-light mt-1.5">{meta}</p>}
+        {person.major && <p className="text-ink-faint text-[13px] font-light mt-0.5">{person.major}</p>}
         {(showLinkedin || showEmail) && (
           <div className="flex items-center gap-4 mt-3">
             {showLinkedin && (
@@ -53,7 +53,7 @@ export default function PersonCard({
                 href={person.links.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-neutral-500 hover:text-white transition-colors"
+                className="text-ink-faint hover:text-ink transition-colors"
                 aria-label={`${person.name} on LinkedIn`}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@ export default function PersonCard({
             {showEmail && (
               <a
                 href={`mailto:${person.links.email}`}
-                className="text-neutral-500 hover:text-white transition-colors"
+                className="text-ink-faint hover:text-ink transition-colors"
                 aria-label={`Email ${person.name}`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

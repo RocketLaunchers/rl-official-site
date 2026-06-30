@@ -1,6 +1,6 @@
 import { eventsApi, importPublicImage, type EventItem } from '../api';
 import CollectionEditor from './CollectionEditor';
-import { Field, ImageField, StringListEditor, TextArea, TextField } from './fields';
+import { Field, ImageField, StringListEditor, Switch, TextArea, TextField } from './fields';
 
 const CATEGORIES = ['competition', 'launch', 'meeting', 'outreach', 'social', 'other'];
 
@@ -10,6 +10,16 @@ export default function EventsEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Events"
       hint="Competitions, launches, meetings, and outreach. Each event belongs to a season."
+      guide={{
+        intro: 'Each event belongs to a season. You can also feature an event on the homepage as an announcement.',
+        steps: [
+          'Click “＋ New”, type the event title, and Create.',
+          'Set the Season id, Category, Date, Location, and Description.',
+          'If it already happened, add a placement/result and any awards.',
+          'To put it on the homepage: turn on “Feature as a homepage announcement”, add a flyer, and optionally a CTA.',
+          'Click Save, then Publish.',
+        ],
+      }}
       api={eventsApi}
       newTitleLabel="Event title"
       makeSeed={(id, title) => ({ type: 'event', id, title })}
@@ -34,7 +44,7 @@ export default function EventsEditor({ repo }: { repo: string }) {
           <TextField label="Placement / result" value={e.placement} placeholder="2nd Place — 10,000 ft COTS" onChange={(v) => update({ placement: v })} />
           <StringListEditor label="Awards" items={e.awards ?? []} onChange={(awards) => update({ awards })} placeholder="Best Technical Report" />
           <Field label="Announcement">
-            <label><input type="checkbox" checked={!!e.featured} onChange={(ev) => update({ featured: ev.target.checked })} /> Feature as a homepage announcement</label>
+            <Switch label="Feature as a homepage announcement" checked={!!e.featured} onChange={(v) => update({ featured: v })} />
           </Field>
           <ImageField label="Flyer (for the announcement)" root={repo} value={e.flyer} onChange={(src) => update({ flyer: src })} onImport={() => importPublicImage(repo)} />
           <div className="grid2">

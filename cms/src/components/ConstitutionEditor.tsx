@@ -10,6 +10,16 @@ export default function ConstitutionEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Constitution"
       hint="Version-controlled governing document. Set exactly one version to “current”. The optional web body is preserved on save (edit it in the JSON file)."
+      guide={{
+        intro: 'Each amendment is a new version. Keep older versions for history, but make sure exactly one is marked “current”.',
+        steps: [
+          'Click “＋ New” to start a new version (title “Constitution”, id like 2026-1).',
+          'Set the Version, Effective season, and Date approved, then Import the PDF.',
+          'List what changed under “Summary of changes”.',
+          'Set this version’s Status to “current”, and set the previous one to “archived”.',
+          'Click Save, then Publish.',
+        ],
+      }}
       api={constitutionApi}
       newTitleLabel="Title"
       makeSeed={(id, title) => ({ type: 'constitution', id, title, version: id })}

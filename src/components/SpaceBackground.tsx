@@ -62,6 +62,24 @@ const STRUCTURES: Structure[] = [
   { scale: 2.0, warp: 3.4, voidLow: 0.5, voidHigh: 0.86, filPow: 2.5, filMix: 0.5, contrast: 1.3, intensity: 1.0 },
 ];
 
+// ---- Light-mode "sky" preset: soft white clouds drifting over blue ---------
+// Near-white, faintly cool palettes; the shader's bright-core term reads as
+// sunlit cloud tops. Softer structures (low filMix => puffy, not wispy).
+const CLOUD_PALETTE_HEX: Record<string, string[]> = {
+  cumulus: ['#c9dcf0', '#e4eefa', '#ffffff', '#f3f8fe', '#d6e4f3'],
+  haze: ['#bcd2ea', '#dbe8f8', '#fbfdff', '#eef5fd', '#caddee'],
+  bright: ['#dbe7f5', '#f1f6fc', '#ffffff', '#ffffff', '#cfe0f2'],
+};
+const CLOUD_STRUCTURES: Structure[] = [
+  { scale: 1.6, warp: 2.2, voidLow: 0.30, voidHigh: 0.62, filPow: 1.6, filMix: 0.15, contrast: 0.95, intensity: 1.0 },
+  { scale: 1.3, warp: 1.8, voidLow: 0.34, voidHigh: 0.66, filPow: 1.4, filMix: 0.10, contrast: 0.9, intensity: 1.05 },
+  { scale: 2.0, warp: 2.8, voidLow: 0.32, voidHigh: 0.64, filPow: 1.8, filMix: 0.20, contrast: 1.0, intensity: 1.0 },
+];
+
+const SKY_BG = 'linear-gradient(to bottom, #a7cbef 0%, #c4def8 50%, #b2d3f2 100%)';
+const SKY_SUN = 'radial-gradient(ellipse 70% 55% at 50% 12%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.12) 35%, rgba(255,255,255,0) 65%)';
+const SPACE_VIGNETTE = 'radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0) 65%)';
+
 const hexToRgb = (hex: string): [number, number, number] => {
   const n = parseInt(hex.slice(1), 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
@@ -218,12 +236,17 @@ type NebulaParams = {
   envThreshold: number;
 };
 
-const SpaceBackground = () => {
+const SpaceBackground = ({ mode = 'space' }: { mode?: 'space' | 'sky' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+
+    // 'sky' = light mode: clouds over a blue sky, no stars.
+    const sky = mode === 'sky';
+    const gasOpacity = sky ? 1 : GAS_OPACITY;
+    const cruiseSpeed = sky ? 20 : CRUISE_SPEED;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -232,11 +255,12 @@ const SpaceBackground = () => {
     // --- Renderer / scene / camera ---
     // No MSAA: stars are soft sprites and gas quads fade at their edges, so
     // multisampling buys nothing here while costing memory + fill rate.
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: sky });
     const pixelRatio = Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2);
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 1);
+    // Sky mode: transparent canvas so the CSS sky gradient shows through the gaps.
+    renderer.setClearColor(0x000000, sky ? 0 : 1);
     const canvas = renderer.domElement;
     canvas.style.display = 'block';
     canvas.style.width = '100%';
@@ -268,7 +292,8 @@ const SpaceBackground = () => {
       });
 
     const color = new THREE.Color();
-    const palettes = Object.values(PALETTE_HEX).map((stops) => stops.map(hexToRgb));
+    const palettes = Object.values(sky ? CLOUD_PALETTE_HEX : PALETTE_HEX).map((stops) => stops.map(hexToRgb));
+    const structures = sky ? CLOUD_STRUCTURES : STRUCTURES;
 
     const makeNebulaMaterial = (blend: THREE.Blending, transparent: boolean) =>
       new THREE.ShaderMaterial({
@@ -328,7 +353,7 @@ const SpaceBackground = () => {
       return {
         palA: palettes[a],
         palB: palettes[b],
-        st: STRUCTURES[Math.floor(Math.random() * STRUCTURES.length)],
+        st: structures[Math.floor(Math.random() * structures.length)],
         // Keep noise coords small so floor()/fract() stay precise on mobile GPUs.
         seedX: Math.random() * 6,
         seedY: Math.random() * 6,
@@ -398,6 +423,7 @@ const SpaceBackground = () => {
     const fieldMat = starMaterial();
     const field = new THREE.Points(fieldGeo, fieldMat);
     field.frustumCulled = false;
+    field.visible = !sky; // no field stars in the daytime sky
     scene.add(field);
 
     // ---------------------------------------------------------------------
@@ -409,7 +435,8 @@ const SpaceBackground = () => {
     const gasMats: THREE.ShaderMaterial[] = [];
     const planeGeo = new THREE.PlaneGeometry(1, 1);
     for (let k = 0; k < CLUSTER_COUNT; k++) {
-      const mat = makeNebulaMaterial(THREE.AdditiveBlending, true);
+      // Clouds composite over the sky with normal alpha; nebulae glow additively.
+      const mat = makeNebulaMaterial(sky ? THREE.NormalBlending : THREE.AdditiveBlending, true);
       const mesh = new THREE.Mesh(planeGeo, mat);
       mesh.renderOrder = -1;
       mesh.frustumCulled = false;
@@ -438,6 +465,9 @@ const SpaceBackground = () => {
       const P = randomParams();
       applyParams(gasMats[k], P);
       gasMeshes[k].scale.set(c.size, c.size, 1);
+
+      // Clouds have no stars — the gas plane above is all we need.
+      if (sky) return;
 
       // Render this nebula offscreen, then importance-sample stars from it.
       sampleNebula(P);
@@ -489,6 +519,7 @@ const SpaceBackground = () => {
     const clusterMat = starMaterial();
     const clusterPoints = new THREE.Points(clusterGeo, clusterMat);
     clusterPoints.frustumCulled = false;
+    clusterPoints.visible = !sky; // no cluster stars in the daytime sky
     scene.add(clusterPoints);
 
     const clusterPosAttr = clusterGeo.getAttribute('position') as THREE.BufferAttribute;
@@ -506,10 +537,11 @@ const SpaceBackground = () => {
       for (let k = 0; k < CLUSTER_COUNT; k++) {
         const c = clusters[k];
         gasMeshes[k].position.set(c.x, c.y, c.z);
-        const op = GAS_OPACITY * fadeAt(c.z);
+        const op = gasOpacity * fadeAt(c.z);
         gasMats[k].uniforms.uOpacity.value = op;
-        // Skip the heavy gas shader entirely while a nebula is faded out.
+        // Skip the heavy gas shader entirely while a cloud/nebula is faded out.
         gasMeshes[k].visible = op > 0.003;
+        if (sky) continue; // clouds carry no stars
         for (let j = 0; j < STARS_PER_CLUSTER; j++) {
           const gi = k * STARS_PER_CLUSTER + j;
           clusterPos[gi * 3] = c.x + clusterOffset[gi * 3];
@@ -557,14 +589,16 @@ const SpaceBackground = () => {
       }
       const dt = Math.min(minDelta > 0 ? acc : delta, 0.05);
       acc = 0;
-      const step = CRUISE_SPEED * dt;
+      const step = cruiseSpeed * dt;
 
-      for (let i = 0; i < FIELD_STARS; i++) {
-        const zi = i * 3 + 2;
-        fieldPos[zi] += step;
-        if (fieldPos[zi] > NEAR) placeFieldStar(i, FAR);
+      if (!sky) {
+        for (let i = 0; i < FIELD_STARS; i++) {
+          const zi = i * 3 + 2;
+          fieldPos[zi] += step;
+          if (fieldPos[zi] > NEAR) placeFieldStar(i, FAR);
+        }
+        fieldPosAttr.needsUpdate = true;
       }
-      fieldPosAttr.needsUpdate = true;
 
       let colorDirty = false;
       for (let k = 0; k < CLUSTER_COUNT; k++) {
@@ -576,10 +610,12 @@ const SpaceBackground = () => {
         }
       }
       writeClusterPositions();
-      clusterPosAttr.needsUpdate = true;
-      if (colorDirty) {
-        clusterColorAttr.needsUpdate = true;
-        clusterSizeAttr.needsUpdate = true;
+      if (!sky) {
+        clusterPosAttr.needsUpdate = true;
+        if (colorDirty) {
+          clusterColorAttr.needsUpdate = true;
+          clusterSizeAttr.needsUpdate = true;
+        }
       }
 
       camera.position.x += (targetX * 26 - camera.position.x) * 0.03;
@@ -628,14 +664,12 @@ const SpaceBackground = () => {
     };
   }, []);
 
+  const isSky = mode === 'sky';
   return (
-    <div ref={containerRef} className="fixed inset-0 z-0 bg-black">
+    <div ref={containerRef} className="fixed inset-0 z-0" style={{ background: isSky ? SKY_BG : '#000' }}>
       <div
         className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0) 65%)',
-        }}
+        style={{ background: isSky ? SKY_SUN : SPACE_VIGNETTE }}
       />
     </div>
   );

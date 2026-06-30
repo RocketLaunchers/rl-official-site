@@ -22,7 +22,7 @@ export default function PageShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-black text-white relative">
+    <div className="min-h-screen bg-canvas text-ink relative">
       <SpaceBackground />
       <div className="relative z-10">
         <Header />
@@ -30,7 +30,7 @@ export default function PageShell({
           <div className="max-w-7xl mx-auto px-6">
             <Link
               to={backTo}
-              className="text-neutral-400 hover:text-white transition-colors font-light text-sm tracking-wide inline-flex items-center gap-2 mb-8"
+              className="text-ink-muted hover:text-ink transition-colors font-light text-sm tracking-wide inline-flex items-center gap-2 mb-8"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -38,10 +38,10 @@ export default function PageShell({
               <span>{backLabel}</span>
             </Link>
 
-            <h1 className="font-display text-4xl lg:text-6xl font-light text-white leading-[1.05] tracking-tight mb-4">
+            <h1 className="font-display text-4xl lg:text-6xl font-light text-ink leading-[1.05] tracking-tight mb-4">
               {title}
             </h1>
-            {intro && <p className="text-neutral-400 font-light leading-relaxed max-w-3xl mb-12">{intro}</p>}
+            {intro && <p className="text-ink-muted font-light leading-relaxed max-w-3xl mb-12">{intro}</p>}
             {!intro && <div className="mb-12" />}
 
             {children}

@@ -8,6 +8,15 @@ export default function SponsorsEditor({ repo }: { repo: string }) {
       repo={repo}
       title="Sponsors"
       hint="Reusable sponsor records. Their per-season support (tier, amount, support type) is set in the Seasons editor."
+      guide={{
+        intro: 'A sponsor is created once here. Their tier and whether they appear on the homepage is set per-season in the Seasons tab.',
+        steps: [
+          'Click “＋ New”, type the sponsor name, and Create.',
+          'Add their logo, website, industry, and description.',
+          'Click Save.',
+          'To feature them, open Seasons → current season → Sponsors, add them, and turn on “Show on homepage”.',
+        ],
+      }}
       api={sponsorsApi}
       newTitleLabel="Sponsor name"
       makeSeed={(id, name) => ({ type: 'sponsor', id, name })}

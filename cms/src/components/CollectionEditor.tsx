@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Collection } from '../api';
 import { ItemToolbar } from './fields';
+import HelpPanel from './HelpPanel';
 import { slugify } from '../util';
 
 /**
@@ -13,6 +14,7 @@ export default function CollectionEditor<T extends { id: string }>({
   repo,
   title,
   hint,
+  guide,
   api,
   makeSeed,
   newTitleLabel = 'Name',
@@ -23,6 +25,8 @@ export default function CollectionEditor<T extends { id: string }>({
   repo: string;
   title: string;
   hint?: string;
+  /** Optional "How this screen works" panel shown above the hint. */
+  guide?: { intro?: string; steps?: string[] };
   api: Collection<T>;
   /** Build a new record from the create form's name + slug. */
   makeSeed: (id: string, name: string) => unknown;
@@ -105,6 +109,7 @@ export default function CollectionEditor<T extends { id: string }>({
 
       <div className="content">
         <div className="container">
+          {guide && <HelpPanel intro={guide.intro} steps={guide.steps} />}
           {hint && <p className="screen-hint">{hint}</p>}
 
           {showNew && (

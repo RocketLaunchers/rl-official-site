@@ -47,6 +47,27 @@ export function TextArea({
   );
 }
 
+/** A labeled on/off toggle — clearer than a checkbox for prominent booleans
+ *  (homepage visibility, "featured", etc.). Reuses the .switch visual. */
+export function Switch({
+  label, checked, onChange,
+}: {
+  label: string; checked: boolean; onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="switch-field"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+    >
+      <span className={`switch ${checked ? 'on' : ''}`}><span className="knob" /></span>
+      <span className="sf-label">{label}</span>
+    </button>
+  );
+}
+
 export function TagsField({ label, value, onChange }: { label?: string; value: string[]; onChange: (v: string[]) => void }) {
   const [text, setText] = useState(value.join(', '));
   return (

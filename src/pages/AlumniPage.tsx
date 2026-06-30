@@ -22,11 +22,11 @@ export default function AlumniPage() {
       intro="Where our members go after Rocket Launchers. Their old season roles stay part of the team's history."
     >
       {alumni.length === 0 ? (
-        <p className="text-neutral-500 font-light">No alumni recorded yet.</p>
+        <p className="text-ink-faint font-light">No alumni recorded yet.</p>
       ) : (
         groups.map(([year, people]) => (
           <section key={year} className="mb-14">
-            <h2 className="text-neutral-500 text-[11px] uppercase tracking-[0.2em] font-light mb-6">
+            <h2 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-6">
               Class of {year}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { listNews, createNews, deleteNews, type NewsSummary } from '../api';
 import { slugify } from '../util';
+import HelpPanel from './HelpPanel';
 
 /** The news list: create / open / delete posts. Editing a post opens the block Editor. */
 export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenPost: (slug: string) => void }) {
@@ -63,6 +64,15 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
 
       <div className="content">
         <div className="container">
+          <HelpPanel
+            intro="News posts are built from content blocks (text, images, and more). New posts start as drafts and only appear on the site once published."
+            steps={[
+              'Click “＋ New post”, type a title, and “Create draft” — this opens the post editor.',
+              'Add content blocks, and set the date and season.',
+              'When it’s ready, set the status to “published” in the post editor.',
+              'Save the post, then go to the Publish tab and push.',
+            ]}
+          />
           {showNew && (
             <div className="inline-form">
               <div>

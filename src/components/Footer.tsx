@@ -20,17 +20,17 @@ const NAV = [
 export default function Footer() {
   const socials = SOCIALS.filter((s) => site.links[s.key]);
   return (
-    <footer className="border-t border-white/10 py-12 relative z-10">
+    <footer className="border-t border-line/10 py-12 relative z-10">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-white text-xs uppercase tracking-[0.18em] font-light mb-4">EXPLORE</h3>
+            <h3 className="text-ink text-xs uppercase tracking-[0.18em] font-light mb-4">EXPLORE</h3>
             <div className="space-y-2">
               {NAV.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className="block text-neutral-400 hover:text-white transition-colors font-light text-sm"
+                  className="block text-ink-muted hover:text-ink transition-colors font-light text-sm"
                 >
                   {n.label}
                 </Link>
@@ -39,7 +39,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-white text-xs uppercase tracking-[0.18em] font-light mb-4">CONNECT</h3>
+            <h3 className="text-ink text-xs uppercase tracking-[0.18em] font-light mb-4">CONNECT</h3>
             <div className="flex flex-wrap gap-4">
               {socials.map((s) => (
                 <a
@@ -48,7 +48,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="text-neutral-500 hover:text-white hover:scale-110 transition-all duration-300"
+                  className="text-ink-faint hover:text-ink hover:scale-110 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d={s.path} />
@@ -59,7 +59,7 @@ export default function Footer() {
                 <a
                   href={`mailto:${site.links.email}`}
                   aria-label="Email"
-                  className="text-neutral-500 hover:text-white hover:scale-110 transition-all duration-300"
+                  className="text-ink-faint hover:text-ink hover:scale-110 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -71,8 +71,8 @@ export default function Footer() {
 
           <div className="md:text-right">
             <img src="/RL-Logo.png" alt="" className="h-12 w-auto mb-4 opacity-80 md:ml-auto" />
-            <p className="text-neutral-400 font-light text-sm">{site.footer.copyright}</p>
-            <p className="text-neutral-600 text-xs font-light mt-1">{site.footer.rights}</p>
+            <p className="text-ink-muted font-light text-sm">{site.footer.copyright}</p>
+            <p className="text-ink-faint text-xs font-light mt-1">{site.footer.rights}</p>
           </div>
         </div>
       </div>
