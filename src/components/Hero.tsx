@@ -18,7 +18,7 @@ const Hero = () => {
           <img
             src="/RL-Logo.png"
             alt={`${site.name} logo`}
-            className="w-28 md:w-36 h-auto mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.18)]"
+            className="w-44 sm:w-56 md:w-72 h-auto mb-8 drop-shadow-[0_0_40px_rgba(255,255,255,0.2)]"
           />
 
           <p className="text-base md:text-xl tracking-[0.3em] text-neutral-300 font-light uppercase mb-6">

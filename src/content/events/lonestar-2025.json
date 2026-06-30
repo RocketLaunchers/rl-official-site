@@ -4,5 +4,11 @@
   "location": "Lometa, Texas",
   "category": "launch",
   "description": "Brunito's maiden high-power launch — the team's first successful custom-avionics flight.",
-  "media": [{ "type": "image", "src": "/lonestar2025.jpg", "caption": "LoneStar 2025" }]
+  "logo": "",
+  "placement": "",
+  "awards": ["First successful custom-avionics flight & recovery"],
+  "media": [
+    { "type": "image", "src": "/lonestar2025.jpg", "caption": "LoneStar 2025" },
+    { "type": "image", "src": "/lonestar-rocket.JPG", "caption": "Brunito on the pad" }
+  ]
 }

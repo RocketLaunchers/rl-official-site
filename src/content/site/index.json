@@ -1,10 +1,20 @@
 {
-  "name": "ROCKET LAUNCHERS",
+  "name": "THE ROCKET LAUNCHERS",
   "tagline": "Student-built high-power rocketry at UT Rio Grande Valley",
-  "headlines": ["DESIGN.", "BUILD.", "LAUNCH."],
+  "headlines": [
+    "DESIGN.",
+    "BUILD.",
+    "LAUNCH."
+  ],
   "ctas": [
-    { "label": "JOIN THE TEAM", "target": "join" },
-    { "label": "OUR ROCKETS", "target": "/rockets" }
+    {
+      "label": "JOIN THE TEAM",
+      "target": "join"
+    },
+    {
+      "label": "OUR ROCKETS",
+      "target": "/rockets"
+    }
   ],
   "links": {
     "github": "https://github.com/",

@@ -1,6 +1,11 @@
-// Generates a simple valid RGBA PNG app icon (no external image tooling needed).
+// Bootstraps a simple valid RGBA PNG app icon (no external image tooling needed).
 // Tauri embeds bundle.icon at compile time, so the file must exist and be valid.
-// Replace src-tauri/icons/icon.png with real branding anytime.
+//
+// This only writes icon.png. The Windows build also needs icon.ico (and macOS
+// needs icon.icns), so after replacing icon.png with real branding, regenerate
+// the full platform set referenced in tauri.conf.json with:
+//   pnpm tauri icon src-tauri/icons/icon.png
+// (run from the cms/ directory).
 import zlib from 'node:zlib';
 import fs from 'node:fs';
 import path from 'node:path';

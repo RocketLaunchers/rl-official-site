@@ -63,21 +63,21 @@ export default function SubteamDetailPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
         {subteam.skills.length > 0 && (
-          <div className="bg-white/[0.02] border border-white/10 p-5">
-            <h3 className="text-white text-[11px] uppercase tracking-[0.18em] font-light mb-3">Skills</h3>
-            <div className="flex flex-wrap gap-2">
+          <div className="bg-white/[0.02] border border-white/10 p-6">
+            <h3 className="text-white text-sm uppercase tracking-[0.18em] font-light mb-4">Skills</h3>
+            <div className="flex flex-wrap gap-2.5">
               {subteam.skills.map((s) => (
-                <span key={s} className="border border-white/10 text-neutral-400 text-[11px] tracking-wide px-2.5 py-1 font-light">{s}</span>
+                <span key={s} className="border border-white/15 text-neutral-200 text-sm md:text-base tracking-wide px-4 py-2 font-light">{s}</span>
               ))}
             </div>
           </div>
         )}
         {subteam.tools.length > 0 && (
-          <div className="bg-white/[0.02] border border-white/10 p-5">
-            <h3 className="text-white text-[11px] uppercase tracking-[0.18em] font-light mb-3">Tools</h3>
-            <div className="flex flex-wrap gap-2">
+          <div className="bg-white/[0.02] border border-white/10 p-6">
+            <h3 className="text-white text-sm uppercase tracking-[0.18em] font-light mb-4">Tools</h3>
+            <div className="flex flex-wrap gap-2.5">
               {subteam.tools.map((t) => (
-                <span key={t} className="border border-white/10 text-neutral-400 text-[11px] tracking-wide px-2.5 py-1 font-light">{t}</span>
+                <span key={t} className="border border-white/15 text-neutral-200 text-sm md:text-base tracking-wide px-4 py-2 font-light">{t}</span>
               ))}
             </div>
           </div>

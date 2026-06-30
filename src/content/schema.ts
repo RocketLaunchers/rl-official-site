@@ -353,6 +353,20 @@ export const EventSchema = z.object({
   location: z.string().default(''),
   category: z.enum(EVENT_CATEGORIES).default('other'),
   description: z.string().default(''),
+  /** Competition/event logo (public path /foo.png or external URL). */
+  logo: z.string().default(''),
+  /** Headline result, e.g. "2nd Place — 10,000 ft COTS". Shown as a badge. */
+  placement: z.string().default(''),
+  /** Individual awards / recognitions earned at this event. */
+  awards: z.array(z.string()).default([]),
+  /** When true, this event is promoted as a homepage announcement. */
+  featured: z.boolean().default(false),
+  /** Promotional flyer/poster image (public path or URL) for the announcement. */
+  flyer: z.string().default(''),
+  /** Optional call-to-action label for the announcement (e.g. "RSVP"). */
+  ctaLabel: z.string().default(''),
+  /** CTA destination: a route (/path), an in-page section (#join), or a URL. */
+  ctaHref: z.string().default(''),
   media: z.array(MediaItemSchema).default([]),
 });
 

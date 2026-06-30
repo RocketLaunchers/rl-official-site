@@ -12,3 +12,12 @@ export const events: EventItem[] = loadCollection(modules, EventSchema, 'event')
 
 export const eventsForSeason = (seasonId: string): EventItem[] =>
   events.filter((e) => e.season === seasonId);
+
+/** Where the official roster competes (newest-first). */
+export const competitions: EventItem[] = events.filter((e) => e.category === 'competition');
+
+/** Everything else the club does — launches, meetings, outreach, socials (newest-first). */
+export const clubEvents: EventItem[] = events.filter((e) => e.category !== 'competition');
+
+/** Featured events promoted as homepage announcements (newest-first). */
+export const announcements: EventItem[] = events.filter((e) => e.featured);

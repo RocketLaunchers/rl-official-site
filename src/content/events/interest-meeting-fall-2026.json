@@ -1,0 +1,15 @@
+{
+  "type": "event", "id": "interest-meeting-fall-2026", "title": "Fall 2026 Interest Meeting",
+  "season": "2026-2027", "date": "2026-09-04", "displayDate": "September 4, 2026 · 6:00 PM",
+  "location": "UTRGV Engineering Building, Room EENGR 1.220 — Edinburg",
+  "category": "meeting",
+  "description": "New to the team? Start here. We'll walk through the subteams, the upcoming build season, and how to get plugged in — no experience required. Pizza provided.",
+  "logo": "",
+  "placement": "",
+  "awards": [],
+  "featured": true,
+  "flyer": "/starbase.jpg",
+  "ctaLabel": "I'm Interested",
+  "ctaHref": "#join",
+  "media": []
+}

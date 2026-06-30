@@ -21,24 +21,42 @@ const SubteamsStrip = () => {
             <Link
               key={st.id}
               to={`/subteams/${st.id}`}
-              className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300 p-6 flex flex-col"
+              className="group border border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.035] transition-all duration-300 flex flex-col overflow-hidden"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-white/5 border border-white/10 p-2.5 text-white">
-                  <Icon name={st.icon} />
-                </div>
-                <h3 className="font-display text-lg font-light text-white tracking-tight group-hover:text-neutral-300 transition-colors">
-                  {st.name}
-                </h3>
+              {/* Visual banner: a photo of what the subteam does, with an icon fallback. */}
+              <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-neutral-950">
+                {st.image ? (
+                  <img
+                    src={st.image}
+                    alt={st.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover opacity-85 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500 ease-out"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/[0.06] to-transparent text-white/40 group-hover:text-white/60 transition-colors">
+                    <Icon name={st.icon} className="w-14 h-14" />
+                  </div>
+                )}
+                {st.createdSeason === season.id && (
+                  <span className="absolute top-3 right-3 text-[10px] uppercase tracking-[0.15em] text-cyan-200 bg-black/60 backdrop-blur-sm border border-cyan-400/40 px-2 py-0.5">
+                    New this season
+                  </span>
+                )}
               </div>
-              <p className="text-neutral-400 text-sm font-light leading-relaxed flex-1">
-                {st.shortDescription}
-              </p>
-              {st.createdSeason === season.id && (
-                <span className="mt-4 self-start text-[10px] uppercase tracking-[0.15em] text-cyan-300/80 border border-cyan-400/30 px-2 py-0.5">
-                  New this season
-                </span>
-              )}
+
+              <div className="p-6 flex flex-col flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-white/5 border border-white/10 p-2.5 text-white">
+                    <Icon name={st.icon} />
+                  </div>
+                  <h3 className="font-display text-lg font-light text-white tracking-tight group-hover:text-neutral-300 transition-colors">
+                    {st.name}
+                  </h3>
+                </div>
+                <p className="text-neutral-400 text-sm font-light leading-relaxed flex-1">
+                  {st.shortDescription}
+                </p>
+              </div>
             </Link>
           ))}
         </div>

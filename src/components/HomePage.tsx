@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import SpaceBackground from './SpaceBackgroundLazy';
 import Header from './Header';
 import Hero from './Hero';
+import Announcements from './Announcements';
 import Mission from './Mission';
 import TeamStrip from './TeamStrip';
 import SubteamsStrip from './SubteamsStrip';
@@ -28,6 +29,7 @@ const HomePage = () => {
       <Header />
       <main className="relative z-10">
         <Hero />
+        <Announcements />
         <Mission />
         <TeamStrip />
         <SubteamsStrip />

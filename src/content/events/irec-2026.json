@@ -4,5 +4,11 @@
   "location": "Spaceport America, New Mexico",
   "category": "competition",
   "description": "The world's largest intercollegiate rocket engineering competition. MARV competes in the 10,000 ft commercial-off-the-shelf solid category.",
-  "media": [{ "type": "image", "src": "/IREC2026.jpeg", "caption": "IREC 2026" }]
+  "logo": "",
+  "placement": "2nd Place — 10,000 ft COTS Category",
+  "awards": ["Best Technical Report — 10k COTS", "Charles Hoult Award for Modeling & Simulation"],
+  "media": [
+    { "type": "image", "src": "/IREC2026.jpeg", "caption": "IREC 2026" },
+    { "type": "image", "src": "/disparado-irec.png", "caption": "MARV at Spaceport America" }
+  ]
 }

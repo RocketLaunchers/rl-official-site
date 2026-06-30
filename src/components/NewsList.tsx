@@ -8,7 +8,7 @@ const NewsList = () => {
   return (
     <section id="news" className="py-24">
       <div className="max-w-4xl mx-auto px-6">
-        <SectionHeading title="NEWS" />
+        <SectionHeading title="NEWS" to="/news" />
 
         <div className="space-y-10">
           {latest.length === 0 && <div className="text-neutral-500 font-light">No news yet.</div>}
