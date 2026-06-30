@@ -153,11 +153,19 @@ fn convert_model(repo: String, src: String, dest: String) -> Result<(), String> 
 /* --------------------------------------------------------- preview server */
 
 fn port_in_use(port: u16) -> bool {
-    let addr = format!("127.0.0.1:{port}");
-    match addr.parse() {
-        Ok(socket) => TcpStream::connect_timeout(&socket, Duration::from_millis(250)).is_ok(),
-        Err(_) => false,
-    }
+    use std::net::{Ipv4Addr, Ipv6Addr, SocketAddr};
+    // Vite binds the loopback as IPv4 (127.0.0.1) or IPv6 (::1) depending on how
+    // the OS resolves `localhost` — on Windows that's usually ::1 first, so an
+    // IPv4-only probe never sees the server and the preview "does not come up in
+    // time". Probe both families; the iframe loads via `localhost`, which the
+    // webview will reach on whichever family Vite actually bound.
+    let candidates = [
+        SocketAddr::from((Ipv4Addr::LOCALHOST, port)),
+        SocketAddr::from((Ipv6Addr::LOCALHOST, port)),
+    ];
+    candidates
+        .iter()
+        .any(|addr| TcpStream::connect_timeout(addr, Duration::from_millis(250)).is_ok())
 }
 
 /// Surgically free a single TCP port. Only ever targets the specific processes
