@@ -1,8 +1,24 @@
 {
-  "type": "person", "id": "priya-patel", "name": "Priya Patel",
-  "photo": "", "major": "Aerospace Engineering", "gradYear": 2025,
+  "type": "person",
+  "id": "priya-patel",
+  "name": "Priya Patel",
+  "photo": "",
+  "major": "Aerospace Engineering",
+  "gradYear": 2025,
   "bio": "Founding President who led the team to its first successful launch.",
-  "links": { "email": "", "linkedin": "https://www.linkedin.com/", "github": "", "website": "" },
-  "isAlumni": true, "company": "SpaceX",
-  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+  "links": {
+    "email": "",
+    "linkedin": "https://www.linkedin.com/",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": true,
+  "company": "SpaceX",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
 }

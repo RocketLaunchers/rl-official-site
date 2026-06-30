@@ -1,8 +1,24 @@
 {
-  "type": "person", "id": "alex-kim", "name": "Alex Kim",
-  "photo": "", "major": "Mechanical Engineering", "gradYear": 2026,
+  "type": "person",
+  "id": "alex-kim",
+  "name": "Alex Kimm",
+  "photo": "",
+  "major": "Mechanical Engineering",
+  "gradYear": 2026,
   "bio": "Flight Dynamics Lead. Runs the 6-DOF simulations that size the vehicle.",
-  "links": { "email": "", "linkedin": "https://www.linkedin.com/", "github": "", "website": "" },
-  "isAlumni": false, "company": "",
-  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+  "links": {
+    "email": "",
+    "linkedin": "https://www.linkedin.com/",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
 }

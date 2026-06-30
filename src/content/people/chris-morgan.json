@@ -1,8 +1,24 @@
 {
-  "type": "person", "id": "chris-morgan", "name": "Chris Morgan",
-  "photo": "", "major": "Computer Engineering", "gradYear": 2025,
+  "type": "person",
+  "id": "chris-morgan",
+  "name": "Chris Morgan",
+  "photo": "",
+  "major": "Computer Engineering",
+  "gradYear": 2025,
   "bio": "Founding Avionics Lead. Built the first telemetry system that flew on Brunito.",
-  "links": { "email": "", "linkedin": "https://www.linkedin.com/", "github": "https://github.com/", "website": "" },
-  "isAlumni": true, "company": "Blue Origin",
-  "privacy": { "showPublicly": true, "showPhoto": true, "showCompany": true, "showLinkedin": true, "showEmail": false }
+  "links": {
+    "email": "",
+    "linkedin": "https://www.linkedin.com/",
+    "github": "https://github.com/",
+    "website": ""
+  },
+  "isAlumni": true,
+  "company": "Blue Origin",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
 }
