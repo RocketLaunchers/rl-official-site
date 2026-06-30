@@ -1,15 +1,15 @@
 {
   "type": "person",
-  "id": "maria-garcia",
-  "name": "Maria Renee Ortuno Urban",
+  "id": "sabian-cardenas",
+  "name": "Sabian Cardenas",
   "photo": "",
   "major": "Mechanical Engineering",
-  "gradYear": 2027,
-  "bio": "",
+  "gradYear": 2028,
+  "bio": "hybrid motor man",
   "links": {
     "email": "",
-    "linkedin": "https://www.linkedin.com/",
-    "github": "https://github.com/",
+    "linkedin": "",
+    "github": "",
     "website": ""
   },
   "isAlumni": false,

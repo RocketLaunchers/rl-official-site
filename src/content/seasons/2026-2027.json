@@ -27,35 +27,35 @@
   ],
   "roster": [
     {
-      "person": "sam-rivera",
+      "person": "sabian-cardenas",
       "role": "director-of-engineering",
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 10
     },
     {
-      "person": "maria-garcia",
+      "person": "maria-renee-ortuno-urban",
       "role": "president",
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 20
     },
     {
-      "person": "taylor-nguyen",
+      "person": "cesar-mendez",
       "role": "treasurer",
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 30
     },
     {
-      "person": "jane-doe",
+      "person": "kevin-garza",
       "role": "vice-president",
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 40
     },
     {
-      "person": "john-smith",
+      "person": "carlos-garza",
       "role": "chief-of-engineering",
       "subteam": "",
       "displayOnTeam": true,

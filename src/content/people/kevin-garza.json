@@ -1,10 +1,10 @@
 {
   "type": "person",
-  "id": "chris-morgan",
-  "name": "John Hinojosa",
+  "id": "kevin-garza",
+  "name": "Kevin Garza",
   "photo": "",
-  "major": "Electrical Engineering",
-  "gradYear": 2026,
+  "major": "Mechanical Engineering",
+  "gradYear": 2027,
   "bio": "",
   "links": {
     "email": "",
@@ -12,7 +12,7 @@
     "github": "",
     "website": ""
   },
-  "isAlumni": true,
+  "isAlumni": false,
   "company": "",
   "privacy": {
     "showPublicly": true,

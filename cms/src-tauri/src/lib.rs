@@ -77,6 +77,19 @@ fn remove_dir(path: String) -> Result<(), String> {
     fs::remove_dir_all(&path).map_err(|e| e.to_string())
 }
 
+/// Move/rename a file or directory. Refuses to overwrite an existing target so a
+/// rename can never clobber another record; creates the parent dir if needed.
+#[tauri::command]
+fn rename_path(from: String, to: String) -> Result<(), String> {
+    if Path::new(&to).exists() {
+        return Err(format!("{to} already exists"));
+    }
+    if let Some(parent) = Path::new(&to).parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    fs::rename(&from, &to).map_err(|e| e.to_string())
+}
+
 /* ------------------------------------------------------ media library scan */
 
 #[derive(Serialize)]
@@ -439,6 +452,7 @@ pub fn run() {
             copy_file,
             remove_file,
             remove_dir,
+            rename_path,
             scan_dir,
             grep_refs,
             check_tools,

@@ -1,0 +1,25 @@
+{
+  "type": "rocket",
+  "id": "invictus",
+  "name": "Invictus",
+  "seasons": [],
+  "status": "Retired",
+  "mission": "",
+  "competition": "",
+  "specs": {
+    "targetAltitude": "",
+    "motor": "",
+    "diameter": "",
+    "length": "",
+    "mass": ""
+  },
+  "heroImage": "",
+  "model3d": "/models/invictus-2023-2024.glb",
+  "media": [],
+  "subsystems": [],
+  "results": "",
+  "lessonsLearned": "",
+  "relatedSubteams": [],
+  "credits": [],
+  "displayOrder": 0
+}

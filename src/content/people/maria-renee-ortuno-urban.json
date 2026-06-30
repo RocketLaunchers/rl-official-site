@@ -1,15 +1,15 @@
 {
   "type": "person",
-  "id": "taylor-nguyen",
-  "name": "Cesar Mendez",
+  "id": "maria-renee-ortuno-urban",
+  "name": "Maria Renee Ortuno Urban",
   "photo": "",
   "major": "Mechanical Engineering",
-  "gradYear": 2028,
+  "gradYear": 2027,
   "bio": "",
   "links": {
     "email": "",
     "linkedin": "https://www.linkedin.com/",
-    "github": "",
+    "github": "https://github.com/",
     "website": ""
   },
   "isAlumni": false,

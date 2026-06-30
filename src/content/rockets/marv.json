@@ -22,18 +22,6 @@
     {
       "name": "Avionics",
       "summary": "Dual-core RP2350 flight computer with a custom sensor suite and long-range LoRa telemetry."
-    },
-    {
-      "name": "Recovery",
-      "summary": "Dual-deployment with a drogue at apogee and main at 700 ft."
-    },
-    {
-      "name": "Airframe",
-      "summary": "Carbon-fiber body with a fiberglass nose cone for RF transparency."
-    },
-    {
-      "name": "Flight Dynamics",
-      "summary": "6-DOF simulation sized the fins for a 2.1-caliber stability margin."
     }
   ],
   "results": "",
@@ -46,11 +34,11 @@
     "flight-dynamics"
   ],
   "credits": [
-    "maria-garcia",
-    "john-smith",
-    "alex-kim",
-    "sam-rivera",
-    "taylor-nguyen"
+    "maria-renee-ortuno-urban",
+    "carlos-garza",
+    "luis-martinez",
+    "sabian-cardenas",
+    "cesar-mendez"
   ],
   "displayOrder": 10
 }

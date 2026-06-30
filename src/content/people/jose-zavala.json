@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "jose-zavala",
+  "name": "Jose Zavala",
+  "photo": "/images/headshot-jose-z.webp",
+  "major": "Mechanical Engineering",
+  "gradYear": 2026,
+  "bio": "I have gained hands-on engineering experience through internships at Tesla, SpaceX, and Kiewit, where I contributed to manufacturing, reliability, and flight aerospace projects. As Director of Engineering for The Rocket Launchers, I developed and tested the team's first hybrid rocket engine, establishing the technical foundation for future members, designed the organization's first modular fin can assembly for rapid rocket reconfiguration and adjustable stability margins, and developed the team's first cloud seeding prototype for system integration, component validation, and technology demonstration. Additionally, I independently developed and tested an advanced thermal protection system, expanding my expertise in materials engineering, thermal analysis, and innovative aerospace design.",
+  "links": {
+    "email": "",
+    "linkedin": "https://www.linkedin.com/in/joselzavala8500/",
+    "github": "",
+    "website": "https://canva.link/skx9g84i8yphh9h"
+  },
+  "isAlumni": true,
+  "company": "SpaceX",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

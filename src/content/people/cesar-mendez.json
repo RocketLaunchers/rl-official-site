@@ -1,14 +1,14 @@
 {
   "type": "person",
-  "id": "sam-rivera",
-  "name": "Sabian Cardenas",
+  "id": "cesar-mendez",
+  "name": "Cesar Mendez",
   "photo": "",
   "major": "Mechanical Engineering",
   "gradYear": 2028,
-  "bio": "hybrid motor man",
+  "bio": "",
   "links": {
     "email": "",
-    "linkedin": "",
+    "linkedin": "https://www.linkedin.com/",
     "github": "",
     "website": ""
   },

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   seasonsApi, peopleApi, rolesApi, subteamsApi, sponsorsApi, rocketsApi,
+  countReferences, renameRecord,
   type Season, type Person, type Role, type Subteam, type Sponsor, type Rocket,
 } from '../api';
 import { ADVISOR_CATEGORIES, type RosterEntry, type SponsorEntry, type AdvisorEntry } from '@portfolio/content-schema';
@@ -35,6 +36,10 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newId, setNewId] = useState('');
+  const [renaming, setRenaming] = useState(false);
+  const [renameTo, setRenameTo] = useState('');
+  const [renameRefs, setRenameRefs] = useState<number | null>(null);
+  const [renameBusy, setRenameBusy] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -82,6 +87,36 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
       select(created.id);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  function openRename() {
+    if (!draft) return;
+    setError(null); setMsg(null);
+    setRenaming(true);
+    setRenameTo(slugify(draft.name) || draft.id);
+    setRenameRefs(null);
+    countReferences(repo, 'season', draft.id).then(setRenameRefs).catch(() => setRenameRefs(null));
+  }
+
+  async function doRenameSeason() {
+    if (!draft) return;
+    const to = renameTo.trim();
+    setRenameBusy(true); setError(null); setMsg(null);
+    try {
+      const saved = await seasonsApi.save(repo, draft); // persist edits before the file moves
+      const { refs } = await renameRecord(repo, seasonsApi, saved, to);
+      const list = await seasonsApi.list(repo);
+      const sorted = [...list].sort((a, b) => (b.startDate ?? '').localeCompare(a.startDate ?? ''));
+      setSeasons(sorted);
+      setSelId(to);
+      setDraft(sorted.find((s) => s.id === to) ?? null);
+      setRenaming(false);
+      setMsg(`Renamed season → “${to}”${refs ? ` · updated ${refs} reference${refs === 1 ? '' : 's'}` : ''}.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setRenameBusy(false);
     }
   }
 
@@ -143,6 +178,25 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
           ) : (
             <>
               <div className="section-title">Season details</div>
+              <div className="tile-head" style={{ marginBottom: 12 }}>
+                <span className="block-id">{draft.id}.json</span>
+                <button className="small ghost" title="Rename the season id and update everything that references it" onClick={() => (renaming ? setRenaming(false) : openRename())}>✎ Rename ID</button>
+              </div>
+              {renaming && (
+                <div className="inline-form">
+                  <div>
+                    <label>New id (file name)</label>
+                    <input value={renameTo} autoFocus placeholder="2026-2027" onChange={(e) => setRenameTo(e.target.value)} />
+                  </div>
+                  <p className="screen-hint" style={{ margin: 0 }}>
+                    {renameRefs === null ? 'Checking references…' : `Will update ${renameRefs} reference${renameRefs === 1 ? '' : 's'} across other content.`}
+                  </p>
+                  <div className="row">
+                    <button className="primary" disabled={renameBusy || !renameTo.trim() || renameTo.trim() === draft.id} onClick={doRenameSeason}>{renameBusy ? 'Renaming…' : 'Rename'}</button>
+                    <button className="ghost" disabled={renameBusy} onClick={() => setRenaming(false)}>Cancel</button>
+                  </div>
+                </div>
+              )}
               <div className="grid2">
                 <TextField label="Name" value={draft.name} onChange={(v) => patch({ name: v })} />
                 <Field label="Status">

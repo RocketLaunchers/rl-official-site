@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import type { Collection } from '../api';
+import { countReferences, renameRecord, type Collection } from '../api';
 import { ItemToolbar } from './fields';
 import HelpPanel from './HelpPanel';
 import { slugify } from '../util';
@@ -42,12 +42,21 @@ export default function CollectionEditor<T extends { id: string }>({
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newSlug, setNewSlug] = useState('');
+  // Rename-id state (one record at a time).
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameTo, setRenameTo] = useState('');
+  const [renameRefs, setRenameRefs] = useState<number | null>(null);
+  const [renameBusy, setRenameBusy] = useState(false);
 
-  useEffect(() => {
-    api
+  function reload() {
+    return api
       .list(repo)
       .then((list) => setItems(sort ? [...list].sort(sort) : list))
       .catch((e) => setError(String(e)));
+  }
+
+  useEffect(() => {
+    reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repo]);
 
@@ -93,6 +102,37 @@ export default function CollectionEditor<T extends { id: string }>({
       setNewSlug('');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  function openRename(item: T) {
+    setError(null);
+    setMsg(null);
+    setRenaming(item.id);
+    setRenameTo(slugify(displayName(item)) || item.id);
+    setRenameRefs(api.refKind ? null : 0);
+    if (api.refKind) {
+      countReferences(repo, api.refKind, item.id)
+        .then((n) => setRenameRefs(n))
+        .catch(() => setRenameRefs(null));
+    }
+  }
+
+  async function doRename(item: T) {
+    setRenameBusy(true);
+    setError(null);
+    setMsg(null);
+    const to = renameTo.trim();
+    try {
+      await api.save(repo, item); // persist any unsaved edits before the file moves
+      const { refs } = await renameRecord(repo, api, item, to);
+      await reload();
+      setRenaming(null);
+      setMsg(`Renamed “${item.id}” → “${to}”${refs ? ` · updated ${refs} reference${refs === 1 ? '' : 's'}` : ''}.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setRenameBusy(false);
     }
   }
 
@@ -149,8 +189,45 @@ export default function CollectionEditor<T extends { id: string }>({
                 <div className="tile-head">
                   <span className="tile-title">{displayName(item) || item.id}</span>
                   <span className="block-id">{item.id}.json</span>
+                  <button
+                    className="small ghost"
+                    title="Rename the id / file name and update everything that references it"
+                    onClick={() => (renaming === item.id ? setRenaming(null) : openRename(item))}
+                  >
+                    ✎ Rename ID
+                  </button>
                   <ItemToolbar onDelete={() => removeOne(item)} />
                 </div>
+                {renaming === item.id && (
+                  <div className="inline-form">
+                    <div>
+                      <label>New id (file name)</label>
+                      <input
+                        value={renameTo}
+                        autoFocus
+                        placeholder="kebab-case-id"
+                        onChange={(e) => setRenameTo(e.target.value)}
+                      />
+                    </div>
+                    <p className="screen-hint" style={{ margin: 0 }}>
+                      {!api.refKind
+                        ? 'Nothing else references this id — only the file is renamed.'
+                        : renameRefs === null
+                        ? 'Checking references…'
+                        : `Will update ${renameRefs} reference${renameRefs === 1 ? '' : 's'} across other content.`}
+                    </p>
+                    <div className="row">
+                      <button
+                        className="primary"
+                        disabled={renameBusy || !renameTo.trim() || renameTo.trim() === item.id}
+                        onClick={() => doRename(item)}
+                      >
+                        {renameBusy ? 'Renaming…' : 'Rename'}
+                      </button>
+                      <button className="ghost" disabled={renameBusy} onClick={() => setRenaming(null)}>Cancel</button>
+                    </div>
+                  </div>
+                )}
                 {renderItem(item, (patch) => update(item.id, patch))}
               </div>
             ))

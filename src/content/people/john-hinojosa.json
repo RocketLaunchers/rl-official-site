@@ -1,19 +1,19 @@
 {
   "type": "person",
-  "id": "priya-patel",
-  "name": "Jose Zavala",
+  "id": "john-hinojosa",
+  "name": "John Hinojosa",
   "photo": "",
-  "major": "Mechanical Engineering",
-  "gradYear": 2025,
-  "bio": "Founding President who led the team to its first successful launch.",
+  "major": "Electrical Engineering",
+  "gradYear": 2026,
+  "bio": "",
   "links": {
     "email": "",
-    "linkedin": "https://www.linkedin.com/",
+    "linkedin": "",
     "github": "",
     "website": ""
   },
   "isAlumni": true,
-  "company": "SpaceX",
+  "company": "",
   "privacy": {
     "showPublicly": true,
     "showPhoto": true,

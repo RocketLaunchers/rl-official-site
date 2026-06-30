@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { listNews, createNews, deleteNews, type NewsSummary } from '../api';
+import { listNews, createNews, deleteNews, renameNews, type NewsSummary } from '../api';
 import { slugify } from '../util';
 import HelpPanel from './HelpPanel';
 
@@ -47,6 +47,20 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
     setError(null);
     try {
       await deleteNews(repo, p.slug);
+      await refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+
+  async function rename(p: NewsSummary) {
+    const to = prompt(`Rename the folder/slug for “${p.title}” (lowercase letters, numbers, dashes):`, slugify(p.title) || p.slug);
+    if (to === null) return; // cancelled
+    const slug = to.trim();
+    if (!slug || slug === p.slug) return;
+    setError(null);
+    try {
+      await renameNews(repo, p.slug, slug);
       await refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -117,6 +131,7 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
                     <td style={{ textAlign: 'right' }}>
                       <div className="item-tools" style={{ justifyContent: 'flex-end' }}>
                         <button className="small" onClick={() => onOpenPost(p.slug)}>Open</button>
+                        <button className="small ghost" title="Rename folder / slug" onClick={() => rename(p)}>Rename</button>
                         <button className="small danger" onClick={() => remove(p)}>Delete</button>
                       </div>
                     </td>

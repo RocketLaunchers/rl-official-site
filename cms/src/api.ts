@@ -54,6 +54,7 @@ const writeTextFile = (path: string, contents: string) => invoke<void>('write_te
 const copyFile = (src: string, dest: string) => invoke<void>('copy_file', { src, dest });
 const removeFile = (path: string) => invoke<void>('remove_file', { path });
 const removeDir = (path: string) => invoke<void>('remove_dir', { path });
+const renamePath = (from: string, to: string) => invoke<void>('rename_path', { from, to });
 
 const join = (...parts: string[]) => parts.join('/');
 const basename = (p: string) => p.split(/[\\/]/).pop() || p;
@@ -314,9 +315,14 @@ export async function convertSourceToWebGlb(root: string, abs: string): Promise<
 
 /* ------------------------------------------------------- generic collections */
 
+/** A record kind whose id is referenced from other content (drives reference rewiring on rename). */
+export type RefKind = 'person' | 'role' | 'subteam' | 'rocket' | 'season' | 'sponsor';
+
 export type Collection<T extends { id: string }> = {
   REL: string;
   label: string;
+  /** If set, renaming a record of this collection rewrites references to it across content. */
+  refKind?: RefKind;
   /** Valid records only (invalid files are logged and skipped). */
   list: (root: string) => Promise<T[]>;
   read: (root: string, id: string) => Promise<T>;
@@ -326,12 +332,13 @@ export type Collection<T extends { id: string }> = {
 };
 
 /** Build a CRUD wrapper for a "one JSON file per record" content folder. */
-function makeCollection<T extends { id: string }>(rel: string, schema: ZodType<T>, label: string): Collection<T> {
+function makeCollection<T extends { id: string }>(rel: string, schema: ZodType<T>, label: string, refKind?: RefKind): Collection<T> {
   const dirOf = (root: string) => join(root, rel);
   const fileOf = (root: string, id: string) => join(root, rel, `${id}.json`);
   return {
     REL: rel,
     label,
+    refKind,
     async list(root) {
       const entries = await listDir(dirOf(root)).catch(() => [] as DirEntry[]);
       const items: T[] = [];
@@ -368,15 +375,158 @@ function makeCollection<T extends { id: string }>(rel: string, schema: ZodType<T
   };
 }
 
-export const seasonsApi = makeCollection<Season>('src/content/seasons', SeasonSchema, 'season');
-export const peopleApi = makeCollection<Person>('src/content/people', PersonSchema, 'person');
-export const rolesApi = makeCollection<Role>('src/content/roles', RoleSchema, 'role');
-export const subteamsApi = makeCollection<Subteam>('src/content/subteams', SubteamSchema, 'subteam');
-export const sponsorsApi = makeCollection<Sponsor>('src/content/sponsors', SponsorSchema, 'sponsor');
-export const rocketsApi = makeCollection<Rocket>('src/content/rockets', RocketSchema, 'rocket');
+export const seasonsApi = makeCollection<Season>('src/content/seasons', SeasonSchema, 'season', 'season');
+export const peopleApi = makeCollection<Person>('src/content/people', PersonSchema, 'person', 'person');
+export const rolesApi = makeCollection<Role>('src/content/roles', RoleSchema, 'role', 'role');
+export const subteamsApi = makeCollection<Subteam>('src/content/subteams', SubteamSchema, 'subteam', 'subteam');
+export const sponsorsApi = makeCollection<Sponsor>('src/content/sponsors', SponsorSchema, 'sponsor', 'sponsor');
+export const rocketsApi = makeCollection<Rocket>('src/content/rockets', RocketSchema, 'rocket', 'rocket');
 export const eventsApi = makeCollection<EventItem>('src/content/events', EventSchema, 'event');
 export const constitutionApi = makeCollection<Constitution>('src/content/constitution', ConstitutionSchema, 'constitution');
 export const albumsApi = makeCollection<Album>('src/content/gallery', AlbumSchema, 'album');
+
+/* ------------------------------------------------- rename + reference rewire */
+
+/** Same slug rule the shared schema enforces for ids. */
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** One place an id can be referenced: how to load its records, apply a swap, and persist. */
+type RefTarget = {
+  load: (root: string) => Promise<{ id: string }[]>;
+  persist: (root: string, rec: unknown) => Promise<unknown>;
+  /** Swap oldId→newId wherever this record references it; returns whether it changed. */
+  apply: (rec: any, oldId: string, newId: string) => boolean;
+};
+
+/** In-place swap of an exact id match in a string[]; returns whether anything changed. */
+function replaceInArray(arr: string[], oldId: string, newId: string): boolean {
+  let changed = false;
+  for (let i = 0; i < arr.length; i++) if (arr[i] === oldId) { arr[i] = newId; changed = true; }
+  return changed;
+}
+
+/** A reference target backed by a normal collection (list/save by id). */
+function target<T extends { id: string }>(api: Collection<T>, apply: (rec: T, oldId: string, newId: string) => boolean): RefTarget {
+  return {
+    load: (root) => api.list(root),
+    persist: (root, rec) => api.save(root, rec),
+    apply: apply as RefTarget['apply'],
+  };
+}
+
+/** A reference target backed by the folder-based news collection. */
+function newsTarget(apply: (post: NewsPost, oldId: string, newId: string) => boolean): RefTarget {
+  return {
+    load: async (root) => {
+      const out: NewsPost[] = [];
+      for (const s of await listNews(root)) if (s.valid) out.push(await readNews(root, s.slug));
+      return out;
+    },
+    persist: (root, rec) => saveNews(root, (rec as NewsPost).id, rec),
+    apply: apply as RefTarget['apply'],
+  };
+}
+
+/**
+ * The complete map of which content references a given record kind. Mirrors the
+ * id-typed fields in the shared schema — the single source of truth for what a
+ * rename has to keep in sync. Built lazily so it closes over the `*Api` objects.
+ */
+function refTargets(): Record<RefKind, RefTarget[]> {
+  return {
+    person: [
+      target(seasonsApi, (s, o, n) => {
+        let c = false;
+        for (const e of s.roster) if (e.person === o) { e.person = n; c = true; }
+        for (const e of s.advisors) if (e.person === o) { e.person = n; c = true; }
+        return c;
+      }),
+      target(rocketsApi, (r, o, n) => replaceInArray(r.credits, o, n)),
+    ],
+    role: [
+      target(seasonsApi, (s, o, n) => {
+        let c = false;
+        for (const e of s.roster) if (e.role === o) { e.role = n; c = true; }
+        return c;
+      }),
+    ],
+    subteam: [
+      target(seasonsApi, (s, o, n) => {
+        let c = false;
+        for (const e of s.roster) if (e.subteam === o) { e.subteam = n; c = true; }
+        if (replaceInArray(s.subteams, o, n)) c = true;
+        return c;
+      }),
+      target(rocketsApi, (r, o, n) => replaceInArray(r.relatedSubteams, o, n)),
+    ],
+    rocket: [
+      target(seasonsApi, (s, o, n) => (s.currentRocket === o ? ((s.currentRocket = n), true) : false)),
+      target(subteamsApi, (st, o, n) => replaceInArray(st.relatedRockets, o, n)),
+    ],
+    season: [
+      target(rocketsApi, (r, o, n) => replaceInArray(r.seasons, o, n)),
+      target(subteamsApi, (st, o, n) => (st.createdSeason === o ? ((st.createdSeason = n), true) : false)),
+      target(eventsApi, (e, o, n) => (e.season === o ? ((e.season = n), true) : false)),
+      target(albumsApi, (a, o, n) => (a.season === o ? ((a.season = n), true) : false)),
+      target(constitutionApi, (c, o, n) => (c.effectiveSeason === o ? ((c.effectiveSeason = n), true) : false)),
+      newsTarget((p, o, n) => (p.season === o ? ((p.season = n), true) : false)),
+    ],
+    sponsor: [
+      target(seasonsApi, (s, o, n) => {
+        let c = false;
+        for (const e of s.sponsors) if (e.sponsor === o) { e.sponsor = n; c = true; }
+        return c;
+      }),
+    ],
+  };
+}
+
+/**
+ * How many records currently reference `oldId` (read-only; powers the "Will
+ * update N references" preview). Calls `apply` with newId === oldId, which
+ * detects a match without changing anything.
+ */
+export async function countReferences(root: string, kind: RefKind, oldId: string): Promise<number> {
+  let count = 0;
+  for (const t of refTargets()[kind]) {
+    for (const rec of await t.load(root)) if (t.apply(rec, oldId, oldId)) count++;
+  }
+  return count;
+}
+
+/** Rewrite every reference oldId→newId across content; returns the number of files changed. */
+async function rewriteReferences(root: string, kind: RefKind, oldId: string, newId: string): Promise<number> {
+  let count = 0;
+  for (const t of refTargets()[kind]) {
+    for (const rec of await t.load(root)) {
+      if (t.apply(rec, oldId, newId)) { await t.persist(root, rec); count++; }
+    }
+  }
+  return count;
+}
+
+/**
+ * Rename a record's id (and its JSON filename), then rewrite every reference to
+ * it across content. Validates the new slug, refuses to clobber an existing id,
+ * writes the new file, deletes the old, and rewires references. Returns the
+ * number of referencing files updated.
+ */
+export async function renameRecord<T extends { id: string }>(
+  root: string,
+  api: Collection<T>,
+  record: T,
+  newId: string,
+): Promise<{ refs: number }> {
+  newId = newId.trim();
+  if (!SLUG_RE.test(newId)) throw new Error('Id must be lowercase letters, numbers, and dashes (e.g. "carlos-garza").');
+  if (newId === record.id) return { refs: 0 };
+  const existing = await api.list(root);
+  if (existing.some((x) => x.id === newId)) throw new Error(`A ${api.label} with id "${newId}" already exists.`);
+  await api.save(root, { ...record, id: newId });
+  await api.remove(root, record.id);
+  const refs = api.refKind ? await rewriteReferences(root, api.refKind, record.id, newId) : 0;
+  return { refs };
+}
 
 /* ------------------------------------------------------------------- news */
 
@@ -438,6 +588,20 @@ export async function createNews(root: string, slug: string, title: string): Pro
 
 export async function deleteNews(root: string, slug: string): Promise<void> {
   await removeDir(join(root, NEWS_REL, slug));
+}
+
+/** Rename a post's folder + slug. Moves the directory (keeping colocated media)
+ *  and fixes the `id` inside index.json. Nothing references news ids, so there
+ *  are no other content files to rewire. */
+export async function renameNews(root: string, oldSlug: string, newSlug: string): Promise<void> {
+  newSlug = newSlug.trim();
+  if (!SLUG_RE.test(newSlug)) throw new Error('Slug must be lowercase letters, numbers, and dashes.');
+  if (newSlug === oldSlug) return;
+  const dest = join(root, NEWS_REL, newSlug);
+  if (await pathExists(dest)) throw new Error(`A post with slug "${newSlug}" already exists.`);
+  await renamePath(join(root, NEWS_REL, oldSlug), dest);
+  const post = await readNews(root, newSlug);
+  await saveNews(root, newSlug, { ...post, id: newSlug });
 }
 
 /* --------------------------------------------------------------- singletons */

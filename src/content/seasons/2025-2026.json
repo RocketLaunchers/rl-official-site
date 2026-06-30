@@ -30,56 +30,56 @@
   ],
   "roster": [
     {
-      "person": "jane-doe",
+      "person": "kevin-garza",
       "role": "lead",
       "subteam": "payload",
       "displayOnTeam": true,
       "displayOrder": 10
     },
     {
-      "person": "taylor-nguyen",
+      "person": "cesar-mendez",
       "role": "lead",
       "subteam": "recovery",
       "displayOnTeam": true,
       "displayOrder": 20
     },
     {
-      "person": "olivia-brooks",
+      "person": "casandra-sauceda",
       "role": "lead",
       "subteam": "propulsion",
       "displayOnTeam": true,
       "displayOrder": 40
     },
     {
-      "person": "john-smith",
+      "person": "carlos-garza",
       "role": "lead",
       "subteam": "flight-dynamics",
       "displayOnTeam": true,
       "displayOrder": 50
     },
     {
-      "person": "maria-garcia",
+      "person": "maria-renee-ortuno-urban",
       "role": "vice-president",
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 60
     },
     {
-      "person": "sam-rivera",
+      "person": "sabian-cardenas",
       "role": "lead",
       "subteam": "hybrid",
       "displayOnTeam": true,
       "displayOrder": 70
     },
     {
-      "person": "alex-kim",
+      "person": "luis-martinez",
       "role": "lead",
       "subteam": "avionics",
       "displayOnTeam": true,
       "displayOrder": 90
     },
     {
-      "person": "chris-morgan",
+      "person": "john-hinojosa",
       "role": "president",
       "subteam": "",
       "displayOnTeam": true,
@@ -93,7 +93,7 @@
       "displayOrder": 90
     },
     {
-      "person": "priya-patel",
+      "person": "jose-zavala",
       "role": "director-of-engineering",
       "subteam": "",
       "displayOnTeam": true,

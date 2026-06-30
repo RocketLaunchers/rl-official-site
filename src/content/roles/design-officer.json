@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "design-officer",
+  "name": "Design Officer",
+  "category": "Engineering",
+  "description": "Oversees the rocket's design.",
+  "displayOrder": 0,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

@@ -42,11 +42,18 @@
       "displayOrder": 20
     },
     {
-      "person": "diego-hernandez",
+      "person": "diego-flores-chanez",
       "role": "lead",
       "subteam": "avionics",
       "displayOnTeam": true,
       "displayOrder": 30
+    },
+    {
+      "person": "jose-zavala",
+      "role": "lead",
+      "subteam": "hybrid",
+      "displayOnTeam": true,
+      "displayOrder": 40
     }
   ],
   "sponsors": [

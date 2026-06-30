@@ -1,0 +1,25 @@
+{
+  "type": "rocket",
+  "id": "cuhboom",
+  "name": "Cuhboom",
+  "seasons": [],
+  "status": "Retired",
+  "mission": "",
+  "competition": "",
+  "specs": {
+    "targetAltitude": "",
+    "motor": "",
+    "diameter": "",
+    "length": "",
+    "mass": ""
+  },
+  "heroImage": "",
+  "model3d": "/models/cuhboom-2022-2023.glb",
+  "media": [],
+  "subsystems": [],
+  "results": "",
+  "lessonsLearned": "",
+  "relatedSubteams": [],
+  "credits": [],
+  "displayOrder": 0
+}
