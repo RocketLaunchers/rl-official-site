@@ -1,18 +1,36 @@
 {
   "sectionTitle": "ABOUT THE CLUB",
-  "image": "/images/starbase.jpg",
-  "imageAlt": "Rocket Launchers team",
+  "image": "/images/IREC2026.jpeg",
+  "imageAlt": "2025-2026 Season team",
   "paragraphs": [
     "Rocket Launchers is a student engineering organization at the University of Texas Rio Grande Valley. We design, build, and launch high-power rockets and compete in intercollegiate competitions like the Spaceport America Cup.",
-    "Everything we fly is student-built. Members join one of our subteams — from Avionics to Airframe to Flight Dynamics — and get hands-on with real aerospace hardware from day one.",
+    "Everything we fly is student-built. Members join one of our subteams — from Avionics to Structures to Flight Dynamics — and get hands-on with real aerospace hardware from day one.",
     "No experience required. We teach you what you need as you build alongside the team."
   ],
   "highlights": [
-    { "icon": "rocket", "title": "Real Hardware", "description": "Design and fly custom rockets every season — not just on paper." },
-    { "icon": "cpu", "title": "Every Discipline", "description": "Avionics, structures, recovery, simulation, manufacturing, and media." },
-    { "icon": "users", "title": "Open to All Majors", "description": "Engineering, CS, business, communications — there's a place for you." }
+    {
+      "icon": "rocket",
+      "title": "Real Hardware",
+      "description": "Design and fly custom rockets every season — not just on paper."
+    },
+    {
+      "icon": "cpu",
+      "title": "Every Discipline",
+      "description": "Avionics, structures, recovery, simulation, manufacturing, and media."
+    },
+    {
+      "icon": "users",
+      "title": "Open to All Majors",
+      "description": "Engineering, CS, business, communications — there's a place for you."
+    }
   ],
-  "stats": { "title": "AT A GLANCE", "items": ["Founded 2024", "7 subteams", "Competing at IREC 2026"] },
+  "stats": {
+    "title": "AT A GLANCE",
+    "items": [
+      "Founded 2016",
+      "Competing at IREC 2026"
+    ]
+  },
   "join": {
     "title": "Join the Team",
     "body": "We recruit at the start of each semester and welcome new members year-round. Come to an interest meeting or reach out — no experience required.",

@@ -2,13 +2,13 @@
   "type": "person",
   "id": "olivia-brooks",
   "name": "Casandra Sauceda",
-  "photo": "",
+  "photo": "/images/headshot-casandra-s.webp",
   "major": "Mechanical Engineering",
   "gradYear": 2026,
-  "bio": "",
+  "bio": "Led the manufacturing, structural validation, and integration of the modular bolted propulsion system for Itzamna. Collaborated with the Payload and Recovery subteam to manufacture aluminum bulkheads for flight hardware. Competed in the 2023 and 2024 Spaceport America Cup and the 2025 and 2026 International Rocket Engineering Competition.",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "xcasandras@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/casandra-sauceda-41ba441a7/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BQ%2BwNy82EThCCVyV3wipsHg%3D%3D",
     "github": "",
     "website": ""
   },
@@ -19,6 +19,6 @@
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

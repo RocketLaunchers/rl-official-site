@@ -1,11 +1,24 @@
 {
-  "type": "album", "id": "lonestar-2025", "title": "LoneStar 2025",
+  "type": "album",
+  "id": "lonestar-2025",
+  "title": "LoneStar 2025",
   "season": "2024-2025",
-  "description": "Brunito's first launch.",
+  "description": "LSC 2025 picture of participating teams.",
   "items": [
-    { "id": "b1", "src": "/images/lonestar2025.jpg", "alt": "LoneStar launch", "title": "On the rail", "description": "Brunito ready to fly." },
-    { "id": "b2", "src": "/images/lonestar-rocket.JPG", "alt": "Recovered rocket", "title": "Recovered", "description": "Back on the ground in one piece." },
-    { "id": "b3", "src": "/images/brunito.jpg", "alt": "Brunito", "title": "Brunito", "description": "The team's first high-power rocket." }
+    {
+      "id": "b1",
+      "src": "/images/lonestar2025.jpg",
+      "alt": "",
+      "title": "Lone Star Cup 2025",
+      "description": "Team picture at the first ever Lone Star Cup 2025."
+    },
+    {
+      "id": "b2",
+      "src": "/images/lonestar-rocket.JPG",
+      "alt": "Powered ascent",
+      "title": "Blast off",
+      "description": "Disparado ripping off the launch pad."
+    }
   ],
   "displayOrder": 20
 }
