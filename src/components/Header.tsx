@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { site } from '../data/site';
-import { useTheme } from '../theme';
 
 type NavItem = { label: string; to: string };
 type NavMenu = { label: string; items: NavItem[] };
@@ -46,7 +45,6 @@ const Chevron = ({ open }: { open: boolean }) => (
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme, toggle } = useTheme();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -67,14 +65,14 @@ const Header = () => {
   };
 
   const iconClass =
-    'text-ink-faint hover:text-ink hover:scale-110 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] light:hover:drop-shadow-none transition-all duration-300 ease-out';
+    'text-ink-faint hover:text-ink hover:scale-110 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] transition-all duration-300 ease-out';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-canvas/70 backdrop-blur-md border-b border-line/10">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between gap-6">
           <Link to="/" className="flex items-center gap-2.5 whitespace-nowrap group">
-            <img src="/RL-Logo.png" alt="" className="h-8 w-auto shrink-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] light:drop-shadow-none" />
+            <img src="/RL-Logo.png" alt="" className="h-8 w-auto shrink-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
             <span className="font-display text-sm tracking-[0.2em] text-ink font-light group-hover:text-ink-soft transition-colors">
               {site.name || 'ROCKET LAUNCHERS'}
             </span>
@@ -84,7 +82,7 @@ const Header = () => {
           <nav className="hidden lg:flex items-center gap-8">
             <Link
               to="/"
-              className="text-[13px] tracking-[0.18em] text-ink-muted hover:text-ink hover:[text-shadow:0_0_10px_rgba(255,255,255,0.45)] light:hover:[text-shadow:none] transition-all duration-300 font-light"
+              className="text-[13px] tracking-[0.18em] text-ink-muted hover:text-ink hover:[text-shadow:0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 font-light"
             >
               HOME
             </Link>
@@ -166,26 +164,6 @@ const Header = () => {
                 </svg>
               </a>
             )}
-
-            {/* Light / dark toggle (always visible) */}
-            <button
-              type="button"
-              onClick={toggle}
-              className={`${iconClass} inline-flex`}
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
-            >
-              {theme === 'dark' ? (
-                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="4" />
-                  <path strokeLinecap="round" d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-                </svg>
-              ) : (
-                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z" />
-                </svg>
-              )}
-            </button>
 
             {/* Mobile hamburger */}
             <button

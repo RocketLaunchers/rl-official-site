@@ -18,7 +18,7 @@ const Hero = () => {
           <img
             src="/RL-Logo.png"
             alt={`${site.name} logo`}
-            className="w-44 sm:w-56 md:w-72 h-auto mb-8 drop-shadow-[0_0_40px_rgba(255,255,255,0.2)] light:drop-shadow-none"
+            className="w-44 sm:w-56 md:w-72 h-auto mb-8 drop-shadow-[0_0_40px_rgba(255,255,255,0.2)]"
           />
 
           <p className="text-base md:text-xl tracking-[0.3em] text-ink-soft font-light uppercase mb-6">
@@ -49,8 +49,8 @@ const Hero = () => {
                 onClick={() => onCta(cta.target)}
                 className={
                   index === 0
-                    ? 'bg-solid text-on-solid px-8 py-3.5 text-[13px] tracking-[0.12em] font-medium hover:bg-solid/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.28)] light:hover:shadow-none transition-all duration-300 ease-out'
-                    : 'border border-line/20 text-ink px-8 py-3.5 text-[13px] tracking-[0.12em] font-light hover:border-line/50 hover:bg-surface-2 hover:shadow-[0_0_18px_rgba(255,255,255,0.12)] light:hover:shadow-none transition-all duration-300 ease-out'
+                    ? 'bg-solid text-on-solid px-8 py-3.5 text-[13px] tracking-[0.12em] font-medium hover:bg-solid/90 hover:shadow-[0_0_22px_rgba(255,255,255,0.28)] transition-all duration-300 ease-out'
+                    : 'border border-line/20 text-ink px-8 py-3.5 text-[13px] tracking-[0.12em] font-light hover:border-line/50 hover:bg-surface-2 hover:shadow-[0_0_18px_rgba(255,255,255,0.12)] transition-all duration-300 ease-out'
                 }
               >
                 {cta.label}

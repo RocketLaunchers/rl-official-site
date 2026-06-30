@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 /* ---- Theme tokens (consumed by tailwind.config.js semantic colors) ----
-   :root is the dark theme (the original look, value-for-value). The light
-   theme overrides only the neutrals + accent. Values are space-separated RGB
-   channels so Tailwind can apply `/opacity` via rgb(var(--x) / <alpha-value>). */
+   The site is dark-only. Values are space-separated RGB channels so Tailwind
+   can apply `/opacity` via rgb(var(--x) / <alpha-value>). */
 :root {
   --c-canvas: 0 0 0;          /* black page bg */
   --c-surface: 14 16 20;      /* ~ old bg-white/[0.02] over black */
@@ -19,21 +18,6 @@
   --c-accent: 103 232 249;    /* cyan-300 */
   --c-solid: 255 255 255;     /* old bg-white CTA */
   --c-on-solid: 0 0 0;        /* old text-black on it */
-}
-
-:root[data-theme='light'] {
-  --c-canvas: 191 222 246;    /* sky blue (matches the cloud background) */
-  --c-surface: 255 255 255;   /* white cards */
-  --c-surface-2: 241 245 249; /* slate-100 hover */
-  --c-well: 226 232 240;      /* slate-200 image well */
-  --c-ink: 31 41 55;          /* gray-800 — the "dark gray" body text */
-  --c-ink-soft: 51 65 85;     /* slate-700 */
-  --c-ink-muted: 71 85 105;   /* slate-600 */
-  --c-ink-faint: 100 116 139; /* slate-500 */
-  --c-line: 51 65 85;         /* slate-700 (low alpha => soft dark hairlines) */
-  --c-accent: 14 116 144;     /* cyan-700 — readable on light */
-  --c-solid: 31 41 55;        /* gray-800 button */
-  --c-on-solid: 255 255 255;  /* white text on it */
 }
 
 @layer base {

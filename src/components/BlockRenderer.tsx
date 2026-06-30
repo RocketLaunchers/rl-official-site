@@ -27,10 +27,10 @@ const HEADING_CLASS: Record<1 | 2 | 3, string> = {
 };
 
 const CALLOUT_CLASS: Record<NonNullable<Extract<Block, { type: 'callout' }>['variant']>, string> = {
-  info: 'border-sky-800/60 bg-sky-950/30 text-sky-100 light:border-sky-300 light:bg-sky-50 light:text-sky-800',
+  info: 'border-sky-800/60 bg-sky-950/30 text-sky-100',
   note: 'border-line/15 bg-surface text-ink',
-  success: 'border-emerald-800/60 bg-emerald-950/30 text-emerald-100 light:border-emerald-300 light:bg-emerald-50 light:text-emerald-800',
-  warning: 'border-amber-800/60 bg-amber-950/30 text-amber-100 light:border-amber-300 light:bg-amber-50 light:text-amber-800',
+  success: 'border-emerald-800/60 bg-emerald-950/30 text-emerald-100',
+  warning: 'border-amber-800/60 bg-amber-950/30 text-amber-100',
 };
 
 function renderBlock(block: Block) {

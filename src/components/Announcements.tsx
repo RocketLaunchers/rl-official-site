@@ -62,7 +62,7 @@ function Meta({ when, location }: { when?: string; location?: string }) {
 
 function Flyer({ src, alt, className }: { src: string; alt: string; className?: string }) {
   return (
-    <div className={`bg-black/40 light:bg-well flex items-center justify-center overflow-hidden ${className ?? ''}`}>
+    <div className={`bg-black/40 flex items-center justify-center overflow-hidden ${className ?? ''}`}>
       {src ? (
         <img src={src} alt={alt} className="max-w-full max-h-full object-contain" />
       ) : (

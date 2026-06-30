@@ -1,8 +1,6 @@
-import plugin from 'tailwindcss/plugin';
-
-/** Semantic color tokens backed by CSS variables (see src/index.css), so the
- *  whole site re-themes by flipping `data-theme` on <html>. The `<alpha-value>`
- *  placeholder keeps Tailwind's `/opacity` modifiers working (e.g. border-line/10). */
+/** Semantic color tokens backed by CSS variables (see src/index.css). The
+ *  `<alpha-value>` placeholder keeps Tailwind's `/opacity` modifiers working
+ *  (e.g. border-line/10). */
 const token = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
 /** @type {import('tailwindcss').Config} */
@@ -30,11 +28,5 @@ export default {
       },
     },
   },
-  plugins: [
-    // `light:` applies only under the light theme — used for the few effects
-    // (white glows, inverted CTAs) that must change when the background is light.
-    plugin(({ addVariant }) => {
-      addVariant('light', ':is([data-theme="light"]) &');
-    }),
-  ],
+  plugins: [],
 };

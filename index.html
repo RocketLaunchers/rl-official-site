@@ -16,13 +16,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Apply the saved theme before paint to avoid a flash. Default: dark.
-      try {
-        var t = localStorage.getItem('rl.theme');
-        document.documentElement.dataset.theme = t === 'light' ? 'light' : 'dark';
-      } catch (e) { document.documentElement.dataset.theme = 'dark'; }
-    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
