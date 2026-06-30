@@ -5,7 +5,7 @@
   "shortDescription": "Flight computers, telemetry, and the electronics that fly the rocket.",
   "longDescription": "The Avionics subteam designs the flight computer, sensor suite, and radio telemetry that track the vehicle through powered flight, coast, and recovery. We build custom PCBs and write embedded firmware, then validate everything on the bench and in the field.",
   "icon": "cpu",
-  "image": "/images/avionics.jpg",
+  "image": "",
   "skills": [
     "Embedded C/Rust",
     "PCB design",
