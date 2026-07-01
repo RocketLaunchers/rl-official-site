@@ -10,10 +10,7 @@
   "subteams": [
     "avionics",
     "recovery",
-    "airframe",
     "payload",
-    "manufacturing",
-    "media",
     "propulsion",
     "structures",
     "hybrid"

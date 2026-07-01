@@ -167,7 +167,12 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
   // Subteam-scoped leadership roles (Lead / Co-Lead) — used to flag active subteams with no lead.
   const leadRoleIds = new Set(refs.roles.filter((r) => r.scope === 'subteam' && r.isLeadership).map((r) => r.id));
   const coveredSubteams = new Set((draft?.roster ?? []).filter((e) => leadRoleIds.has(e.role) && e.subteam).map((e) => e.subteam));
-  const subteamsMissingLead = (draft?.subteams ?? []).filter((id) => !coveredSubteams.has(id));
+  const existingSubteamIds = new Set(refs.subteams.map((s) => s.id));
+  // Only nag about a missing lead for subteams that still exist and are active.
+  const subteamsMissingLead = (draft?.subteams ?? []).filter((id) => existingSubteamIds.has(id) && !coveredSubteams.has(id));
+  // Ids left in this season after their subteam record was deleted — surfaced so
+  // they can be removed (the checkbox list below only knows existing records).
+  const danglingSubteams = (draft?.subteams ?? []).filter((id) => !existingSubteamIds.has(id));
   const subteamName = (id: string) => refs.subteams.find((s) => s.id === id)?.name ?? id;
 
   // Roster is stored as a flat array of (person, role) entries, but edited grouped
@@ -340,7 +345,21 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
                       /> {st.name}
                     </label>
                   ))}
+                  {danglingSubteams.map((id) => (
+                    <label key={id} className="muted" title="This subteam was deleted — untick to remove it from this season">
+                      <input
+                        type="checkbox"
+                        checked
+                        onChange={() => patch({ subteams: draft.subteams.filter((x) => x !== id) })}
+                      /> {id} (deleted)
+                    </label>
+                  ))}
                 </div>
+                {danglingSubteams.length > 0 && (
+                  <p className="screen-hint" style={{ marginTop: 8 }}>
+                    {danglingSubteams.length === 1 ? 'A subteam' : `${danglingSubteams.length} subteams`} listed here {danglingSubteams.length === 1 ? 'was' : 'were'} deleted ({danglingSubteams.join(', ')}). Untick to remove, then Save.
+                  </p>
+                )}
               </Field>
 
               <StringListEditor label="Sponsor tiers (in order)" items={draft.sponsorTiers} onChange={(sponsorTiers) => patch({ sponsorTiers })} placeholder="Gold" />
