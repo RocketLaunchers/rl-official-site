@@ -313,6 +313,40 @@ export async function convertSourceToWebGlb(root: string, abs: string): Promise<
   return '/' + MEDIA_DIRS.model + '/' + name;
 }
 
+const cropImageCmd = (src: string, dest: string, x: number, y: number, w: number, h: number) =>
+  invoke<void>('crop_image', { src, dest, x, y, w, h });
+
+/**
+ * Crop a rectangle (in source pixels) out of a public image into a new WebP under
+ * public/images, returning its public path. The original file is left untouched,
+ * so the crop is a separate, re-pickable asset.
+ */
+export async function cropImage(
+  root: string,
+  srcRef: string,
+  rect: { x: number; y: number; w: number; h: number },
+): Promise<string> {
+  if (!(await tools()).ffmpeg) {
+    throw new Error('Cropping needs ffmpeg. Install it (or run the CMS where it is available), then try again.');
+  }
+  const src = `${root}/public${srcRef}`;
+  // Strip any existing "-crop" suffix so re-cropping doesn't stack (foo-crop-crop).
+  const base = cleanBase(srcRef).replace(/-crop(-\d+)?$/, '');
+  let name = `${base}-crop.webp`;
+  for (let i = 2; await pathExists(join(root, 'public', MEDIA_DIRS.image, name)); i++) {
+    name = `${base}-crop-${i}.webp`;
+  }
+  await cropImageCmd(
+    src,
+    join(root, 'public', MEDIA_DIRS.image, name),
+    Math.max(0, Math.round(rect.x)),
+    Math.max(0, Math.round(rect.y)),
+    Math.max(1, Math.round(rect.w)),
+    Math.max(1, Math.round(rect.h)),
+  );
+  return '/' + MEDIA_DIRS.image + '/' + name;
+}
+
 /* ------------------------------------------------------- generic collections */
 
 /** A record kind whose id is referenced from other content (drives reference rewiring on rename). */

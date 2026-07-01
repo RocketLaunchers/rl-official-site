@@ -71,7 +71,7 @@ export default function RocketsEditor({ repo }: { repo: string }) {
             ))}
           </div>
 
-          <ImageField label="Hero image" root={repo} value={r.heroImage} onChange={(src) => update({ heroImage: src })} />
+          <ImageField label="Hero image" root={repo} value={r.heroImage} onChange={(src) => update({ heroImage: src })} aspect={16 / 9} />
           <ImageField label="3D model (GLB)" kind="model" root={repo} value={r.model3d} onChange={(src) => update({ model3d: src })} />
           <MediaListEditor repo={repo} media={r.media} onChange={(media) => update({ media })} />
 

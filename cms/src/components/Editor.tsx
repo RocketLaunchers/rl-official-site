@@ -140,6 +140,7 @@ export default function Editor({ repo, slug, onBack }: { repo: string; slug: str
                 value={draft.coverImage ?? ''}
                 baseDir={baseDir}
                 kind="image"
+                aspect={16 / 9}
                 onChange={(src) => patch({ coverImage: src || undefined })}
               />
 

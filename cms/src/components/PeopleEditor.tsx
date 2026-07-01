@@ -34,7 +34,7 @@ export default function PeopleEditor({ repo }: { repo: string }) {
       renderItem={(p, update) => (
         <>
           <TextField label="Name" value={p.name} onChange={(v) => update({ name: v })} />
-          <ImageField label="Photo" root={repo} value={p.photo} onChange={(src) => update({ photo: src })} />
+          <ImageField label="Photo" root={repo} value={p.photo} onChange={(src) => update({ photo: src })} aspect={1} />
           <div className="grid2">
             <TextField label="Major / department" value={p.major} onChange={(v) => update({ major: v })} />
             <Field label="Graduation year (blank for faculty/mentor)">

@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "elias-ramos",
+  "name": "Elias Ramos",
+  "photo": "",
+  "major": "Mechanical Engineer",
+  "gradYear": 2026,
+  "bio": "Internship at DSS Houston, Tx.\nUndergraduate Research Honor Mention\nPLTL of the Month",
+  "links": {
+    "email": "elias.ramos02@utrgv.edu",
+    "linkedin": "https://www.linkedin.com/in/eliasramos-me",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": false,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

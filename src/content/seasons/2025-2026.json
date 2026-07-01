@@ -126,6 +126,13 @@
       "subteam": "avionics",
       "displayOnTeam": true,
       "displayOrder": 140
+    },
+    {
+      "person": "elias-ramos",
+      "role": "lead",
+      "subteam": "structures",
+      "displayOnTeam": true,
+      "displayOrder": 150
     }
   ],
   "sponsors": [

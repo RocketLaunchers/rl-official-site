@@ -60,6 +60,13 @@
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 50
+    },
+    {
+      "person": "emmanuel-jones",
+      "role": "chief-of-engineering",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 60
     }
   ],
   "sponsors": [],

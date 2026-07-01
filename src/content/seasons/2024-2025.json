@@ -54,6 +54,13 @@
       "subteam": "hybrid",
       "displayOnTeam": true,
       "displayOrder": 40
+    },
+    {
+      "person": "emmanuel-jones",
+      "role": "member",
+      "subteam": "hybrid",
+      "displayOnTeam": true,
+      "displayOrder": 50
     }
   ],
   "sponsors": [

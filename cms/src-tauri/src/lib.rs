@@ -230,6 +230,15 @@ fn process_image(src: String, dest: String) -> Result<(), String> {
     )
 }
 
+/// Crop a rectangle out of an image (source pixels) into a new WebP. Used by the
+/// picker's crop tool so the stored file already matches its display shape.
+#[tauri::command]
+fn crop_image(src: String, dest: String, x: u32, y: u32, w: u32, h: u32) -> Result<(), String> {
+    ensure_parent(&dest)?;
+    let crop = format!("crop={w}:{h}:{x}:{y}");
+    run_tool("ffmpeg", &["-y", "-i", &src, "-vf", &crop, "-c:v", "libwebp", "-quality", "90", &dest], None)
+}
+
 /// Transcode + compress a video to H.264 MP4 (max 1080p).
 #[tauri::command]
 fn process_video(src: String, dest: String) -> Result<(), String> {
@@ -457,6 +466,7 @@ pub fn run() {
             grep_refs,
             check_tools,
             process_image,
+            crop_image,
             process_video,
             convert_model,
             preview_status,

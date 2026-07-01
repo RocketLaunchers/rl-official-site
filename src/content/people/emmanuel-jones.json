@@ -2,13 +2,13 @@
   "type": "person",
   "id": "emmanuel-jones",
   "name": "Emmanuel Jones",
-  "photo": "",
+  "photo": "/images/img-20251028-wa0010-emmanuel-j.webp",
   "major": "Mechanical Engineering",
-  "gradYear": 2028,
-  "bio": "",
+  "gradYear": 2027,
+  "bio": "Mechanical engineering student passionate about aerospace design and hands-on engineering. My projects include the development of a high-power rocket featuring active airbrake systems, composite structures, and ground support equipment, with experience spanning design, simulation, manufacturing, testing, and flight operations.",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "emmanueljones212@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/emmanueljones7891",
     "github": "",
     "website": ""
   },
@@ -19,6 +19,6 @@
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

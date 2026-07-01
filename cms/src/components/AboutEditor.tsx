@@ -82,7 +82,7 @@ export default function AboutEditor({ repo }: { repo: string }) {
 
           <div className="section-title">Header & image</div>
           <TextField label="Section title" value={data.sectionTitle} onChange={(v) => patch({ sectionTitle: v })} />
-          <ImageField label="Image" root={repo} value={data.image} onChange={(src) => patch({ image: src })} />
+          <ImageField label="Image" root={repo} value={data.image} onChange={(src) => patch({ image: src })} aspect={4 / 3} />
           <TextField label="Image alt text" value={data.imageAlt} onChange={(v) => patch({ imageAlt: v })} />
 
           <div className="section-title">Mission paragraphs</div>

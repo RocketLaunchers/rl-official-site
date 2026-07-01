@@ -2,13 +2,13 @@
   "type": "person",
   "id": "kevin-garza",
   "name": "Kevin Garza",
-  "photo": "",
+  "photo": "/images/kevin-garza-crop.webp",
   "major": "Mechanical Engineering",
   "gradYear": 2027,
-  "bio": "",
+  "bio": "Leader of the first Payload challenge accepted by IREC Judges",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "kevin.garza12@utrgv.edu",
+    "linkedin": "https://www.linkedin.com/in/kevin-garza-736832370?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     "github": "",
     "website": ""
   },
@@ -19,6 +19,6 @@
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

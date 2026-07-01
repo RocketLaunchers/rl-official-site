@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { mediaUrl } from '../api';
 import ModelPreview from './LazyModelPreview';
 import { useAssetPicker, type PickFilter } from './AssetPicker';
+import ImageCropper from './ImageCropper';
 
 /** Shared form-field primitives used across every content editor. */
 
@@ -160,7 +161,7 @@ type ImageFieldKind = 'image' | 'video' | 'media' | 'model' | 'file';
  * files only enter via Tools → Assets; this never opens the OS file dialog.
  */
 export function ImageField({
-  label, root, value, baseDir, onChange, kind = 'image',
+  label, root, value, baseDir, onChange, kind = 'image', aspect,
 }: {
   label?: string;
   root: string;
@@ -168,12 +169,18 @@ export function ImageField({
   baseDir?: string;
   onChange: (src: string) => void;
   kind?: ImageFieldKind;
+  /** Display aspect ratio (w/h) of where this image is shown. When set, the crop
+   *  tool locks the selection to it so the result fills its box with no cutoff. */
+  aspect?: number;
 }) {
   const { pickAsset } = useAssetPicker();
+  const [cropping, setCropping] = useState(false);
   const url = mediaUrl(root, value, baseDir);
   const isVideo = /\.(mp4|webm|ogv|mov)$/i.test(value);
   const isModel = kind === 'model' || /\.(glb|gltf|obj)$/i.test(value);
   const valExt = (value.split('.').pop() || '').toLowerCase();
+  // Crop only applies to local public images (path resolvable on disk).
+  const canCrop = !!value && !isVideo && !isModel && value.startsWith('/');
 
   async function choose() {
     const ref = await pickAsset(pickFilterFor(kind));
@@ -196,10 +203,20 @@ export function ImageField({
           <input value={value} readOnly placeholder="— none selected —" title={value} />
           <div className="row">
             <button className="small" onClick={choose}>Choose…</button>
+            {canCrop && <button className="small ghost" onClick={() => setCropping(true)}>Crop…</button>}
             {value && <button className="small ghost" onClick={() => onChange('')}>Clear</button>}
           </div>
         </div>
       </div>
+      {cropping && (
+        <ImageCropper
+          root={root}
+          src={value}
+          aspect={aspect}
+          onCancel={() => setCropping(false)}
+          onDone={(path) => { onChange(path); setCropping(false); }}
+        />
+      )}
     </Field>
   );
 }
