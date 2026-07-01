@@ -2,7 +2,7 @@
   "type": "person",
   "id": "luis-martinez",
   "name": "Luis Martinez",
-  "photo": "",
+  "photo": "/images/luis-martinez-crop.webp",
   "major": "Computer Science",
   "gradYear": 2026,
   "bio": "Avionics member 2024-2025, Avionics Lead 2025-2026. Led the development of the MARV flight computer, designed Payload's electronics. Introduced concepts like HIL(Hardware in the loop) and SITL(Software in the loop) for validation. Worked with Flight Dynamics to lay the groundwork for future development of airbrakes by designing a layered estimator (ESKF + EKF) and MPC for active control. ",

@@ -136,7 +136,8 @@ export default function ImageCropper({
     setBusy(true);
     setError(null);
     try {
-      let { x, y, w, h } = sel;
+      const { x, y } = sel;
+      let { w, h } = sel;
       // Guarantee the exact output ratio (so object-cover doesn't trim it further).
       if (ratio) {
         h = w / ratio;
@@ -157,7 +158,7 @@ export default function ImageCropper({
 
   return (
     <div className="viewer-modal" onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
-      <div className="vm-panel" style={{ maxWidth: 920 }}>
+      <div className="vm-panel" style={{ maxWidth: 920, height: 'auto', maxHeight: '92vh' }}>
         <div className="vm-top">
           <div className="vm-title"><Icon name="media" size={16} /> Crop image</div>
           <div className="vm-top-actions">
@@ -176,7 +177,7 @@ export default function ImageCropper({
           </div>
         )}
 
-        <div style={{ padding: 16, display: 'flex', justifyContent: 'center', background: '#0b0b0e' }}>
+        <div style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0b0b0e' }}>
           <div
             style={{ position: 'relative', lineHeight: 0, touchAction: 'none' }}
             onPointerMove={onPointerMove}
@@ -187,6 +188,7 @@ export default function ImageCropper({
               src={url}
               alt=""
               onLoad={onImgLoad}
+              onError={() => setError('Could not load this image for cropping.')}
               draggable={false}
               style={{ display: 'block', maxWidth: '100%', maxHeight: '60vh', userSelect: 'none' }}
             />

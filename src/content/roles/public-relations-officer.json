@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "public-relations-officer",
+  "name": "Public Relations Officer",
+  "category": "",
+  "description": "",
+  "displayOrder": 0,
+  "isLeadership": false,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

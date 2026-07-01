@@ -220,6 +220,23 @@ input[type="checkbox"], input[type="radio"] {
 .tile { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; background: var(--panel); }
 .tile-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .tile-head .tile-title { font-weight: 400; }
+.tile.selected { border-color: color-mix(in srgb, var(--section, var(--accent)) 60%, var(--border)); background: color-mix(in srgb, var(--section, var(--accent)) 8%, var(--panel)); }
+/* Collapsed cards have no body, so drop the head's bottom margin. */
+.tile:has(.tile-collapse) .tile-head:only-child { margin-bottom: 0; }
+.tile-collapse { border-color: transparent; padding: 2px 7px; color: var(--muted); font-size: 12px; line-height: 1; }
+.tile-collapse:hover { border-color: var(--border); color: var(--text); }
+.tile-head .tile-toggle { cursor: pointer; }
+.tile-head .tile-toggle:hover { color: var(--muted); }
+.tile-check { margin-right: 2px; }
+
+/* Find + bulk-select controls in collection lists */
+.list-search { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.list-search input { flex: 1 1 auto; min-width: 0; }
+.list-search .list-count { font-size: 12px; color: var(--muted); font-family: ui-monospace, monospace; white-space: nowrap; }
+.bulk-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; }
+.bulk-bar .spacer { flex: 1; }
+.bulk-bar .bulk-all { display: flex; align-items: center; gap: 8px; margin: 0; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--text); }
+.bulk-bar .bulk-count { font-size: 12px; color: var(--muted); }
 
 /* ---- website-faithful preview ---- */
 .preview { background: #000; padding: 36px 28px; border-radius: 12px; }

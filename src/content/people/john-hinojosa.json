@@ -2,23 +2,23 @@
   "type": "person",
   "id": "john-hinojosa",
   "name": "John Hinojosa",
-  "photo": "",
+  "photo": "/images/john-hinojosa-crop.webp",
   "major": "Electrical Engineering",
   "gradYear": 2026,
-  "bio": "",
+  "bio": "John Hinojosa graduated from the University of Texas Rio Grande Valley with a Bachelor of Science in Electrical Engineering. During his time with the UTRGV Rocket Launchers, he contributed to the team’s 2024 Nancy Squires Team Spirit Award, competed in the inaugural Lone Star Cup, and helped earn the 2025 Early Bird Award. He later served as President of the organization, leading and supporting subteams across avionics, payload, structures, and recovery while fostering teamwork and technical growth. He was also recognized as a CECS Outstanding Student and now works as a Substation Design Engineer in the electric power industry.",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "johnhinojosa35@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/johndhinojosa",
     "github": "",
     "website": ""
   },
   "isAlumni": true,
-  "company": "",
+  "company": "Primoris",
   "privacy": {
     "showPublicly": true,
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

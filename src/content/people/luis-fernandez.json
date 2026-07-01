@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "luis-fernandez",
+  "name": "Luis Fernandez",
+  "photo": "",
+  "major": "Mechanical Engineering",
+  "gradYear": 2029,
+  "bio": "Worked on Itzamna’s bolted fin can and first time boat tail. ",
+  "links": {
+    "email": "luis.fernandez10@utrgv.edu",
+    "linkedin": "https://www.linkedin.com/in/luis-fernandez-485768386?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": false,
+    "showCompany": false,
+    "showLinkedin": false,
+    "showEmail": false
+  }
+}

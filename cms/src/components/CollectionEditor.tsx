@@ -47,11 +47,23 @@ export default function CollectionEditor<T extends { id: string }>({
   const [renameTo, setRenameTo] = useState('');
   const [renameRefs, setRenameRefs] = useState<number | null>(null);
   const [renameBusy, setRenameBusy] = useState(false);
+  // Find / focus: filter the list, collapse cards to just name+id, and select
+  // several at once for bulk delete.
+  const [query, setQuery] = useState('');
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   function reload() {
     return api
       .list(repo)
-      .then((list) => setItems(sort ? [...list].sort(sort) : list))
+      .then((list) => {
+        const sorted = sort ? [...list].sort(sort) : list;
+        setItems(sorted);
+        // Start compact: every card collapsed to name + id. Editing expands it.
+        setCollapsed(new Set(sorted.map((x) => x.id)));
+      })
       .catch((e) => setError(String(e)));
   }
 
@@ -85,10 +97,57 @@ export default function CollectionEditor<T extends { id: string }>({
     try {
       await api.remove(repo, item.id);
       setItems((xs) => xs?.filter((x) => x.id !== item.id) ?? xs);
+      dropFromSets(item.id);
       setMsg(`Deleted “${displayName(item)}”.`);
     } catch (e) {
       setError(String(e));
     }
+  }
+
+  /** Remove an id from the collapse/select sets after its record is gone. */
+  function dropFromSets(id: string) {
+    setSelected((s) => {
+      if (!s.has(id)) return s;
+      const n = new Set(s);
+      n.delete(id);
+      return n;
+    });
+    setCollapsed((s) => {
+      if (!s.has(id)) return s;
+      const n = new Set(s);
+      n.delete(id);
+      return n;
+    });
+  }
+
+  async function bulkDelete() {
+    const ids = [...selected];
+    if (!ids.length) return;
+    if (!confirm(`Delete ${ids.length} ${api.label}${ids.length === 1 ? '' : 's'}? This removes their JSON files and can’t be undone.`))
+      return;
+    setBulkBusy(true);
+    setError(null);
+    setMsg(null);
+    const done: string[] = [];
+    let failure: string | null = null;
+    for (const id of ids) {
+      try {
+        await api.remove(repo, id);
+        done.push(id);
+      } catch (e) {
+        failure = e instanceof Error ? e.message : String(e);
+        break; // stop on first failure; report how far we got
+      }
+    }
+    if (done.length) {
+      const gone = new Set(done);
+      setItems((xs) => xs?.filter((x) => !gone.has(x.id)) ?? xs);
+      setSelected((s) => new Set([...s].filter((id) => !gone.has(id))));
+      setCollapsed((s) => new Set([...s].filter((id) => !gone.has(id))));
+    }
+    if (failure) setError(`Deleted ${done.length} of ${ids.length}. Stopped on error: ${failure}`);
+    else setMsg(`Deleted ${done.length} ${api.label}${done.length === 1 ? '' : 's'}.`);
+    setBulkBusy(false);
   }
 
   async function create() {
@@ -136,11 +195,62 @@ export default function CollectionEditor<T extends { id: string }>({
     }
   }
 
+  const q = query.trim().toLowerCase();
+  const filtered = (items ?? []).filter(
+    (it) => !q || displayName(it).toLowerCase().includes(q) || it.id.toLowerCase().includes(q),
+  );
+  const allCollapsed = filtered.length > 0 && filtered.every((it) => collapsed.has(it.id));
+  const selectedInView = filtered.filter((it) => selected.has(it.id)).length;
+  const allFilteredSelected = filtered.length > 0 && selectedInView === filtered.length;
+
+  function toggleIn(setState: typeof setCollapsed, id: string) {
+    setState((s) => {
+      const n = new Set(s);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  }
+  function toggleAllCollapsed() {
+    setCollapsed((s) => {
+      if (allCollapsed) return new Set<string>(); // expand all
+      const n = new Set(s);
+      filtered.forEach((it) => n.add(it.id));
+      return n;
+    });
+  }
+  function toggleSelectAll() {
+    setSelected((s) => {
+      const n = new Set(s);
+      if (allFilteredSelected) filtered.forEach((it) => n.delete(it.id));
+      else filtered.forEach((it) => n.add(it.id));
+      return n;
+    });
+  }
+  function exitSelectMode() {
+    setSelectMode(false);
+    setSelected(new Set());
+  }
+
   return (
     <div className="app">
       <div className="topbar">
         <h1 style={{ fontWeight: 400 }}>{title}</h1>
         <div className="spacer" />
+        {items && items.length > 0 && (
+          <>
+            <button
+              className="small ghost"
+              title="Select several records to delete at once"
+              onClick={() => (selectMode ? exitSelectMode() : setSelectMode(true))}
+            >
+              {selectMode ? '✕ Done' : '☑ Select'}
+            </button>
+            <button className="small ghost" title="Collapse or expand every card" onClick={toggleAllCollapsed}>
+              {allCollapsed ? 'Expand all' : 'Collapse all'}
+            </button>
+          </>
+        )}
         <button className="small ghost" onClick={() => setShowNew((v) => !v)}>＋ New</button>
         <button className="primary small" onClick={saveAll} disabled={!items || saving}>
           {saving ? 'Saving…' : 'Save'}
@@ -179,26 +289,84 @@ export default function CollectionEditor<T extends { id: string }>({
           {error && <div className="notice error">{error}</div>}
           {msg && <div className="notice ok">{msg}</div>}
 
+          {items && items.length > 1 && (
+            <div className="list-search">
+              <input
+                type="search"
+                placeholder={`Search ${title.toLowerCase()} by name or id…`}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              {q && (
+                <span className="list-count">
+                  {filtered.length} / {items.length}
+                </span>
+              )}
+            </div>
+          )}
+
+          {selectMode && items && items.length > 0 && (
+            <div className="bulk-bar">
+              <label className="bulk-all">
+                <input type="checkbox" checked={allFilteredSelected} onChange={toggleSelectAll} />
+                Select all{q ? ' matching' : ''}
+              </label>
+              <div className="spacer" />
+              <span className="bulk-count">{selected.size} selected</span>
+              <button className="small ghost" disabled={!selected.size} onClick={() => setSelected(new Set())}>
+                Clear
+              </button>
+              <button className="small danger" disabled={!selected.size || bulkBusy} onClick={bulkDelete}>
+                {bulkBusy ? 'Deleting…' : `Delete ${selected.size || ''}`.trim()}
+              </button>
+            </div>
+          )}
+
           {items === null ? (
             <div className="empty">Loading…</div>
           ) : items.length === 0 ? (
             <div className="empty">Nothing yet. Add one.</div>
+          ) : filtered.length === 0 ? (
+            <div className="empty">No matches for “{query.trim()}”.</div>
           ) : (
-            items.map((item) => (
-              <div className="tile" key={item.id}>
+            filtered.map((item) => {
+              const isCollapsed = collapsed.has(item.id);
+              const isSelected = selected.has(item.id);
+              return (
+              <div className={`tile${isSelected ? ' selected' : ''}`} key={item.id}>
                 <div className="tile-head">
-                  <span className="tile-title">{displayName(item) || item.id}</span>
-                  <span className="block-id">{item.id}.json</span>
+                  {selectMode && (
+                    <input
+                      type="checkbox"
+                      className="tile-check"
+                      checked={isSelected}
+                      onChange={() => toggleIn(setSelected, item.id)}
+                      aria-label={`Select ${displayName(item) || item.id}`}
+                    />
+                  )}
                   <button
-                    className="small ghost"
-                    title="Rename the id / file name and update everything that references it"
-                    onClick={() => (renaming === item.id ? setRenaming(null) : openRename(item))}
+                    className="small ghost tile-collapse"
+                    title={isCollapsed ? 'Expand' : 'Collapse'}
+                    onClick={() => toggleIn(setCollapsed, item.id)}
                   >
-                    ✎ Rename ID
+                    {isCollapsed ? '▸' : '▾'}
                   </button>
-                  <ItemToolbar onDelete={() => removeOne(item)} />
+                  <span className="tile-title tile-toggle" onClick={() => toggleIn(setCollapsed, item.id)}>
+                    {displayName(item) || item.id}
+                  </span>
+                  <span className="block-id">{item.id}.json</span>
+                  {!selectMode && !isCollapsed && (
+                    <button
+                      className="small ghost"
+                      title="Rename the id / file name and update everything that references it"
+                      onClick={() => (renaming === item.id ? setRenaming(null) : openRename(item))}
+                    >
+                      ✎ Rename ID
+                    </button>
+                  )}
+                  {!selectMode && <ItemToolbar onDelete={() => removeOne(item)} />}
                 </div>
-                {renaming === item.id && (
+                {!isCollapsed && renaming === item.id && (
                   <div className="inline-form">
                     <div>
                       <label>New id (file name)</label>
@@ -228,9 +396,10 @@ export default function CollectionEditor<T extends { id: string }>({
                     </div>
                   </div>
                 )}
-                {renderItem(item, (patch) => update(item.id, patch))}
+                {!isCollapsed && renderItem(item, (patch) => update(item.id, patch))}
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

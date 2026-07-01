@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "roel-cantu",
+  "name": "Roel Cantu",
+  "photo": "/images/roel-cantu-crop.webp",
+  "major": "Mechanical Engineering",
+  "gradYear": 2029,
+  "bio": "UTRGV Luminary Scholar",
+  "links": {
+    "email": "roel.cantu05@utrgv.edu",
+    "linkedin": "https://www.linkedin.com/in/roel-cantu-6576003a4?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": true
+  }
+}

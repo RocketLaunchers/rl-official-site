@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "ernesto-cruz",
+  "name": "Ernesto Cruz",
+  "photo": "",
+  "major": "Computer Science",
+  "gradYear": 2027,
+  "bio": "",
+  "links": {
+    "email": "",
+    "linkedin": "",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": false
+  }
+}

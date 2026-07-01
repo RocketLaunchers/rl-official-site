@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "hector-martinez",
+  "name": "Hector Martinez",
+  "photo": "",
+  "major": "Computer Engineering",
+  "gradYear": 2029,
+  "bio": "Avid bare-metal C++ enthusiast.",
+  "links": {
+    "email": "hectorm0340@gmail.com",
+    "linkedin": "",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": true
+  }
+}

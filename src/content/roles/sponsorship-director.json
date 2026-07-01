@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "sponsorship-director",
+  "name": "Sponsorship Director",
+  "category": "",
+  "description": "",
+  "displayOrder": 0,
+  "isLeadership": false,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": true
+}

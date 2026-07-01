@@ -61,6 +61,20 @@
       "subteam": "hybrid",
       "displayOnTeam": true,
       "displayOrder": 50
+    },
+    {
+      "person": "maria-renee-ortuno-urban",
+      "role": "lead",
+      "subteam": "payload",
+      "displayOnTeam": true,
+      "displayOrder": 60
+    },
+    {
+      "person": "santos-garcia",
+      "role": "lead",
+      "subteam": "propulsion",
+      "displayOnTeam": true,
+      "displayOrder": 70
     }
   ],
   "sponsors": [

@@ -1,0 +1,24 @@
+{
+  "type": "person",
+  "id": "andrea-gonzalez",
+  "name": "Andrea Gonzalez",
+  "photo": "/images/img-3081-andrea-gonzalez-crop.webp",
+  "major": "",
+  "gradYear": 2027,
+  "bio": "I currently have a job at Prem Lab at The University of Texas Rio Grande Valley. I participated in the NASA Orbit competition and my team and I (Society of Aerospace and Robotics Engineers) made it to top 10 out of 100 teams. ",
+  "links": {
+    "email": "andrea.gonzalez24@utrgv.edu",
+    "linkedin": "https://www.linkedin.com/in/andrea-gonzalez-b255a9232?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
+    "github": "",
+    "website": ""
+  },
+  "isAlumni": false,
+  "company": "",
+  "privacy": {
+    "showPublicly": true,
+    "showPhoto": true,
+    "showCompany": true,
+    "showLinkedin": true,
+    "showEmail": true
+  }
+}
