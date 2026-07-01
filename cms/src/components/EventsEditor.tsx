@@ -17,6 +17,7 @@ export default function EventsEditor({ repo }: { repo: string }) {
           'Set the Season id, Category, Date, Location, and Description.',
           'If it already happened, add a placement/result and any awards.',
           'To put it on the homepage: turn on “Feature as a homepage announcement”, add a flyer, and optionally a CTA.',
+          'Use the search box to find an event, and the “Sort by” menu to reorder the list (by date, season, or category). Events show newest-first on the site regardless.',
           'Click Save, then Publish.',
         ],
       }}
@@ -25,6 +26,13 @@ export default function EventsEditor({ repo }: { repo: string }) {
       makeSeed={(id, title) => ({ type: 'event', id, title })}
       displayName={(e) => e.title}
       sort={(a, b) => (b.date ?? '').localeCompare(a.date ?? '')}
+      sortModes={[
+        { key: 'date-desc', label: 'Date (newest first)', cmp: (a, b) => (b.date ?? '').localeCompare(a.date ?? '') },
+        { key: 'date-asc', label: 'Date (oldest first)', cmp: (a, b) => (a.date ?? '').localeCompare(b.date ?? '') },
+        { key: 'season', label: 'Season', cmp: (a, b) => (b.season ?? '').localeCompare(a.season ?? '') || (b.date ?? '').localeCompare(a.date ?? '') },
+        { key: 'category', label: 'Category', cmp: (a, b) => a.category.localeCompare(b.category) || (b.date ?? '').localeCompare(a.date ?? '') },
+        { key: 'title', label: 'Title (A–Z)', cmp: (a, b) => a.title.localeCompare(b.title) },
+      ]}
       renderItem={(e, update) => (
         <>
           <TextField label="Title" value={e.title} onChange={(v) => update({ title: v })} />

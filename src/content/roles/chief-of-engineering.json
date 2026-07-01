@@ -4,7 +4,7 @@
   "name": "Chief of Engineering",
   "category": "Engineering",
   "description": "",
-  "displayOrder": 60,
+  "displayOrder": 40,
   "isLeadership": true,
   "isSubteamRole": false,
   "scope": "org",

@@ -7,16 +7,17 @@ import { personById } from '../data/people';
 import { roleById } from '../data/roles';
 import { rocketById } from '../data/rockets';
 
-/** Find who led this subteam each season (newest first). */
+/** Find who led this subteam each season (newest first). A subteam can have more
+ *  than one lead in a season (e.g. co-leads), so every matching entry is kept. */
 function leadHistory(subteamId: string) {
-  const out: { seasonName: string; personName: string; roleName: string }[] = [];
+  const out: { seasonId: string; seasonName: string; personName: string; roleName: string }[] = [];
   for (const season of seasons) {
     for (const entry of season.roster) {
-      if (entry.subteam !== subteamId) continue;
+      if (entry.subteam !== subteamId || !entry.displayOnTeam) continue;
       const role = roleById(entry.role);
       const person = personById(entry.person);
       if (!role || !person || !role.isSubteamRole) continue;
-      out.push({ seasonName: season.name, personName: person.name, roleName: role.name });
+      out.push({ seasonId: season.id, seasonName: season.name, personName: person.name, roleName: role.name });
     }
   }
   return out;
@@ -35,8 +36,11 @@ export default function SubteamDetailPage() {
   }
 
   const leads = leadHistory(subteam.id);
-  const currentLead = leads[0];
-  const pastLeads = leads.slice(1);
+  // The newest season that has any lead is the "current" one — keep all of its
+  // leads together (co-leads), and treat every earlier season as past.
+  const currentSeasonId = leads[0]?.seasonId;
+  const currentLeads = leads.filter((l) => l.seasonId === currentSeasonId);
+  const pastLeads = leads.filter((l) => l.seasonId !== currentSeasonId);
   const rockets = subteam.relatedRockets.map(rocketById).filter(Boolean);
   const created = subteam.createdSeason ? seasonById(subteam.createdSeason) : undefined;
 
@@ -52,7 +56,11 @@ export default function SubteamDetailPage() {
           {subteam.status}
         </span>
         {created && <span className="text-ink-faint font-light">Created {created.name}</span>}
-        {currentLead && <span className="text-ink-faint font-light">· Lead: {currentLead.personName}</span>}
+        {currentLeads.length > 0 && (
+          <span className="text-ink-faint font-light">
+            · {currentLeads.length > 1 ? 'Leads' : 'Lead'}: {currentLeads.map((l) => l.personName).join(', ')}
+          </span>
+        )}
       </div>
 
       {subteam.media.length > 0 && (

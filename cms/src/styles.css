@@ -143,6 +143,9 @@ input[type="checkbox"], input[type="radio"] {
 .block .block-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .block .block-type { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); }
 .block .block-id { font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace; }
+/* A single role nested inside a roster member's card. */
+.role-row { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin: 10px 0; background: var(--panel-2); }
+.role-row .block-head { margin-bottom: 8px; }
 
 .notice { padding: 12px 14px; border-radius: 8px; font-size: 13px; margin: 14px 0; white-space: pre-wrap; }
 .notice.error { background: color-mix(in srgb, var(--danger) 16%, var(--panel)); border: 1px solid color-mix(in srgb, var(--danger) 45%, var(--border)); color: color-mix(in srgb, var(--danger) 70%, var(--text)); }
@@ -228,11 +231,17 @@ input[type="checkbox"], input[type="radio"] {
 .tile-head .tile-toggle { cursor: pointer; }
 .tile-head .tile-toggle:hover { color: var(--muted); }
 .tile-check { margin-right: 2px; }
+/* ↑/↓ reorder buttons on a manually-ordered card (roles, subteams, rockets…). */
+.tile-reorder { display: inline-flex; gap: 2px; }
+.tile-reorder button { padding: 2px 7px; line-height: 1; color: var(--muted); }
+.tile-reorder button:disabled { opacity: 0.3; }
 
 /* Find + bulk-select controls in collection lists */
 .list-search { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 .list-search input { flex: 1 1 auto; min-width: 0; }
 .list-search .list-count { font-size: 12px; color: var(--muted); font-family: ui-monospace, monospace; white-space: nowrap; }
+.list-sort { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.list-sort select { width: auto; }
 .bulk-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 14px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; }
 .bulk-bar .spacer { flex: 1; }
 .bulk-bar .bulk-all { display: flex; align-items: center; gap: 8px; margin: 0; text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--text); }

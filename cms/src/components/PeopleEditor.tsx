@@ -23,6 +23,7 @@ export default function PeopleEditor({ repo }: { repo: string }) {
           'Add a photo, major, bio, and links.',
           'Use the Privacy checkboxes to choose what shows publicly (e.g. hide their email).',
           'Click Save.',
+          'Use the “Sort by” menu to reorder the list by name, graduation year, or alumni — this is just for browsing here; it does not change the public site.',
           'To show them on the team page, add them to a season’s roster in the Seasons tab.',
         ],
       }}
@@ -31,6 +32,11 @@ export default function PeopleEditor({ repo }: { repo: string }) {
       makeSeed={(id, name) => ({ type: 'person', id, name })}
       displayName={(p) => p.name}
       sort={(a, b) => a.name.localeCompare(b.name)}
+      sortModes={[
+        { key: 'name', label: 'Name (A–Z)', cmp: (a, b) => a.name.localeCompare(b.name) },
+        { key: 'grad', label: 'Graduation year (newest)', cmp: (a, b) => (b.gradYear ?? 0) - (a.gradYear ?? 0) || a.name.localeCompare(b.name) },
+        { key: 'alumni', label: 'Alumni first', cmp: (a, b) => Number(b.isAlumni) - Number(a.isAlumni) || a.name.localeCompare(b.name) },
+      ]}
       renderItem={(p, update) => (
         <>
           <TextField label="Name" value={p.name} onChange={(v) => update({ name: v })} />

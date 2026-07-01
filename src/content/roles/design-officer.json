@@ -4,7 +4,7 @@
   "name": "Design Officer",
   "category": "Engineering",
   "description": "Oversees the rocket's design.",
-  "displayOrder": 0,
+  "displayOrder": 50,
   "isLeadership": true,
   "isSubteamRole": false,
   "scope": "org",

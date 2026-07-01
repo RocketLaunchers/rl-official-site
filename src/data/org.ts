@@ -40,12 +40,17 @@ export function roleTitle(role: Role, subteam?: Subteam): string {
   return role.scope === 'subteam' && subteam ? `${subteam.name} ${role.name}` : role.name;
 }
 
-/** Resolved roster for a season (only entries flagged to display), ordered. */
+/**
+ * Resolved roster for a season: only entries flagged to display, with dangling
+ * references and non-public people dropped. Ordering is not applied here — it is
+ * derived from the global role/subteam order by `groupedRoster`, so the team
+ * reads the same way every season (no per-season hand-numbering).
+ */
 export function rosterForSeason(seasonId: string): RosterMember[] {
   const season = bySeason(seasonId);
   if (!season) return [];
   const out: RosterMember[] = [];
-  for (const entry of [...season.roster].sort((a, b) => a.displayOrder - b.displayOrder)) {
+  for (const entry of season.roster) {
     if (!entry.displayOnTeam) continue;
     const person = personById(entry.person);
     const role = roleById(entry.role);
@@ -55,18 +60,84 @@ export function rosterForSeason(seasonId: string): RosterMember[] {
   return out;
 }
 
-/** Roster split into executive officers, subteam leads, and general members. */
+/**
+ * A person as shown on the team page: one card that lists every role they hold
+ * this season. Someone can wear two hats (e.g. a Chief of Engineering who also
+ * leads Payload), so the same person can appear in more than one section — but
+ * each of their cards still lists their full set of titles.
+ */
+export type RosterPerson = { person: Person; titles: string[] };
+
+/** Which team-page section a role belongs to. */
+function roleSection(role: Role): 'officers' | 'leads' | 'members' {
+  if (role.isSubteamRole) return 'leads';
+  if (role.isLeadership) return 'officers';
+  return 'members';
+}
+
+const byName = (a: RosterMember, b: RosterMember) => a.person.name.localeCompare(b.person.name);
+const subOrder = (m: RosterMember) => m.subteam?.displayOrder ?? 0;
+
+/**
+ * Section comparators. Everything is driven by the *global* role and subteam
+ * order (set once in the Roles / Subteams editors), never by per-season numbers,
+ * so a role always lands in the same spot across the whole season history:
+ *  - officers   → by role rank (President, VP, … set in Roles), then name
+ *  - leads      → by subteam order (set in Subteams), then role rank (Lead before
+ *                 Co-Lead), then name
+ *  - members    → by subteam order, then name
+ */
+const SECTION_SORT: Record<'officers' | 'leads' | 'members', (a: RosterMember, b: RosterMember) => number> = {
+  officers: (a, b) => a.role.displayOrder - b.role.displayOrder || byName(a, b),
+  leads: (a, b) => subOrder(a) - subOrder(b) || a.role.displayOrder - b.role.displayOrder || byName(a, b),
+  members: (a, b) => subOrder(a) - subOrder(b) || byName(a, b),
+};
+
+/**
+ * Roster split into executive officers, subteam leads, and general members.
+ *
+ * A person is listed in every section they hold a visible role in, and each of
+ * their cards carries their full set of season titles — so someone who is both
+ * an officer and a subteam lead appears in both sections, each card reading e.g.
+ * "Chief of Engineering · Payload Lead". Roles toggled off (`displayOnTeam:
+ * false`) are already dropped by `rosterForSeason`, so they never show. Ordering
+ * within each section comes from the global role/subteam order (see SECTION_SORT).
+ */
 export function groupedRoster(seasonId: string): {
-  officers: RosterMember[];
-  leads: RosterMember[];
-  members: RosterMember[];
+  officers: RosterPerson[];
+  leads: RosterPerson[];
+  members: RosterPerson[];
 } {
   const all = rosterForSeason(seasonId);
-  return {
-    officers: all.filter((m) => m.role.isLeadership && !m.role.isSubteamRole),
-    leads: all.filter((m) => m.role.isSubteamRole),
-    members: all.filter((m) => !m.role.isLeadership && !m.role.isSubteamRole),
+  // Each person's roles, so a multi-role card can list them all, ranked by role.
+  const rolesByPerson = new Map<string, RosterMember[]>();
+  for (const m of all) {
+    const arr = rolesByPerson.get(m.person.id) ?? [];
+    arr.push(m);
+    rolesByPerson.set(m.person.id, arr);
+  }
+  const titlesFor = (personId: string): string[] => {
+    const ranked = [...(rolesByPerson.get(personId) ?? [])].sort((a, b) => a.role.displayOrder - b.role.displayOrder);
+    const titles: string[] = [];
+    for (const m of ranked) {
+      const t = roleTitle(m.role, m.subteam);
+      if (!titles.includes(t)) titles.push(t);
+    }
+    return titles;
   };
+  // For a section, keep one representative entry per person (their best-ranked
+  // role in that section), then order the people by that section's comparator.
+  const build = (section: 'officers' | 'leads' | 'members'): RosterPerson[] => {
+    const cmp = SECTION_SORT[section];
+    const repByPerson = new Map<string, RosterMember>();
+    for (const m of all) {
+      if (roleSection(m.role) !== section) continue;
+      const cur = repByPerson.get(m.person.id);
+      if (!cur || cmp(m, cur) < 0) repByPerson.set(m.person.id, m);
+    }
+    return [...repByPerson.values()].sort(cmp).map((m) => ({ person: m.person, titles: titlesFor(m.person.id) }));
+  };
+  return { officers: build('officers'), leads: build('leads'), members: build('members') };
 }
 
 /** Resolved, ordered sponsors for a season. */
@@ -126,17 +197,28 @@ export const alumni: Person[] = people
   .filter((p) => p.isAlumni && p.privacy.showPublicly)
   .sort((a, b) => (b.gradYear ?? 0) - (a.gradYear ?? 0) || a.name.localeCompare(b.name));
 
-/** Every season role a person has held, newest season first (for profiles/alumni). */
+/**
+ * Every season role a person has held, newest season first (for profiles/alumni).
+ * Roles hidden with `displayOnTeam: false` are omitted, so the per-role toggle
+ * applies to a person's history too.
+ */
 export function pastRolesForPerson(personId: string): { season: Season; role: Role; subteam?: Subteam }[] {
   const out: { season: Season; role: Role; subteam?: Subteam }[] = [];
   // `seasons` is newest-first via the seasons loader.
   for (const season of seasons) {
     for (const entry of season.roster) {
-      if (entry.person !== personId) continue;
+      if (entry.person !== personId || !entry.displayOnTeam) continue;
       const role = roleById(entry.role);
       if (!role) continue;
       out.push({ season, role, subteam: entry.subteam ? subteamById(entry.subteam) : undefined });
     }
   }
   return out;
+}
+
+/** A person's full role history as "<Title> · <Season>" lines (for alumni cards). */
+export function pastRoleTitles(personId: string): string[] {
+  return pastRolesForPerson(personId).map(
+    ({ role, subteam, season }) => `${roleTitle(role, subteam)} · ${season.name.replace(/\s*Season$/i, '')}`,
+  );
 }

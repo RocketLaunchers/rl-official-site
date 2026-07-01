@@ -22,6 +22,10 @@ export default function SponsorsEditor({ repo }: { repo: string }) {
       makeSeed={(id, name) => ({ type: 'sponsor', id, name })}
       displayName={(s) => s.name}
       sort={(a, b) => a.name.localeCompare(b.name)}
+      sortModes={[
+        { key: 'name', label: 'Name (A–Z)', cmp: (a, b) => a.name.localeCompare(b.name) },
+        { key: 'industry', label: 'Industry', cmp: (a, b) => (a.industry || '~').localeCompare(b.industry || '~') || a.name.localeCompare(b.name) },
+      ]}
       renderItem={(s, update) => (
         <>
           <TextField label="Name" value={s.name} onChange={(v) => update({ name: v })} />

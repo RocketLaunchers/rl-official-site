@@ -14,7 +14,7 @@ export default function RolesEditor({ repo }: { repo: string }) {
           'Click “＋ New”, type the role name, and Create.',
           'Set Scope: “Subteam role” for Lead / Co-Lead / Member, or “Org-wide officer”.',
           'Set its Category and Description, and tick the flags (Leadership, Subteam role, Active).',
-          'Use Display order to control where it appears (lower = first).',
+          'Use the ↑ / ↓ buttons on each role card to set the order (top = first). This order drives the team roster on the site — the same roles line up the same way every season.',
           'Click Save, then Publish.',
         ],
       }}
@@ -23,6 +23,7 @@ export default function RolesEditor({ repo }: { repo: string }) {
       makeSeed={(id, name) => ({ type: 'role', id, name })}
       displayName={(r) => r.name}
       sort={(a, b) => a.displayOrder - b.displayOrder}
+      reorderable
       renderItem={(r, update) => (
         <>
           <div className="grid2">
@@ -30,17 +31,12 @@ export default function RolesEditor({ repo }: { repo: string }) {
             <TextField label="Category" value={r.category} placeholder="Executive / Engineering / Subteam Lead" onChange={(v) => update({ category: v })} />
           </div>
           <TextArea label="Description" value={r.description} onChange={(v) => update({ description: v })} />
-          <div className="grid2">
-            <Field label="Display order (lower = first)">
-              <input type="number" value={r.displayOrder} onChange={(e) => update({ displayOrder: Number(e.target.value) })} />
-            </Field>
-            <Field label="Scope">
-              <select value={r.scope ?? 'org'} onChange={(e) => update({ scope: e.target.value as Role['scope'] })}>
-                <option value="subteam">Subteam role (combines with a subteam)</option>
-                <option value="org">Org-wide officer (no subteam)</option>
-              </select>
-            </Field>
-          </div>
+          <Field label="Scope">
+            <select value={r.scope ?? 'org'} onChange={(e) => update({ scope: e.target.value as Role['scope'] })}>
+              <option value="subteam">Subteam role (combines with a subteam)</option>
+              <option value="org">Org-wide officer (no subteam)</option>
+            </select>
+          </Field>
           <Field label="Flags">
             <div className="checkboxes">
               <label><input type="checkbox" checked={r.isLeadership} onChange={(e) => update({ isLeadership: e.target.checked })} /> Leadership</label>

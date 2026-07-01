@@ -50,7 +50,8 @@ export default function GalleryEditor({ repo }: { repo: string }) {
         intro: 'Group photos into albums. Tie an album to a season and it shows on the homepage while that season is current.',
         steps: [
           'Click “＋ New”, type the album title, and Create.',
-          'Optionally set a season id and a display order.',
+          'Optionally tie it to a season id.',
+          'Use the ↑ / ↓ buttons on each album card to set the order albums appear in (top = first).',
           'Click “＋ Add photo”, then Import each image and add a title and alt text.',
           'Click Save, then Publish.',
         ],
@@ -60,14 +61,12 @@ export default function GalleryEditor({ repo }: { repo: string }) {
       makeSeed={(id, title) => ({ type: 'album', id, title })}
       displayName={(a) => a.title}
       sort={(a, b) => a.displayOrder - b.displayOrder}
+      reorderable
       renderItem={(a, update) => (
         <>
           <div className="grid2">
             <TextField label="Title" value={a.title} onChange={(v) => update({ title: v })} />
             <TextField label="Season id (optional)" value={a.season} placeholder="2025-2026" onChange={(v) => update({ season: v })} />
-            <Field label="Display order">
-              <input type="number" value={a.displayOrder} onChange={(e) => update({ displayOrder: Number(e.target.value) })} />
-            </Field>
           </div>
           <TextArea label="Description" value={a.description} onChange={(v) => update({ description: v })} />
           <AlbumItems repo={repo} items={a.items} onChange={(items) => update({ items })} />

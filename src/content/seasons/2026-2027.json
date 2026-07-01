@@ -67,6 +67,20 @@
       "subteam": "",
       "displayOnTeam": true,
       "displayOrder": 60
+    },
+    {
+      "person": "roel-cantu",
+      "role": "sponsorship-director",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 0
+    },
+    {
+      "person": "andrea-gonzalez",
+      "role": "public-relations-officer",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 0
     }
   ],
   "sponsors": [],

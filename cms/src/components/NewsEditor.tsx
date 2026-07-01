@@ -3,6 +3,20 @@ import { listNews, createNews, deleteNews, renameNews, type NewsSummary } from '
 import { slugify } from '../util';
 import HelpPanel from './HelpPanel';
 
+/** Sort options for the news list (view-only; the site orders posts by date). */
+const NEWS_SORTS: Record<string, (a: NewsSummary, b: NewsSummary) => number> = {
+  'date-desc': (a, b) => (b.date ?? '').localeCompare(a.date ?? ''),
+  'date-asc': (a, b) => (a.date ?? '').localeCompare(b.date ?? ''),
+  title: (a, b) => a.title.localeCompare(b.title),
+  status: (a, b) => a.status.localeCompare(b.status) || (b.date ?? '').localeCompare(a.date ?? ''),
+};
+const NEWS_SORT_OPTIONS: [string, string][] = [
+  ['date-desc', 'Date (newest first)'],
+  ['date-asc', 'Date (oldest first)'],
+  ['title', 'Title (A–Z)'],
+  ['status', 'Status (draft first)'],
+];
+
 /** The news list: create / open / delete posts. Editing a post opens the block Editor. */
 export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenPost: (slug: string) => void }) {
   const [posts, setPosts] = useState<NewsSummary[] | null>(null);
@@ -11,6 +25,8 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
   const [newTitle, setNewTitle] = useState('');
   const [newSlug, setNewSlug] = useState('');
   const [creating, setCreating] = useState(false);
+  const [query, setQuery] = useState('');
+  const [sortKey, setSortKey] = useState('date-desc');
 
   const refresh = useCallback(async () => {
     setError(null);
@@ -67,6 +83,11 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
     }
   }
 
+  const q = query.trim().toLowerCase();
+  const filtered = (posts ?? [])
+    .filter((p) => !q || p.title.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q))
+    .sort(NEWS_SORTS[sortKey] ?? NEWS_SORTS['date-desc']);
+
   return (
     <div className="app">
       <div className="topbar">
@@ -85,6 +106,7 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
               'Add content blocks, and set the date and season.',
               'When it’s ready, set the status to “published” in the post editor.',
               'Save the post, then go to the Publish tab and push.',
+              'As the list grows, use the search box and the “Sort by” menu (date, title, or status) to find a post.',
             ]}
           />
           {showNew && (
@@ -111,12 +133,33 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
           ) : posts.length === 0 ? (
             <div className="empty">No posts yet. Create your first draft.</div>
           ) : (
-            <table className="posts">
-              <thead>
-                <tr><th>Title</th><th>Status</th><th>Date</th><th>Season</th><th>Blocks</th><th /></tr>
-              </thead>
-              <tbody>
-                {posts.map((p) => (
+            <>
+              {posts.length > 1 && (
+                <div className="list-search">
+                  <input
+                    type="search"
+                    placeholder="Search news by title or slug…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                  <label className="list-sort">
+                    Sort by
+                    <select value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+                      {NEWS_SORT_OPTIONS.map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                    </select>
+                  </label>
+                  {q && <span className="list-count">{filtered.length} / {posts.length}</span>}
+                </div>
+              )}
+              {filtered.length === 0 ? (
+                <div className="empty">No matches for “{query.trim()}”.</div>
+              ) : (
+                <table className="posts">
+                  <thead>
+                    <tr><th>Title</th><th>Status</th><th>Date</th><th>Season</th><th>Blocks</th><th /></tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((p) => (
                   <tr key={p.slug}>
                     <td className="title">
                       {p.title}
@@ -137,8 +180,10 @@ export default function NewsEditor({ onOpenPost, repo }: { repo: string; onOpenP
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
+                  </tbody>
+                </table>
+              )}
+            </>
           )}
         </div>
       </div>

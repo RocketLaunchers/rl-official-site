@@ -2,13 +2,13 @@
   "type": "person",
   "id": "francisco-amaro",
   "name": "Francisco Amaro",
-  "photo": "",
+  "photo": "/images/francisco-amaro-crop.webp",
   "major": "Mechanical Engineering",
-  "gradYear": 2028,
-  "bio": "",
+  "gradYear": 2029,
+  "bio": "Leading the development of a L1 Rocket Winder. Inventor Autodesk certified, and Solid Works certified (CSWA)",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "franciscoj.amaroii@gmail.com",
+    "linkedin": "www.linkedin.com/in/francisco-amaro-b59b93380",
     "github": "",
     "website": ""
   },
@@ -19,6 +19,6 @@
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

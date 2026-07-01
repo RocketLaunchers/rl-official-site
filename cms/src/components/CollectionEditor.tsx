@@ -21,6 +21,8 @@ export default function CollectionEditor<T extends { id: string }>({
   displayName,
   renderItem,
   sort,
+  reorderable,
+  sortModes,
 }: {
   repo: string;
   title: string;
@@ -33,7 +35,20 @@ export default function CollectionEditor<T extends { id: string }>({
   newTitleLabel?: string;
   displayName: (item: T) => string;
   renderItem: (item: T, update: (patch: Partial<T>) => void) => ReactNode;
+  /** Initial order on load. For `reorderable` lists this is the saved order. */
   sort?: (a: T, b: T) => number;
+  /**
+   * Manual ordering: cards get ↑/↓ buttons that reorder the list and renumber a
+   * numeric `displayOrder` field (10, 20, 30…). Use for lists whose on-site order
+   * is author-controlled (roles, subteams, rockets, gallery).
+   */
+  reorderable?: boolean;
+  /**
+   * View-only "Sort by" categories, for records with no manual order (e.g.
+   * people, sorted by name / grad year / alumni). Mutually exclusive with
+   * `reorderable`. The first entry is the default.
+   */
+  sortModes?: { key: string; label: string; cmp: (a: T, b: T) => number }[];
 }) {
   const [items, setItems] = useState<T[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +69,8 @@ export default function CollectionEditor<T extends { id: string }>({
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  // View-only sort category (People, etc.); defaults to the first mode.
+  const [sortKey, setSortKey] = useState<string>(sortModes?.[0]?.key ?? '');
 
   function reload() {
     return api
@@ -74,6 +91,25 @@ export default function CollectionEditor<T extends { id: string }>({
 
   function update(id: string, patch: Partial<T>) {
     setItems((xs) => xs?.map((x) => (x.id === id ? { ...x, ...patch } : x)) ?? xs);
+    setMsg(null);
+  }
+
+  /** Rewrite displayOrder to match list position (10, 20, 30…) after a reorder. */
+  function renumber(arr: T[]): T[] {
+    return arr.map((x, i) => ({ ...x, displayOrder: (i + 1) * 10 })) as T[];
+  }
+
+  /** Move one record up/down in the manual order (reorderable lists only). */
+  function move(id: string, dir: -1 | 1) {
+    setItems((xs) => {
+      if (!xs) return xs;
+      const i = xs.findIndex((x) => x.id === id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= xs.length) return xs;
+      const next = [...xs];
+      [next[i], next[j]] = [next[j], next[i]];
+      return renumber(next);
+    });
     setMsg(null);
   }
 
@@ -155,7 +191,11 @@ export default function CollectionEditor<T extends { id: string }>({
     setError(null);
     try {
       const created = (await api.create(repo, makeSeed(slug, newName.trim()))) as T;
-      setItems((xs) => [...(xs ?? []), created]);
+      // New records land at the end; renumber so the manual order stays clean.
+      setItems((xs) => {
+        const appended = [...(xs ?? []), created];
+        return reorderable ? renumber(appended) : appended;
+      });
       setShowNew(false);
       setNewName('');
       setNewSlug('');
@@ -196,9 +236,12 @@ export default function CollectionEditor<T extends { id: string }>({
   }
 
   const q = query.trim().toLowerCase();
-  const filtered = (items ?? []).filter(
+  const activeSort = sortModes?.find((m) => m.key === sortKey)?.cmp ?? sortModes?.[0]?.cmp;
+  const matched = (items ?? []).filter(
     (it) => !q || displayName(it).toLowerCase().includes(q) || it.id.toLowerCase().includes(q),
   );
+  // `sortModes` re-sorts the view live; otherwise keep the (manual/load) order.
+  const filtered = activeSort ? [...matched].sort(activeSort) : matched;
   const allCollapsed = filtered.length > 0 && filtered.every((it) => collapsed.has(it.id));
   const selectedInView = filtered.filter((it) => selected.has(it.id)).length;
   const allFilteredSelected = filtered.length > 0 && selectedInView === filtered.length;
@@ -297,6 +340,16 @@ export default function CollectionEditor<T extends { id: string }>({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
+              {sortModes && sortModes.length > 0 && (
+                <label className="list-sort">
+                  Sort by
+                  <select value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+                    {sortModes.map((m) => (
+                      <option key={m.key} value={m.key}>{m.label}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
               {q && (
                 <span className="list-count">
                   {filtered.length} / {items.length}
@@ -329,7 +382,7 @@ export default function CollectionEditor<T extends { id: string }>({
           ) : filtered.length === 0 ? (
             <div className="empty">No matches for “{query.trim()}”.</div>
           ) : (
-            filtered.map((item) => {
+            filtered.map((item, idx) => {
               const isCollapsed = collapsed.has(item.id);
               const isSelected = selected.has(item.id);
               return (
@@ -343,6 +396,12 @@ export default function CollectionEditor<T extends { id: string }>({
                       onChange={() => toggleIn(setSelected, item.id)}
                       aria-label={`Select ${displayName(item) || item.id}`}
                     />
+                  )}
+                  {reorderable && !selectMode && !q && (
+                    <span className="tile-reorder">
+                      <button className="small ghost" title="Move up" disabled={idx === 0} onClick={() => move(item.id, -1)}>↑</button>
+                      <button className="small ghost" title="Move down" disabled={idx === filtered.length - 1} onClick={() => move(item.id, 1)}>↓</button>
+                    </span>
                   )}
                   <button
                     className="small ghost tile-collapse"

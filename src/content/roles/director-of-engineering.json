@@ -4,7 +4,7 @@
   "name": "Director of Engineering",
   "category": "Engineering",
   "description": "Owns the overall vehicle architecture and coordinates the technical subteams.",
-  "displayOrder": 50,
+  "displayOrder": 30,
   "isLeadership": true,
   "isSubteamRole": false,
   "scope": "org",

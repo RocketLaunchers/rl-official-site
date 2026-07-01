@@ -4,8 +4,8 @@
   "name": "Sponsorship Director",
   "category": "",
   "description": "",
-  "displayOrder": 0,
-  "isLeadership": false,
+  "displayOrder": 80,
+  "isLeadership": true,
   "isSubteamRole": false,
   "scope": "org",
   "active": true

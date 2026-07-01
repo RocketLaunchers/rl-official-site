@@ -1,0 +1,11 @@
+{
+  "type": "news",
+  "id": "test",
+  "title": "test",
+  "status": "draft",
+  "season": "",
+  "excerpt": "",
+  "readTime": "",
+  "tags": [],
+  "blocks": []
+}

@@ -17,6 +17,7 @@ export default function ConstitutionEditor({ repo }: { repo: string }) {
           'Set the Version, Effective season, and Date approved, then Choose the PDF (upload it first in Tools → Assets).',
           'List what changed under “Summary of changes”.',
           'Set this version’s Status to “current”, and set the previous one to “archived”.',
+          'Use search and the “Sort by” menu (date, status, or version) to find a version as history grows.',
           'Click Save, then Publish.',
         ],
       }}
@@ -25,6 +26,12 @@ export default function ConstitutionEditor({ repo }: { repo: string }) {
       makeSeed={(id, title) => ({ type: 'constitution', id, title, version: id })}
       displayName={(c) => `${c.title} — v${c.version}`}
       sort={(a, b) => (b.dateApproved ?? '').localeCompare(a.dateApproved ?? '')}
+      sortModes={[
+        { key: 'date-desc', label: 'Date approved (newest)', cmp: (a, b) => (b.dateApproved ?? '').localeCompare(a.dateApproved ?? '') },
+        { key: 'date-asc', label: 'Date approved (oldest)', cmp: (a, b) => (a.dateApproved ?? '').localeCompare(b.dateApproved ?? '') },
+        { key: 'status', label: 'Status (current first)', cmp: (a, b) => ['current', 'draft', 'archived'].indexOf(a.status) - ['current', 'draft', 'archived'].indexOf(b.status) || (b.dateApproved ?? '').localeCompare(a.dateApproved ?? '') },
+        { key: 'version', label: 'Version', cmp: (a, b) => b.version.localeCompare(a.version) },
+      ]}
       renderItem={(c, update) => (
         <>
           <div className="grid2">

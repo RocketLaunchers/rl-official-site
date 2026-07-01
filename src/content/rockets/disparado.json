@@ -1,6 +1,6 @@
 {
   "type": "rocket",
-  "id": "brunito",
+  "id": "disparado",
   "name": "Disparado",
   "seasons": [
     "2024-2025"
@@ -45,5 +45,5 @@
     "jose-zavala",
     "cesar-mendez"
   ],
-  "displayOrder": 20
+  "displayOrder": 5
 }

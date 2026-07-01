@@ -6,7 +6,7 @@
   "endDate": "2026-05-15",
   "status": "archived",
   "theme": "Reach for Apogee",
-  "currentRocket": "marv",
+  "currentRocket": "itzamna",
   "subteams": [
     "avionics",
     "recovery",
@@ -122,7 +122,7 @@
     },
     {
       "person": "jordan-lara",
-      "role": "member",
+      "role": "lead",
       "subteam": "avionics",
       "displayOnTeam": true,
       "displayOrder": 140

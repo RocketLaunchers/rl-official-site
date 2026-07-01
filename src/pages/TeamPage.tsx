@@ -2,20 +2,16 @@ import { useState } from 'react';
 import PageShell from '../components/PageShell';
 import PersonCard from '../components/PersonCard';
 import { seasons, currentSeason } from '../data/seasons';
-import { groupedRoster, advisorsForSeason, roleTitle, type RosterMember } from '../data/org';
+import { groupedRoster, advisorsForSeason, type RosterPerson } from '../data/org';
 
-function Group({ title, members }: { title: string; members: RosterMember[] }) {
+function Group({ title, members }: { title: string; members: RosterPerson[] }) {
   if (members.length === 0) return null;
   return (
     <section className="mb-14">
       <h2 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-6">{title}</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {members.map((m) => (
-          <PersonCard
-            key={`${m.entry.person}-${m.entry.role}`}
-            person={m.person}
-            subtitle={roleTitle(m.role, m.subteam)}
-          />
+          <PersonCard key={m.person.id} person={m.person} subtitle={m.titles} />
         ))}
       </div>
     </section>

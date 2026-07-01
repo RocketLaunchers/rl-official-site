@@ -1,6 +1,6 @@
 {
   "type": "rocket",
-  "id": "marv",
+  "id": "itzamna",
   "name": "Itzamna",
   "seasons": [
     "2025-2026"
@@ -40,5 +40,5 @@
     "sabian-cardenas",
     "cesar-mendez"
   ],
-  "displayOrder": 10
+  "displayOrder": 0
 }

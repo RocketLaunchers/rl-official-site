@@ -18,6 +18,7 @@ export default function SubteamsEditor({ repo }: { repo: string }) {
           'Click “＋ New”, type the subteam name, and Create.',
           'Add a short and long description, pick an icon, and set status to Active.',
           'Optionally add an image, skills, and tools.',
+          'Use the ↑ / ↓ buttons on each card to set the order subteams appear in (top = first) — this also orders subteam leads and members on the team page.',
           'Click Save.',
           'To activate it this year, tick it under Seasons → current season → “Active subteams this season”.',
         ],
@@ -27,6 +28,7 @@ export default function SubteamsEditor({ repo }: { repo: string }) {
       makeSeed={(id, name) => ({ type: 'subteam', id, name })}
       displayName={(s) => s.name}
       sort={(a, b) => a.displayOrder - b.displayOrder}
+      reorderable
       renderItem={(s, update) => (
         <>
           <TextField label="Name" value={s.name} onChange={(v) => update({ name: v })} />
@@ -44,9 +46,6 @@ export default function SubteamsEditor({ repo }: { repo: string }) {
               </select>
             </Field>
             <TextField label="Created season id" value={s.createdSeason} placeholder="2025-2026" onChange={(v) => update({ createdSeason: v })} />
-            <Field label="Display order">
-              <input type="number" value={s.displayOrder} onChange={(e) => update({ displayOrder: Number(e.target.value) })} />
-            </Field>
           </div>
           <ImageField label="Image" root={repo} value={s.image} onChange={(src) => update({ image: src })} aspect={16 / 9} />
           <StringListEditor label="Skills" items={s.skills} onChange={(skills) => update({ skills })} placeholder="Embedded C/Rust" />

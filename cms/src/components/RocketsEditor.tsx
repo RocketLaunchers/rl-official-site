@@ -40,6 +40,7 @@ export default function RocketsEditor({ repo }: { repo: string }) {
           'Set its status, competition, mission, and specs.',
           'Add a hero image, a 3D model, and any media.',
           'Record results and lessons learned once it has flown.',
+          'Use the ↑ / ↓ buttons on each card to set the order rockets are listed (top = first).',
           'Click Save, then Publish.',
         ],
       }}
@@ -48,6 +49,7 @@ export default function RocketsEditor({ repo }: { repo: string }) {
       makeSeed={(id, name) => ({ type: 'rocket', id, name })}
       displayName={(r) => r.name}
       sort={(a, b) => a.displayOrder - b.displayOrder}
+      reorderable
       renderItem={(r, update) => (
         <>
           <div className="grid2">
@@ -58,9 +60,6 @@ export default function RocketsEditor({ repo }: { repo: string }) {
               </select>
             </Field>
             <TextField label="Competition" value={r.competition} onChange={(v) => update({ competition: v })} />
-            <Field label="Display order">
-              <input type="number" value={r.displayOrder} onChange={(e) => update({ displayOrder: Number(e.target.value) })} />
-            </Field>
           </div>
           <TagsField label="Season ids (comma-separated)" value={r.seasons} onChange={(seasons) => update({ seasons })} />
           <TextArea label="Mission" value={r.mission} onChange={(v) => update({ mission: v })} />

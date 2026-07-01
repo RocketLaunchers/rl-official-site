@@ -4,8 +4,8 @@
   "name": "Public Relations Officer",
   "category": "",
   "description": "",
-  "displayOrder": 0,
-  "isLeadership": false,
+  "displayOrder": 90,
+  "isLeadership": true,
   "isSubteamRole": false,
   "scope": "org",
   "active": true

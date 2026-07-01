@@ -12,8 +12,9 @@ function initials(name: string): string {
 
 /**
  * A reusable person tile used by the team roster, advisors/mentors, and alumni.
- * `subtitle` is the role/category line; `meta` is optional secondary text
- * (subteam, graduation year, company). Honors the person's privacy flags.
+ * `subtitle` is the role/category line — pass an array to show several (a member
+ * who holds multiple roles, or an alum's full history); `meta` is optional
+ * secondary text (subteam, graduation year, company). Honors privacy flags.
  */
 export default function PersonCard({
   person,
@@ -21,9 +22,10 @@ export default function PersonCard({
   meta,
 }: {
   person: Person;
-  subtitle?: string;
+  subtitle?: string | string[];
   meta?: string;
 }) {
+  const subtitles = subtitle == null ? [] : Array.isArray(subtitle) ? subtitle : [subtitle];
   const showPhoto = person.privacy.showPhoto && person.photo;
   const showLinkedin = person.privacy.showLinkedin && person.links.linkedin;
   const showEmail = person.privacy.showEmail && person.links.email;
@@ -41,9 +43,14 @@ export default function PersonCard({
       </div>
       <div className="p-5">
         <h3 className="font-display text-base font-light text-ink tracking-tight">{person.name}</h3>
-        {subtitle && (
-          <p className="text-[11px] uppercase tracking-[0.15em] text-accent/80 font-light mt-1">{subtitle}</p>
-        )}
+        {subtitles.map((s, i) => (
+          <p
+            key={i}
+            className={`text-[11px] uppercase tracking-[0.15em] text-accent/80 font-light ${i === 0 ? 'mt-1' : 'mt-0.5'}`}
+          >
+            {s}
+          </p>
+        ))}
         {meta && <p className="text-ink-faint text-[13px] font-light mt-1.5">{meta}</p>}
         {person.major && <p className="text-ink-faint text-[13px] font-light mt-0.5">{person.major}</p>}
         {(showLinkedin || showEmail) && (
