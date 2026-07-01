@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import SpaceBackground from './SpaceBackgroundLazy';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -22,8 +21,7 @@ export default function PageShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-canvas text-ink relative">
-      <SpaceBackground />
+    <div className="min-h-screen text-ink relative">
       <div className="relative z-10">
         <Header />
         <main className="pt-28 pb-20">

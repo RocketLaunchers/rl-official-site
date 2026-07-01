@@ -32,6 +32,15 @@ const FADE_OUT = 440;
 const CRUISE_SPEED = 34;
 const FIELD_SPREAD = 0.72;
 const MIN_PX = 1.8;
+
+// ---- Warp jump (page transition) ------------------------------------------
+// On navigation we briefly slam the cruise speed up so the field rushes past,
+// stretch stars into comet streaks, then ease back down to CRUISE_SPEED.
+const WARP_SPEED = 1700; // peak forward speed while warping (~50x cruise)
+const WARP_ATTACK = 9; // how fast warp intensity ramps up (per second)
+const WARP_DECAY = 2.6; // how fast it eases back down (per second)
+const WARP_HOLD = 0.16; // seconds held at peak before decaying
+const STREAK_MAX = 600; // world-space length of a star streak at full warp
 const GAS_OPACITY = 0.85; // overall nebula brightness
 const SAMPLE_RES = 128; // offscreen buffer size used for star placement
 
@@ -177,6 +186,7 @@ const STAR_VERT = /* glsl */ `
   uniform float uFar;
   uniform float uFadeIn;
   uniform float uFadeOut;
+  uniform float uWarpFade;
   void main() {
     vColor = aColor;
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
@@ -188,7 +198,7 @@ const STAR_VERT = /* glsl */ `
     float wantCss = aSize * uSizeScale / max(-mv.z, 1.0);
     float small = clamp(wantCss / uMinPx, 0.0, 1.0);
     float sizeCss = clamp(max(wantCss, uMinPx), 0.0, 18.0);
-    vAlpha = fade * (0.15 + 0.85 * small);
+    vAlpha = fade * (0.15 + 0.85 * small) * uWarpFade;
     gl_PointSize = sizeCss * uPixelRatio;
   }
 `;
@@ -202,6 +212,46 @@ const STAR_FRAG = /* glsl */ `
     if (d > 0.5) discard;
     float core = 1.0 - smoothstep(0.0, 0.5, d);
     gl_FragColor = vec4(vColor, pow(core, 1.7) * vAlpha);
+  }
+`;
+
+// ---- Star streak shader (warp jump) ----------------------------------------
+// Each star becomes a 2-vertex line: the head sits at the star's position, the
+// tail trails behind along the travel axis by uStreakLen. Alpha tapers from a
+// bright head to a transparent tail (comet look) and scales with uWarp so the
+// streaks fade in/out with the jump.
+const STREAK_VERT = /* glsl */ `
+  attribute float aEnd;
+  attribute vec3 aColor;
+  varying vec3 vColor;
+  varying float vAlpha;
+  uniform float uStreakLen;
+  uniform float uWarp;
+  uniform float uNear;
+  uniform float uFar;
+  uniform float uFadeIn;
+  uniform float uFadeOut;
+  void main() {
+    vColor = aColor;
+    vec3 p = position;
+    p.z -= aEnd * uStreakLen; // tail trails toward -z (away from camera)
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * mv;
+    float z = position.z;
+    float fin = smoothstep(uFar, uFar + uFadeIn, z);
+    float fout = 1.0 - smoothstep(uNear - uFadeOut, uNear, z);
+    float fade = clamp(fin * fout, 0.0, 1.0);
+    float taper = 1.0 - aEnd; // 1 at head, 0 at tail
+    vAlpha = fade * uWarp * taper;
+  }
+`;
+
+const STREAK_FRAG = /* glsl */ `
+  precision mediump float;
+  varying vec3 vColor;
+  varying float vAlpha;
+  void main() {
+    gl_FragColor = vec4(vColor, vAlpha);
   }
 `;
 
@@ -220,8 +270,12 @@ type NebulaParams = {
   envThreshold: number;
 };
 
-const SpaceBackground = () => {
+const SpaceBackground = ({ warpSignal = 0 }: { warpSignal?: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  // Set by the scene effect; called from the warpSignal effect below to kick
+  // off a warp jump without tearing down / rebuilding the Three.js scene.
+  const triggerWarpRef = useRef<(() => void) | null>(null);
+  const lastSignal = useRef(warpSignal);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -263,6 +317,7 @@ const SpaceBackground = () => {
           uFar: { value: FAR },
           uFadeIn: { value: FADE_IN },
           uFadeOut: { value: FADE_OUT },
+          uWarpFade: { value: 1 },
         },
         vertexShader: STAR_VERT,
         fragmentShader: STAR_FRAG,
@@ -406,6 +461,45 @@ const SpaceBackground = () => {
     field.frustumCulled = false;
     scene.add(field);
 
+    // --- Warp streaks: a line per field star (head + trailing tail vertex) ---
+    const streakPos = new Float32Array(FIELD_STARS * 2 * 3);
+    const streakEnd = new Float32Array(FIELD_STARS * 2);
+    const streakColor = new Float32Array(FIELD_STARS * 2 * 3);
+    for (let i = 0; i < FIELD_STARS; i++) {
+      streakEnd[i * 2] = 0; // head
+      streakEnd[i * 2 + 1] = 1; // tail
+      for (let e = 0; e < 2; e++) {
+        streakColor[(i * 2 + e) * 3] = fieldColor[i * 3];
+        streakColor[(i * 2 + e) * 3 + 1] = fieldColor[i * 3 + 1];
+        streakColor[(i * 2 + e) * 3 + 2] = fieldColor[i * 3 + 2];
+      }
+    }
+    const streakGeo = new THREE.BufferGeometry();
+    streakGeo.setAttribute('position', new THREE.BufferAttribute(streakPos, 3));
+    streakGeo.setAttribute('aEnd', new THREE.BufferAttribute(streakEnd, 1));
+    streakGeo.setAttribute('aColor', new THREE.BufferAttribute(streakColor, 3));
+    const streakMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uStreakLen: { value: 0 },
+        uWarp: { value: 0 },
+        uNear: { value: NEAR },
+        uFar: { value: FAR },
+        uFadeIn: { value: FADE_IN },
+        uFadeOut: { value: FADE_OUT },
+      },
+      vertexShader: STREAK_VERT,
+      fragmentShader: STREAK_FRAG,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const streaks = new THREE.LineSegments(streakGeo, streakMat);
+    streaks.frustumCulled = false;
+    streaks.visible = false;
+    scene.add(streaks);
+    const streakPosAttr = streakGeo.getAttribute('position') as THREE.BufferAttribute;
+
     // ---------------------------------------------------------------------
     // Clusters: a nebula gas plane + stars sampled from it
     // ---------------------------------------------------------------------
@@ -547,6 +641,19 @@ const SpaceBackground = () => {
     };
     window.addEventListener('resize', onResize);
 
+    // --- Warp jump state ---
+    // warp eases toward warpTarget; a nav bump sets target=1 and a hold window,
+    // after which target drops back to 0 and the field decelerates to cruise.
+    let warp = 0;
+    let warpTarget = 0;
+    let warpHoldUntil = 0;
+    const triggerWarp = () => {
+      if (prefersReducedMotion) return;
+      warpTarget = 1;
+      warpHoldUntil = clock.elapsedTime + WARP_HOLD;
+    };
+    triggerWarpRef.current = triggerWarp;
+
     // --- Animation ---
     const clock = new THREE.Clock();
     let raf = 0;
@@ -563,7 +670,14 @@ const SpaceBackground = () => {
       }
       const dt = Math.min(minDelta > 0 ? acc : delta, 0.05);
       acc = 0;
-      const step = cruiseSpeed * dt;
+
+      // Advance the warp envelope: fast attack up to the hold window, then decay.
+      if (warpTarget === 1 && clock.elapsedTime >= warpHoldUntil) warpTarget = 0;
+      const wRate = warpTarget > warp ? WARP_ATTACK : WARP_DECAY;
+      warp += (warpTarget - warp) * Math.min(1, wRate * dt);
+      if (warpTarget === 0 && warp < 0.0005) warp = 0;
+      const warpEased = warp * warp * (3 - 2 * warp); // smoothstep
+      const step = (cruiseSpeed + warpEased * (WARP_SPEED - cruiseSpeed)) * dt;
 
       for (let i = 0; i < FIELD_STARS; i++) {
         const zi = i * 3 + 2;
@@ -571,6 +685,30 @@ const SpaceBackground = () => {
         if (fieldPos[zi] > NEAR) placeFieldStar(i, FAR);
       }
       fieldPosAttr.needsUpdate = true;
+
+      // Drive the warp streaks + dim the round stars while warping.
+      fieldMat.uniforms.uWarpFade.value = 1 - 0.82 * warpEased;
+      clusterMat.uniforms.uWarpFade.value = 1 - 0.82 * warpEased;
+      streakMat.uniforms.uWarp.value = warpEased;
+      streakMat.uniforms.uStreakLen.value = warpEased * STREAK_MAX;
+      if (warp > 0.001) {
+        streaks.visible = true;
+        for (let i = 0; i < FIELD_STARS; i++) {
+          const px = fieldPos[i * 3];
+          const py = fieldPos[i * 3 + 1];
+          const pz = fieldPos[i * 3 + 2];
+          const b = i * 6;
+          streakPos[b] = px;
+          streakPos[b + 1] = py;
+          streakPos[b + 2] = pz;
+          streakPos[b + 3] = px;
+          streakPos[b + 4] = py;
+          streakPos[b + 5] = pz;
+        }
+        streakPosAttr.needsUpdate = true;
+      } else {
+        streaks.visible = false;
+      }
 
       let colorDirty = false;
       for (let k = 0; k < CLUSTER_COUNT; k++) {
@@ -622,6 +760,8 @@ const SpaceBackground = () => {
       document.removeEventListener('visibilitychange', onVisibility);
       fieldGeo.dispose();
       fieldMat.dispose();
+      streakGeo.dispose();
+      streakMat.dispose();
       clusterGeo.dispose();
       clusterMat.dispose();
       planeGeo.dispose();
@@ -630,9 +770,18 @@ const SpaceBackground = () => {
       rtQuad.geometry.dispose();
       rt.dispose();
       renderer.dispose();
+      triggerWarpRef.current = null;
       if (canvas.parentNode === container) container.removeChild(canvas);
     };
   }, []);
+
+  // Fire a warp jump whenever the route (warpSignal) changes. The scene itself
+  // is never rebuilt, so the field keeps flowing across page transitions.
+  useEffect(() => {
+    if (warpSignal === lastSignal.current) return;
+    lastSignal.current = warpSignal;
+    triggerWarpRef.current?.();
+  }, [warpSignal]);
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-0" style={{ background: '#000' }}>

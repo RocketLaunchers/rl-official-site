@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import SpaceBackground from './SpaceBackgroundLazy';
 import Header from './Header';
 import Hero from './Hero';
 import Announcements from './Announcements';
@@ -24,8 +23,7 @@ const HomePage = () => {
   }, [hash]);
 
   return (
-    <div className="min-h-screen bg-canvas text-ink relative">
-      <SpaceBackground />
+    <div className="min-h-screen text-ink relative">
       <Header />
       <main className="relative z-10">
         <Hero />
