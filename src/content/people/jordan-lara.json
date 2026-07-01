@@ -2,23 +2,23 @@
   "type": "person",
   "id": "jordan-lara",
   "name": "Jordan Lara",
-  "photo": "",
+  "photo": "/images/suted-jordyboi-crop.webp",
   "major": "Electrical Engineering",
   "gradYear": 2026,
-  "bio": "",
+  "bio": "Jordan joined The Rocketlaunchers in 2021 as a First Year Electrical Engineering student. He immediately started work on TAS (Telemetry Aquisition System) Led by former Telemtry lead Ramon. Jordan then went on to designed, build, and manufacture MARV (Modular Avionics for Rockets and Vehicles) Along side Luis Martinez, a previous Avionics lead for ITZAMNA and future L3 Rockets with the Rocket Launchers. Jordan had also worked in avionics manufacturing and test at Collins Aerospace (formerly part of Raytheon), assembling and testing avionics boxes for Boeing, Airbus, and military aircraft. Jordan currently works on the Avionics team as an Electrical Engineer for Firefly Aerospace working on the Alpha Launch vehicle. Jordan’s fascination with turning ideas into moving machines began in high‑school robotics and has carried through to his professional and hobby projects, which span embedded design, RF systems, PCB design, robotics, avionics, and telemetry . Outside of work, he keeps active by running, lifting and playing basketball, and he makes a habit of filming SpaceX launches at Starbase, Texas ",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "Jordanlara445@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/jordanalara",
     "github": "",
-    "website": ""
+    "website": "http://jordanlara.info"
   },
   "isAlumni": true,
-  "company": "",
+  "company": "Firefly Aerospace",
   "privacy": {
     "showPublicly": true,
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

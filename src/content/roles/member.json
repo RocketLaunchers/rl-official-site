@@ -4,7 +4,7 @@
   "name": "Member",
   "category": "Member",
   "description": "A contributing member of a subteam.",
-  "displayOrder": 120,
+  "displayOrder": 130,
   "isLeadership": false,
   "isSubteamRole": false,
   "scope": "subteam",

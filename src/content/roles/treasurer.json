@@ -4,7 +4,7 @@
   "name": "Treasurer",
   "category": "Executive",
   "description": "Manages the budget, reimbursements, and sponsorship funds.",
-  "displayOrder": 70,
+  "displayOrder": 80,
   "isLeadership": true,
   "isSubteamRole": false,
   "scope": "org",

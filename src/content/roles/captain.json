@@ -1,0 +1,12 @@
+{
+  "type": "role",
+  "id": "captain",
+  "name": "Captain",
+  "category": "Engineering",
+  "description": "",
+  "displayOrder": 50,
+  "isLeadership": true,
+  "isSubteamRole": false,
+  "scope": "org",
+  "active": false
+}

@@ -4,7 +4,7 @@
   "name": "Co-Lead",
   "category": "Subteam Lead",
   "description": "Shares leadership of a subteam alongside the Lead.",
-  "displayOrder": 110,
+  "displayOrder": 120,
   "isLeadership": true,
   "isSubteamRole": true,
   "scope": "subteam",

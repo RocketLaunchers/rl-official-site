@@ -72,6 +72,13 @@
       "subteam": "propulsion",
       "displayOnTeam": true,
       "displayOrder": 70
+    },
+    {
+      "person": "john-hinojosa",
+      "role": "captain",
+      "subteam": "",
+      "displayOnTeam": true,
+      "displayOrder": 0
     }
   ],
   "sponsors": [
