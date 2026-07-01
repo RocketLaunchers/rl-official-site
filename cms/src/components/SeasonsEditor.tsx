@@ -66,6 +66,7 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
   const [collapsedSponsors, setCollapsedSponsors] = useState<Set<string>>(new Set());
   const [collapsedAdvisors, setCollapsedAdvisors] = useState<Set<string>>(new Set());
   const [advisorSort, setAdvisorSort] = useState<'order' | 'category' | 'name'>('order');
+  const [rosterQuery, setRosterQuery] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -99,6 +100,7 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
     setCollapsedSponsors(new Set(season?.sponsors.map((e) => e.sponsor) ?? []));
     setCollapsedAdvisors(new Set(season?.advisors.map((e) => e.person) ?? []));
     setAdvisorSort('order');
+    setRosterQuery('');
   }
   const patch = (p: Partial<Season>) => { setDraft((d) => (d ? { ...d, ...p } : d)); setMsg(null); };
 
@@ -231,6 +233,9 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
     patch({ advisors: [...(draft?.advisors ?? []), { person, category: 'Faculty Advisor', supportRole: '', description: '', featured: false, displayOrder: ((draft?.advisors.length ?? 0) + 1) * 10 }] });
   };
 
+  // Roster search — narrow the member list by name when a season is crowded.
+  const rq = rosterQuery.trim().toLowerCase();
+  const visibleGroups = rq ? rosterGroups.filter((g) => (personName(g.person) || g.person).toLowerCase().includes(rq)) : rosterGroups;
   // Collapse-all state per season list.
   const allMembersCollapsed = rosterGroups.length > 0 && rosterGroups.every((g) => collapsedMembers.has(g.person));
   const allSponsorsCollapsed = draft ? draft.sponsors.length > 0 && draft.sponsors.every((e) => collapsedSponsors.has(e.sponsor)) : false;
@@ -371,7 +376,21 @@ export default function SeasonsEditor({ repo }: { repo: string }) {
                   No Lead assigned yet for: {subteamsMissingLead.map(subteamName).join(', ')}.
                 </div>
               )}
-              {rosterGroups.map((group) => {
+              {rosterGroups.length > 3 && (
+                <div className="list-search">
+                  <input
+                    type="search"
+                    placeholder="Search this season’s members by name…"
+                    value={rosterQuery}
+                    onChange={(e) => setRosterQuery(e.target.value)}
+                  />
+                  {rq && <span className="list-count">{visibleGroups.length} / {rosterGroups.length}</span>}
+                </div>
+              )}
+              {rq && visibleGroups.length === 0 && (
+                <div className="empty">No members match “{rosterQuery.trim()}”.</div>
+              )}
+              {visibleGroups.map((group) => {
                 const person = refs.people.find((p) => p.id === group.person);
                 const isCollapsed = collapsedMembers.has(group.person);
                 const summary = group.items.map((it) => previewOf(it.entry)).filter(Boolean).join(', ');

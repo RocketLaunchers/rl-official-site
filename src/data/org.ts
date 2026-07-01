@@ -222,3 +222,23 @@ export function pastRoleTitles(personId: string): string[] {
     ({ role, subteam, season }) => `${roleTitle(role, subteam)} · ${season.name.replace(/\s*Season$/i, '')}`,
   );
 }
+
+/**
+ * A person's role history grouped by season (newest first) — one row per season
+ * with all the titles they held that year. Powers the profile card's history.
+ */
+export function roleHistoryFor(personId: string): { seasonId: string; seasonName: string; titles: string[] }[] {
+  const out: { seasonId: string; seasonName: string; titles: string[] }[] = [];
+  const indexBySeason = new Map<string, number>();
+  for (const { season, role, subteam } of pastRolesForPerson(personId)) {
+    const title = roleTitle(role, subteam);
+    let i = indexBySeason.get(season.id);
+    if (i === undefined) {
+      i = out.length;
+      indexBySeason.set(season.id, i);
+      out.push({ seasonId: season.id, seasonName: season.name.replace(/\s*Season$/i, ''), titles: [] });
+    }
+    if (!out[i].titles.includes(title)) out[i].titles.push(title);
+  }
+  return out;
+}

@@ -1,17 +1,26 @@
 import { useState } from 'react';
+import type { Person } from '../content/schema';
 import PageShell from '../components/PageShell';
 import PersonCard from '../components/PersonCard';
+import PersonProfileModal from '../components/PersonProfileModal';
 import { seasons, currentSeason } from '../data/seasons';
 import { groupedRoster, advisorsForSeason, type RosterPerson } from '../data/org';
 
-function Group({ title, members }: { title: string; members: RosterPerson[] }) {
+type Profile = { person: Person; titles: string[] };
+
+function Group({ title, members, onSelect }: { title: string; members: RosterPerson[]; onSelect: (p: Profile) => void }) {
   if (members.length === 0) return null;
   return (
     <section className="mb-14">
       <h2 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-6">{title}</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {members.map((m) => (
-          <PersonCard key={m.person.id} person={m.person} subtitle={m.titles} />
+          <PersonCard
+            key={m.person.id}
+            person={m.person}
+            subtitle={m.titles}
+            onClick={() => onSelect({ person: m.person, titles: m.titles })}
+          />
         ))}
       </div>
     </section>
@@ -20,6 +29,7 @@ function Group({ title, members }: { title: string; members: RosterPerson[] }) {
 
 export default function TeamPage() {
   const [seasonId, setSeasonId] = useState<string>(currentSeason?.id ?? seasons[0]?.id ?? '');
+  const [profile, setProfile] = useState<Profile | null>(null);
   const { officers, leads, members } = groupedRoster(seasonId);
   const advisors = advisorsForSeason(seasonId);
   const empty = officers.length + leads.length + members.length + advisors.length === 0;
@@ -53,9 +63,9 @@ export default function TeamPage() {
         <p className="text-ink-faint font-light">No roster has been assigned for this season yet.</p>
       ) : (
         <>
-          <Group title="Officers" members={officers} />
-          <Group title="Subteam Leads" members={leads} />
-          <Group title="Members" members={members} />
+          <Group title="Officers" members={officers} onSelect={setProfile} />
+          <Group title="Subteam Leads" members={leads} onSelect={setProfile} />
+          <Group title="Members" members={members} onSelect={setProfile} />
 
           {advisors.length > 0 && (
             <section>
@@ -69,12 +79,17 @@ export default function TeamPage() {
                     person={a.person}
                     subtitle={a.entry.category}
                     meta={a.entry.supportRole || undefined}
+                    onClick={() => setProfile({ person: a.person, titles: [a.entry.category, a.entry.supportRole].filter(Boolean) })}
                   />
                 ))}
               </div>
             </section>
           )}
         </>
+      )}
+
+      {profile && (
+        <PersonProfileModal person={profile.person} titles={profile.titles} onClose={() => setProfile(null)} />
       )}
     </PageShell>
   );

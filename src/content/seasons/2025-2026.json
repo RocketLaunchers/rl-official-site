@@ -18,7 +18,8 @@
     "hybrid",
     "propulsion",
     "structures",
-    "srad"
+    "srad",
+    "graphics"
   ],
   "sponsorTiers": [
     "Platinum",
@@ -133,6 +134,13 @@
       "subteam": "structures",
       "displayOnTeam": true,
       "displayOrder": 150
+    },
+    {
+      "person": "ernesto-cruz",
+      "role": "lead",
+      "subteam": "graphics",
+      "displayOnTeam": true,
+      "displayOrder": 0
     }
   ],
   "sponsors": [

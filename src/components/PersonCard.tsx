@@ -20,10 +20,13 @@ export default function PersonCard({
   person,
   subtitle,
   meta,
+  onClick,
 }: {
   person: Person;
   subtitle?: string | string[];
   meta?: string;
+  /** When set, the whole card becomes a button (e.g. to open a profile). */
+  onClick?: () => void;
 }) {
   const subtitles = subtitle == null ? [] : Array.isArray(subtitle) ? subtitle : [subtitle];
   const showPhoto = person.privacy.showPhoto && person.photo;
@@ -31,7 +34,22 @@ export default function PersonCard({
   const showEmail = person.privacy.showEmail && person.links.email;
 
   return (
-    <div className="group border border-line/10 bg-surface hover:border-line/25 hover:bg-surface-2 transition-all duration-300">
+    <div
+      className={`group border border-line/10 bg-surface hover:border-line/25 hover:bg-surface-2 transition-all duration-300 ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
+    >
       <div className="aspect-square bg-well overflow-hidden border-b border-line/10 flex items-center justify-center">
         {showPhoto ? (
           <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
@@ -54,7 +72,7 @@ export default function PersonCard({
         {meta && <p className="text-ink-faint text-[13px] font-light mt-1.5">{meta}</p>}
         {person.major && <p className="text-ink-faint text-[13px] font-light mt-0.5">{person.major}</p>}
         {(showLinkedin || showEmail) && (
-          <div className="flex items-center gap-4 mt-3">
+          <div className="flex items-center gap-4 mt-3" onClick={(e) => e.stopPropagation()}>
             {showLinkedin && (
               <a
                 href={person.links.linkedin}

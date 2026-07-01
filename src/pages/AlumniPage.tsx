@@ -1,5 +1,8 @@
+import { useState } from 'react';
+import type { Person } from '../content/schema';
 import PageShell from '../components/PageShell';
 import PersonCard from '../components/PersonCard';
+import PersonProfileModal from '../components/PersonProfileModal';
 import { alumni, pastRoleTitles } from '../data/org';
 
 /** Group alumni by graduation year (newest first). */
@@ -15,6 +18,7 @@ function byGradYear(people: typeof alumni) {
 
 export default function AlumniPage() {
   const groups = byGradYear(alumni);
+  const [profile, setProfile] = useState<{ person: Person; titles: string[] } | null>(null);
 
   return (
     <PageShell
@@ -33,11 +37,23 @@ export default function AlumniPage() {
               {people.map((p) => {
                 const roles = pastRoleTitles(p.id);
                 const company = p.privacy.showCompany && p.company ? `Now at ${p.company}` : undefined;
-                return <PersonCard key={p.id} person={p} subtitle={roles} meta={company} />;
+                return (
+                  <PersonCard
+                    key={p.id}
+                    person={p}
+                    subtitle={roles}
+                    meta={company}
+                    onClick={() => setProfile({ person: p, titles: [] })}
+                  />
+                );
               })}
             </div>
           </section>
         ))
+      )}
+
+      {profile && (
+        <PersonProfileModal person={profile.person} titles={profile.titles} onClose={() => setProfile(null)} />
       )}
     </PageShell>
   );
