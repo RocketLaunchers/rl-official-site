@@ -2,23 +2,23 @@
   "type": "person",
   "id": "cesar-mendez",
   "name": "Cesar Mendez",
-  "photo": "",
+  "photo": "/images/dr-mendez-crop.webp",
   "major": "Mechanical Engineering",
-  "gradYear": 2028,
-  "bio": "",
+  "gradYear": 2027,
+  "bio": "Was the recovery lead that oversaw the team's first ever single bay dual deployment system.",
   "links": {
-    "email": "",
-    "linkedin": "https://www.linkedin.com/",
+    "email": "cesar.mendez01@outlook.com",
+    "linkedin": "https://www.linkedin.com/in/cesar-mendez-093814395",
     "github": "",
     "website": ""
   },
-  "isAlumni": false,
+  "isAlumni": true,
   "company": "",
   "privacy": {
     "showPublicly": true,
     "showPhoto": true,
-    "showCompany": true,
+    "showCompany": false,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }

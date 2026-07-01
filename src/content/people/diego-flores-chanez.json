@@ -2,13 +2,13 @@
   "type": "person",
   "id": "diego-flores-chanez",
   "name": "Diego Flores Chanez",
-  "photo": "",
+  "photo": "/images/el-gran-chanez-crop.webp",
   "major": "Electrical Engineering",
   "gradYear": 2027,
-  "bio": "",
+  "bio": "As Telemetry Lead, developed PCB in EasyEDA that collects rocket data through sensors and GPS. Successfully tracked and recovered at Spaceport America Cup 2024.\nPushed to transition of Telemetry into Avionics and led team into development of BRUNO avionics computer, GUI for live data display, antenna research and changed BigRedBee for FeatherWeight GPS. Due to tariffs, BRUNITO was developed in breakout boards for the 1st edition of Texas Lone Star Cup where the rocket was successfully tracked and recovered. Participated in IREC 2025 where rocket was recovered in record time for the team.\nAs Sponsorship Advisor, I obtained over $4k in sponsorships to finance rocket, got Red Bull on board, and coordinated partnership with Red Bull for RL Cup.",
   "links": {
-    "email": "",
-    "linkedin": "",
+    "email": "diego.floreschanez01@utrgv.edu",
+    "linkedin": "https://www.linkedin.com/in/diegofloreschanez/",
     "github": "",
     "website": ""
   },
@@ -19,6 +19,6 @@
     "showPhoto": true,
     "showCompany": true,
     "showLinkedin": true,
-    "showEmail": false
+    "showEmail": true
   }
 }
