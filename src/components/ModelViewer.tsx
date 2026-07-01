@@ -56,6 +56,10 @@ export default function ModelViewer({
     let controls: OrbitControls | null = null;
     let pmrem: THREE.PMREMGenerator | null = null;
     let resizeObserver: ResizeObserver | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    // Pause the render loop while the viewer is scrolled off-screen so idle
+    // tiles don't keep a WebGL scene spinning in the background.
+    let inView = true;
 
     const setupScene = (object: THREE.Object3D) => {
       if (disposed) return;
@@ -167,6 +171,7 @@ export default function ModelViewer({
 
       const loop = () => {
         frame = requestAnimationFrame(loop);
+        if (!inView || document.hidden) return; // idle while off-screen / tab hidden
         if (controls) controls.update();
         else if (autoRotate) pivot.rotation.y += 0.004;
         renderer?.render(scene, camera);
@@ -181,6 +186,11 @@ export default function ModelViewer({
         renderer?.setSize(w, h);
       });
       resizeObserver.observe(mount);
+
+      intersectionObserver = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; }, {
+        rootMargin: '150px',
+      });
+      intersectionObserver.observe(mount);
 
       setStatus('ready');
     };
@@ -200,11 +210,18 @@ export default function ModelViewer({
       disposed = true;
       cancelAnimationFrame(frame);
       resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
       controls?.dispose();
       pmrem?.dispose();
       if (renderer) {
         renderer.dispose();
+        // Actually release the WebGL context now — dispose() only frees GPU
+        // resources, leaving the context alive until GC. Without this, rapidly
+        // mounting/unmounting viewers leaks contexts until the browser hits its
+        // limit and kills the oldest one (the persistent starfield → black).
+        renderer.forceContextLoss();
         renderer.domElement.remove();
+        renderer = null;
       }
     };
   }, [src, interactive, autoRotate]);

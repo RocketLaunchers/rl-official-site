@@ -657,6 +657,7 @@ const SpaceBackground = ({ warpSignal = 0 }: { warpSignal?: number }) => {
     // --- Animation ---
     const clock = new THREE.Clock();
     let raf = 0;
+    let contextLost = false;
     // Cap the frame rate on mobile to save battery/GPU; the slow cruise looks
     // identical at 30fps. Desktop runs uncapped for the smoothest parallax.
     const minDelta = isMobile ? 1 / 30 : 0;
@@ -744,7 +745,7 @@ const SpaceBackground = ({ warpSignal = 0 }: { warpSignal?: number }) => {
       if (document.hidden) {
         cancelAnimationFrame(raf);
         raf = 0;
-      } else if (!raf && !prefersReducedMotion) {
+      } else if (!raf && !prefersReducedMotion && !contextLost) {
         clock.getDelta();
         acc = 0;
         raf = requestAnimationFrame(renderFrame);
@@ -752,12 +753,38 @@ const SpaceBackground = ({ warpSignal = 0 }: { warpSignal?: number }) => {
     };
     document.addEventListener('visibilitychange', onVisibility);
 
+    // Survive a lost GL context. If the browser ever drops this context (e.g.
+    // too many contexts elsewhere), pause and — once restored — resume. Calling
+    // preventDefault() opts into restoration; three.js re-uploads its resources
+    // on the next render, so the field comes back instead of staying black.
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      contextLost = true;
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+    const onContextRestored = () => {
+      contextLost = false;
+      if (prefersReducedMotion) {
+        camera.lookAt(0, 0, -600);
+        renderer.render(scene, camera);
+      } else if (!raf && !document.hidden) {
+        clock.getDelta();
+        acc = 0;
+        raf = requestAnimationFrame(renderFrame);
+      }
+    };
+    canvas.addEventListener('webglcontextlost', onContextLost as EventListener);
+    canvas.addEventListener('webglcontextrestored', onContextRestored as EventListener);
+
     // --- Cleanup ---
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('visibilitychange', onVisibility);
+      canvas.removeEventListener('webglcontextlost', onContextLost as EventListener);
+      canvas.removeEventListener('webglcontextrestored', onContextRestored as EventListener);
       fieldGeo.dispose();
       fieldMat.dispose();
       streakGeo.dispose();
@@ -770,6 +797,7 @@ const SpaceBackground = ({ warpSignal = 0 }: { warpSignal?: number }) => {
       rtQuad.geometry.dispose();
       rt.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();
       triggerWarpRef.current = null;
       if (canvas.parentNode === container) container.removeChild(canvas);
     };
