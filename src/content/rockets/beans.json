@@ -1,7 +1,7 @@
 {
   "type": "rocket",
-  "id": "invictus",
-  "name": "Invictus",
+  "id": "beans",
+  "name": "Beans",
   "seasons": [],
   "status": "Retired",
   "mission": "",
@@ -14,7 +14,7 @@
     "mass": ""
   },
   "heroImage": "",
-  "model3d": "/models/invictus-2023-2024.glb",
+  "model3d": "/models/beans-2021-2022.glb",
   "media": [],
   "subsystems": [],
   "results": "",
@@ -22,5 +22,5 @@
   "relatedSubteams": [],
   "credits": [],
   "customFields": [],
-  "displayOrder": 30
+  "displayOrder": 50
 }

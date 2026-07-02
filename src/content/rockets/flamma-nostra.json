@@ -1,9 +1,9 @@
 {
   "type": "rocket",
-  "id": "invictus",
-  "name": "Invictus",
+  "id": "flamma-nostra",
+  "name": "Flamma Nostra",
   "seasons": [],
-  "status": "Retired",
+  "status": "Concept",
   "mission": "",
   "competition": "",
   "specs": {
@@ -14,7 +14,7 @@
     "mass": ""
   },
   "heroImage": "",
-  "model3d": "/models/invictus-2023-2024.glb",
+  "model3d": "/models/flamma-nostra-2020-2021.glb",
   "media": [],
   "subsystems": [],
   "results": "",
@@ -22,5 +22,5 @@
   "relatedSubteams": [],
   "credits": [],
   "customFields": [],
-  "displayOrder": 30
+  "displayOrder": 60
 }
