@@ -2,7 +2,7 @@ import { rocketsApi, type Rocket } from '../api';
 import type { RocketSubsystem } from '@portfolio/content-schema';
 import CollectionEditor from './CollectionEditor';
 import MediaListEditor from './MediaListEditor';
-import { Field, ImageField, TagsField, TextArea, TextField } from './fields';
+import { CustomFieldsEditor, Field, ImageField, TagsField, TextArea, TextField } from './fields';
 
 const STATUSES = ['Concept', 'In Design', 'Manufacturing', 'Testing', 'Launched', 'Retired'];
 const SPEC_KEYS: (keyof Rocket['specs'])[] = ['targetAltitude', 'motor', 'diameter', 'length', 'mass'];
@@ -79,6 +79,11 @@ export default function RocketsEditor({ repo }: { repo: string }) {
           <TextArea label="Lessons learned" value={r.lessonsLearned} onChange={(v) => update({ lessonsLearned: v })} />
           <TagsField label="Related subteam ids" value={r.relatedSubteams} onChange={(relatedSubteams) => update({ relatedSubteams })} />
           <TagsField label="Credits — person ids" value={r.credits} onChange={(credits) => update({ credits })} />
+          <CustomFieldsEditor
+            label="Custom fields (extra links / info shown on the rocket page)"
+            items={r.customFields}
+            onChange={(customFields) => update({ customFields })}
+          />
         </>
       )}
     />

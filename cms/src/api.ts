@@ -241,9 +241,51 @@ export type MediaAsset = {
   viewable3d: boolean;
   /** (public only) referenced somewhere in the repo — false = orphan. */
   used: boolean;
+  /** (public only) content areas that reference it — folder names under
+   *  src/content (e.g. "rockets", "people"). Empty when it's used only in code,
+   *  or not at all. Powers the library's "where is this used" category filter. */
+  usedIn: string[];
   /** Infrastructure/config file that should never be offered for deletion. */
   system: boolean;
 };
+
+/** Content folders under src/content that can reference an asset, in the order
+ *  the library/picker shows their filter chips. Keys are the folder names. */
+export const USAGE_AREAS: { key: string; label: string }[] = [
+  { key: 'rockets', label: 'Rockets' },
+  { key: 'people', label: 'People' },
+  { key: 'events', label: 'Events' },
+  { key: 'sponsors', label: 'Sponsors' },
+  { key: 'subteams', label: 'Subteams' },
+  { key: 'gallery', label: 'Gallery' },
+  { key: 'news', label: 'News' },
+  { key: 'seasons', label: 'Seasons' },
+  { key: 'constitution', label: 'Constitution' },
+  { key: 'roles', label: 'Roles' },
+  { key: 'about', label: 'About' },
+  { key: 'site', label: 'Site & Home' },
+];
+
+const USAGE_LABEL = new Map(USAGE_AREAS.map((u) => [u.key, u.label]));
+
+/** Human label for a usage filter key (content area, or 'other'/'unused'). */
+export function usageLabel(key: string): string {
+  if (key === 'unused') return 'Unused';
+  if (key === 'other') return 'Other';
+  return USAGE_LABEL.get(key) ?? key;
+}
+
+/** The filter buckets an asset belongs to: its content areas, or 'other' (used
+ *  only in code/config) or 'unused' (referenced nowhere — a deletable orphan). */
+export function assetUsageKeys(a: MediaAsset): string[] {
+  if (a.usedIn.length > 0) return a.usedIn;
+  return a.used ? ['other'] : ['unused'];
+}
+
+/** Whether an asset passes a usage filter ('all' matches everything). */
+export function matchesUsage(a: MediaAsset, key: string): boolean {
+  return key === 'all' || assetUsageKeys(a).includes(key);
+}
 
 const MODEL_VIEW_EXTS = ['glb', 'gltf', 'obj'];
 
@@ -279,8 +321,49 @@ function toAsset(root: string, area: MediaArea, f: Scan): MediaAsset {
     url: convertFileSrc(abs),
     viewable3d: MODEL_VIEW_EXTS.includes(ext),
     used: false,
+    usedIn: [],
     system: area === 'public' && isSystemFile(name),
   };
+}
+
+const CONTENT_REL = 'src/content';
+
+/**
+ * For each ref, which content areas (top-level folder under src/content)
+ * reference it. Content-only by design — unlike `grep_refs`, which scans the
+ * whole repo (components, index.html, css) to decide "used at all" — this answers
+ * the narrower "where in the CONTENT is this used", which drives the library's
+ * category filter. Reads each content JSON once and substring-matches the refs,
+ * the same matching `grep_refs` uses.
+ */
+async function scanContentUsage(root: string, refs: string[]): Promise<Record<string, string[]>> {
+  const out: Record<string, string[]> = {};
+  if (refs.length === 0) return out;
+  let files: Scan[];
+  try {
+    files = await invoke<Scan[]>('scan_dir', { path: join(root, CONTENT_REL) });
+  } catch {
+    return out; // no content dir / unreadable — treat as "unknown", not a hard error
+  }
+  const byArea: Record<string, string[]> = {};
+  await Promise.all(
+    files
+      .filter((f) => f.rel.endsWith('.json'))
+      .map(async (f) => {
+        const area = f.rel.split('/')[0];
+        try {
+          const text = await readTextFile(join(root, CONTENT_REL, f.rel));
+          (byArea[area] ??= []).push(text);
+        } catch { /* skip unreadable file */ }
+      }),
+  );
+  for (const [area, texts] of Object.entries(byArea)) {
+    const blob = texts.join('\n');
+    for (const ref of refs) {
+      if (blob.includes(ref)) (out[ref] ??= []).push(area);
+    }
+  }
+  return out;
 }
 
 /**
@@ -296,8 +379,15 @@ export async function listMedia(root: string): Promise<MediaAsset[]> {
   const publicAssets = pub.map((f) => toAsset(root, 'public', f));
   const sourceAssets = src.map((f) => toAsset(root, 'models', f));
   // "Used" only means something for served files; flag orphans in public/.
-  const found = new Set(await invoke<string[]>('grep_refs', { root, needles: publicAssets.map((a) => a.ref) }));
-  for (const a of publicAssets) a.used = found.has(a.ref);
+  const refs = publicAssets.map((a) => a.ref);
+  const [found, usage] = await Promise.all([
+    invoke<string[]>('grep_refs', { root, needles: refs }).then((r) => new Set(r)),
+    scanContentUsage(root, refs),
+  ]);
+  for (const a of publicAssets) {
+    a.used = found.has(a.ref);
+    a.usedIn = usage[a.ref] ?? [];
+  }
   return [...publicAssets, ...sourceAssets];
 }
 
@@ -476,6 +566,7 @@ function refTargets(): Record<RefKind, RefTarget[]> {
         return c;
       }),
       target(rocketsApi, (r, o, n) => replaceInArray(r.credits, o, n)),
+      target(eventsApi, (e, o, n) => replaceInArray(e.attendees, o, n)),
     ],
     role: [
       target(seasonsApi, (s, o, n) => {

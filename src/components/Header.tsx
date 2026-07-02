@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { site } from '../data/site';
 
@@ -16,20 +16,17 @@ const MENUS: NavMenu[] = [
     ],
   },
   {
-    label: 'PROJECTS',
-    items: [
-      { label: 'Rockets', to: '/rockets' },
-      { label: 'Competitions', to: '/competitions' },
-    ],
-  },
-  {
     label: 'HAPPENINGS',
     items: [
+      { label: 'Competitions', to: '/competitions' },
       { label: 'Events', to: '/events' },
       { label: 'News', to: '/news' },
     ],
   },
 ];
+
+/** Rockets is our flagship — a single standout link rather than a menu. */
+const ROCKETS_TO = '/rockets';
 
 const Chevron = ({ open }: { open: boolean }) => (
   <svg
@@ -67,6 +64,8 @@ const Header = () => {
   const iconClass =
     'text-ink-faint hover:text-ink hover:scale-110 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] transition-all duration-300 ease-out';
 
+  const rocketsActive = location.pathname === ROCKETS_TO || location.pathname.startsWith('/rockets/');
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-canvas/70 backdrop-blur-md border-b border-line/10">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -91,8 +90,8 @@ const Header = () => {
               const open = openMenu === menu.label;
               const active = menu.items.some((i) => i.to === location.pathname);
               return (
+                <Fragment key={menu.label}>
                 <div
-                  key={menu.label}
                   className="relative"
                   onMouseEnter={() => setOpenMenu(menu.label)}
                   onMouseLeave={() => setOpenMenu((m) => (m === menu.label ? null : m))}
@@ -130,6 +129,17 @@ const Header = () => {
                     </div>
                   </div>
                 </div>
+                {menu.label === 'HAPPENINGS' && (
+                  <Link
+                    to={ROCKETS_TO}
+                    className={`text-[13px] tracking-[0.18em] font-light transition-all duration-300 ease-out hover:scale-105 hover:[text-shadow:0_0_10px_rgba(239,68,68,0.6)] ${
+                      rocketsActive ? 'text-red-400' : 'text-red-500 hover:text-red-400'
+                    }`}
+                  >
+                    ROCKETS
+                  </Link>
+                )}
+                </Fragment>
               );
             })}
 
@@ -195,22 +205,34 @@ const Header = () => {
               HOME
             </Link>
             {MENUS.map((menu) => (
-              <div key={menu.label}>
-                <div className="text-[11px] tracking-[0.2em] text-ink-faint uppercase font-light mb-2">{menu.label}</div>
-                <div className="space-y-1 pl-3 border-l border-line/10">
-                  {menu.items.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className={`block py-1.5 text-sm tracking-[0.1em] font-light transition-colors hover:text-ink ${
-                        item.to === location.pathname ? 'text-ink' : 'text-ink-muted'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+              <Fragment key={menu.label}>
+                <div>
+                  <div className="text-[11px] tracking-[0.2em] text-ink-faint uppercase font-light mb-2">{menu.label}</div>
+                  <div className="space-y-1 pl-3 border-l border-line/10">
+                    {menu.items.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`block py-1.5 text-sm tracking-[0.1em] font-light transition-colors hover:text-ink ${
+                          item.to === location.pathname ? 'text-ink' : 'text-ink-muted'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+                {menu.label === 'HAPPENINGS' && (
+                  <Link
+                    to={ROCKETS_TO}
+                    className={`block text-sm tracking-[0.16em] font-light transition-colors ${
+                      rocketsActive ? 'text-red-400' : 'text-red-500 hover:text-red-400'
+                    }`}
+                  >
+                    ROCKETS
+                  </Link>
+                )}
+              </Fragment>
             ))}
             <button
               onClick={() => goToSection('join')}

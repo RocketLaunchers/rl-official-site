@@ -2,6 +2,8 @@ import PageShell from '../components/PageShell';
 import { seasons, currentSeason } from '../data/seasons';
 import { sponsorById } from '../data/sponsors';
 import { sponsorsByTier } from '../data/org';
+import CustomFields from '../components/CustomFields';
+import { usableCustomFields } from '../lib/customFields';
 
 export default function SponsorsPage() {
   const groups = currentSeason ? sponsorsByTier(currentSeason.id) : [];
@@ -33,33 +35,49 @@ export default function SponsorsPage() {
                 <div key={group.tier}>
                   <h3 className="text-ink text-sm uppercase tracking-[0.18em] font-light mb-5">{group.tier}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {group.sponsors.map(({ sponsor, entry }) => (
-                      <a
-                        key={sponsor.id}
-                        href={sponsor.website || undefined}
-                        target={sponsor.website ? '_blank' : undefined}
-                        rel="noopener noreferrer"
-                        className="group border border-line/10 bg-surface hover:border-line/25 hover:bg-surface-2 transition-all duration-300 p-6"
-                      >
-                        <div className="h-16 flex items-center mb-4">
-                          {sponsor.logo ? (
-                            <img src={sponsor.logo} alt={sponsor.name} className="max-h-full max-w-[160px] object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+                    {group.sponsors.map(({ sponsor, entry }) => {
+                      const description = entry.publicDescription || sponsor.description;
+                      const main = (
+                        <>
+                          <div className="h-16 flex items-center mb-4">
+                            {sponsor.logo ? (
+                              <img src={sponsor.logo} alt={sponsor.name} className="max-h-full max-w-[160px] object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+                            ) : (
+                              <h4 className="font-display text-lg font-light text-ink tracking-tight">{sponsor.name}</h4>
+                            )}
+                          </div>
+                          {description && (
+                            <p className="text-ink-muted text-sm font-light leading-relaxed">{description}</p>
+                          )}
+                        </>
+                      );
+                      // A card is one big link to the sponsor's site; custom-field
+                      // links live below the link (nested anchors are invalid HTML).
+                      return (
+                        <div
+                          key={sponsor.id}
+                          className="group border border-line/10 bg-surface hover:border-line/25 hover:bg-surface-2 transition-all duration-300 p-6 flex flex-col"
+                        >
+                          {sponsor.website ? (
+                            <a href={sponsor.website} target="_blank" rel="noopener noreferrer" className="block">
+                              {main}
+                            </a>
                           ) : (
-                            <h4 className="font-display text-lg font-light text-ink tracking-tight">{sponsor.name}</h4>
+                            main
+                          )}
+                          {entry.supportTypes.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {entry.supportTypes.map((t) => (
+                                <span key={t} className="border border-line/10 text-ink-faint text-[10px] uppercase tracking-wide px-2 py-0.5 font-light">{t}</span>
+                              ))}
+                            </div>
+                          )}
+                          {usableCustomFields(sponsor.customFields).length > 0 && (
+                            <CustomFields fields={sponsor.customFields} className="mt-4 pt-4 border-t border-line/10 divide-y divide-line/10" />
                           )}
                         </div>
-                        <p className="text-ink-muted text-sm font-light leading-relaxed mb-3">
-                          {entry.publicDescription || sponsor.description}
-                        </p>
-                        {entry.supportTypes.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {entry.supportTypes.map((t) => (
-                              <span key={t} className="border border-line/10 text-ink-faint text-[10px] uppercase tracking-wide px-2 py-0.5 font-light">{t}</span>
-                            ))}
-                          </div>
-                        )}
-                      </a>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}

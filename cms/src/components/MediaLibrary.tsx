@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   listMedia, deleteMedia, convertSourceToWebGlb, checkTools,
   importPublicImage, importPublicVideo, importPublicModel, importPublicFile, importPublicAnyFile,
+  assetUsageKeys, matchesUsage, usageLabel, USAGE_AREAS,
   type MediaAsset, type MediaKind, type Tools,
 } from '../api';
 import HelpPanel from './HelpPanel';
@@ -44,6 +45,8 @@ export default function MediaLibrary({ repo }: { repo: string }) {
   const [viewing, setViewing] = useState<MediaAsset | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Usage category filter: 'all' | 'unused' | 'other' | a content-area key.
+  const [usageFilter, setUsageFilter] = useState('all');
 
   const refresh = useCallback(() => {
     setError(null);
@@ -108,6 +111,32 @@ export default function MediaLibrary({ repo }: { repo: string }) {
     };
   }, [assets, publicAssets]);
 
+  // Category filter chips + counts (only areas that actually have assets show).
+  const filterOptions = useMemo(() => {
+    const countFor = (key: string) => publicAssets.filter((a) => assetUsageKeys(a).includes(key)).length;
+    const opts = [{ key: 'all', label: 'All', count: publicAssets.length }];
+    for (const { key, label } of USAGE_AREAS) {
+      const c = countFor(key);
+      if (c > 0) opts.push({ key, label, count: c });
+    }
+    for (const key of ['other', 'unused']) {
+      const c = countFor(key);
+      if (c > 0) opts.push({ key, label: usageLabel(key), count: c });
+    }
+    return opts;
+  }, [publicAssets]);
+
+  // If the active filter's chip disappears (e.g. after deleting the last asset in
+  // a category), fall back to "All" so the grid never goes silently empty.
+  useEffect(() => {
+    if (!filterOptions.some((o) => o.key === usageFilter)) setUsageFilter('all');
+  }, [filterOptions, usageFilter]);
+
+  const shownPublic = useMemo(
+    () => publicAssets.filter((a) => matchesUsage(a, usageFilter)),
+    [publicAssets, usageFilter],
+  );
+
   const toolsMissing = tools && (!tools.ffmpeg || !tools.node);
 
   function Card({ a }: { a: MediaAsset }) {
@@ -139,9 +168,11 @@ export default function MediaLibrary({ repo }: { repo: string }) {
             ? (!a.viewable3d && <span className="badge sys">convert to view</span>)
             : a.system
               ? <span className="badge sys">system</span>
-              : a.used
-                ? <span className="badge used">in use</span>
-                : <span className="badge orphan">not used</span>}
+              : a.usedIn.length > 0
+                ? a.usedIn.map((k) => <span key={k} className="badge used">{usageLabel(k)}</span>)
+                : a.used
+                  ? <span className="badge used">in use</span>
+                  : <span className="badge orphan">not used</span>}
           {heavy && <span className="badge heavy">large</span>}
         </div>
 
@@ -174,7 +205,7 @@ export default function MediaLibrary({ repo }: { repo: string }) {
             steps={[
               'This is the ONLY place to bring in new files from your computer. Everywhere else (rockets, news, people…) you pick from what’s already here.',
               'Imports are sorted automatically: public/images, public/videos, public/models, public/docs (PDFs), and public/files (anything else, e.g. .docx, .ork).',
-              'A “not used” badge (website files) means nothing references it — safe to delete.',
+              'Each website file shows where it’s used (Rockets, People, Events…). Use the filter chips to jump to one area, or to “Unused” files that nothing references — safe to delete.',
               'Click a 3D model — GLB or raw OBJ — to open the viewer; drag to rotate and toggle parts on/off.',
               'On a source rocket, click “Convert for web” to create a small optimized GLB in public/.',
             ]}
@@ -226,25 +257,52 @@ export default function MediaLibrary({ repo }: { repo: string }) {
             </div>
           )}
 
+          {filterOptions.length > 2 && (
+            <div className="filter-chips" role="tablist" aria-label="Filter assets by where they're used">
+              {filterOptions.map((o) => (
+                <button
+                  key={o.key}
+                  role="tab"
+                  aria-selected={usageFilter === o.key}
+                  className={`chip${usageFilter === o.key ? ' on' : ''}`}
+                  onClick={() => setUsageFilter(o.key)}
+                >
+                  {o.label} <span className="chip-n">{o.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
           {!assets ? (
             <div className="empty">Loading…</div>
           ) : assets.length === 0 ? (
             <div className="empty">No files yet. Use the import buttons above.</div>
           ) : (
             <>
-              <div className="area-head">On the website <span className="area-sub">public/ · served to visitors</span></div>
-              {GROUPS.map(({ kind, label, icon }) => {
-                const items = publicAssets.filter((a) => a.kind === kind);
-                if (items.length === 0) return null;
-                return (
-                  <div key={kind}>
-                    <div className="section-title sub-title"><Icon name={icon} size={15} /> {label} ({items.length})</div>
-                    <div className="media-grid">{items.map((a) => <Card key={a.abs} a={a} />)}</div>
-                  </div>
-                );
-              })}
+              <div className="area-head">
+                On the website <span className="area-sub">public/ · served to visitors</span>
+                {usageFilter !== 'all' && (
+                  <span className="area-sub">· showing {usageLabel(usageFilter)} ({shownPublic.length})</span>
+                )}
+              </div>
+              {shownPublic.length === 0 ? (
+                <div className="empty">No files match this filter.</div>
+              ) : (
+                GROUPS.map(({ kind, label, icon }) => {
+                  const items = shownPublic.filter((a) => a.kind === kind);
+                  if (items.length === 0) return null;
+                  return (
+                    <div key={kind}>
+                      <div className="section-title sub-title"><Icon name={icon} size={15} /> {label} ({items.length})</div>
+                      <div className="media-grid">{items.map((a) => <Card key={a.abs} a={a} />)}</div>
+                    </div>
+                  );
+                })
+              )}
 
-              {sourceAssets.length > 0 && (
+              {/* Source files (raw 3D) aren't served, so usage categories don't
+                  apply — only surface them when nothing is filtered. */}
+              {usageFilter === 'all' && sourceAssets.length > 0 && (
                 <>
                   <div className="area-head" style={{ marginTop: 34 }}>
                     Source files <span className="area-sub">models/ · raw 3D, not deployed</span>

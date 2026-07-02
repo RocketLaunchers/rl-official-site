@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import type { Person } from '../content/schema';
-import { roleHistoryFor } from '../data/org';
+import { roleHistoryFor, eventsAttendedBy } from '../data/org';
+import CustomFields from './CustomFields';
+import { usableCustomFields } from '../lib/customFields';
 
 /** Initials fallback when a person has no photo. */
 function initials(name: string): string {
@@ -66,6 +68,7 @@ export default function PersonProfileModal({
   }, [onClose]);
 
   const history = roleHistoryFor(person.id);
+  const eventsAttended = eventsAttendedBy(person.id);
   const headline = titles.length ? titles : history[0]?.titles ?? [];
 
   const showPhoto = person.privacy.showPhoto && person.photo;
@@ -157,6 +160,13 @@ export default function PersonProfileModal({
             </div>
           )}
 
+          {usableCustomFields(person.customFields).length > 0 && (
+            <div className="mt-7">
+              <h3 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-3">More</h3>
+              <CustomFields fields={person.customFields} className="border-t border-line/10 divide-y divide-line/10" />
+            </div>
+          )}
+
           {history.length > 0 && (
             <div className="mt-7">
               <h3 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-3">Role history</h3>
@@ -165,6 +175,20 @@ export default function PersonProfileModal({
                   <li key={h.seasonId} className="flex gap-4 py-2.5">
                     <span className="text-ink-faint text-[13px] font-light w-24 shrink-0 tabular-nums">{h.seasonName}</span>
                     <span className="text-ink text-sm font-light">{h.titles.join(' · ')}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {eventsAttended.length > 0 && (
+            <div className="mt-7">
+              <h3 className="text-ink-faint text-[11px] uppercase tracking-[0.2em] font-light mb-3">Events attended</h3>
+              <ul className="divide-y divide-line/10 border-t border-line/10">
+                {eventsAttended.map((e) => (
+                  <li key={e.id} className="flex gap-4 py-2.5">
+                    <span className="text-ink-faint text-[13px] font-light w-24 shrink-0 tabular-nums">{e.displayDate || e.date || ''}</span>
+                    <span className="text-ink text-sm font-light">{e.title}</span>
                   </li>
                 ))}
               </ul>

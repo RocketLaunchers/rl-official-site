@@ -135,6 +135,25 @@ export const GalleryItemSchema = z.object({
   description: z.string().default(''),
 });
 
+/* ------------------------------------------------------------ custom fields */
+
+/**
+ * A free-form, author-defined field: a chosen name (`label`) plus a `value`.
+ * Deliberately minimal so it stays flexible — if the value looks like a URL or
+ * an email it renders as a link on the site, otherwise it shows as plain text.
+ * Attached to people, sponsors, rockets, events, and constitution versions so
+ * new kinds of info (an Instagram handle, an extra document link, a Discord
+ * invite, …) can be added and shown without a schema/code change.
+ */
+export const CustomFieldSchema = z.object({
+  /** The field name shown as the label, e.g. "Instagram". */
+  label: z.string().default(''),
+  /** A URL, email, or plain text. Linkified automatically when it looks like one. */
+  value: z.string().default(''),
+});
+
+export type CustomField = z.infer<typeof CustomFieldSchema>;
+
 /* -------------------------------------------------------------------- news */
 
 /**
@@ -214,6 +233,8 @@ export const PersonSchema = z.object({
     showLinkedin: true,
     showEmail: false,
   }),
+  /** Author-defined extras shown on the public profile (extra links, etc.). */
+  customFields: z.array(CustomFieldSchema).default([]),
 });
 
 /* ------------------------------------------------------------------- roles */
@@ -282,6 +303,8 @@ export const SponsorSchema = z.object({
   description: z.string().default(''),
   industry: z.string().default(''),
   contact: z.string().default(''),
+  /** Author-defined extras shown on the sponsor card (extra links, etc.). */
+  customFields: z.array(CustomFieldSchema).default([]),
 });
 
 /* ----------------------------------------------------------------- rockets */
@@ -334,6 +357,8 @@ export const RocketSchema = z.object({
   relatedSubteams: z.array(z.string()).default([]),
   /** Person ids credited. */
   credits: z.array(z.string()).default([]),
+  /** Author-defined extras shown on the rocket page (extra links, specs, etc.). */
+  customFields: z.array(CustomFieldSchema).default([]),
   displayOrder: z.number().default(0),
 });
 
@@ -347,6 +372,13 @@ export const EVENT_CATEGORIES = [
   'social',
   'other',
 ] as const;
+
+/** One button on a homepage announcement: a label + a destination. */
+export const AnnouncementButtonSchema = z.object({
+  label: z.string().default(''),
+  /** A route (/path), an in-page section (#join), or an external URL. */
+  href: z.string().default(''),
+});
 
 export const EventSchema = z.object({
   type: z.literal('event').default('event'),
@@ -369,11 +401,13 @@ export const EventSchema = z.object({
   featured: z.boolean().default(false),
   /** Promotional flyer/poster image (public path or URL) for the announcement. */
   flyer: z.string().default(''),
-  /** Optional call-to-action label for the announcement (e.g. "RSVP"). */
-  ctaLabel: z.string().default(''),
-  /** CTA destination: a route (/path), an in-page section (#join), or a URL. */
-  ctaHref: z.string().default(''),
+  /** Call-to-action buttons for the announcement (e.g. "RSVP", "Directions"). */
+  ctaButtons: z.array(AnnouncementButtonSchema).default([]),
   media: z.array(MediaItemSchema).default([]),
+  /** Person ids of members who attended — surfaced on each member's profile. */
+  attendees: z.array(z.string()).default([]),
+  /** Author-defined extras shown on the event card (extra links, etc.). */
+  customFields: z.array(CustomFieldSchema).default([]),
 });
 
 /* ------------------------------------------------------------- constitution */
@@ -399,6 +433,8 @@ export const ConstitutionSchema = z.object({
   /** Optional block-based web version. */
   body: z.array(Block).default([]),
   summaryOfChanges: z.array(z.string()).default([]),
+  /** Author-defined extras shown on the constitution page (extra links, etc.). */
+  customFields: z.array(CustomFieldSchema).default([]),
   status: z.enum(CONSTITUTION_STATUSES).default('draft'),
 });
 
@@ -587,6 +623,7 @@ export type Sponsor = z.infer<typeof SponsorSchema>;
 export type RocketSpecs = z.infer<typeof RocketSpecsSchema>;
 export type RocketSubsystem = z.infer<typeof RocketSubsystemSchema>;
 export type Rocket = z.infer<typeof RocketSchema>;
+export type AnnouncementButton = z.infer<typeof AnnouncementButtonSchema>;
 export type EventItem = z.infer<typeof EventSchema>;
 export type Constitution = z.infer<typeof ConstitutionSchema>;
 export type Album = z.infer<typeof AlbumSchema>;

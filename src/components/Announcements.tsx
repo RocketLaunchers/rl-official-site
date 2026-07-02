@@ -9,6 +9,24 @@ function flyerSrc(e: EventItem): string {
   return img?.src ?? '';
 }
 
+/** Announcement buttons with both a label and a destination. */
+function ctaButtons(e: EventItem) {
+  return e.ctaButtons.filter((b) => b.label.trim() && b.href.trim());
+}
+
+/** A row of announcement buttons; renders nothing when there are none. */
+function CtaButtons({ event, large }: { event: EventItem; large?: boolean }) {
+  const buttons = ctaButtons(event);
+  if (buttons.length === 0) return null;
+  return (
+    <div className={`flex flex-wrap gap-3${large ? ' mt-1' : ''}`}>
+      {buttons.map((b, i) => (
+        <Cta key={i} label={b.label} href={b.href} large={large} />
+      ))}
+    </div>
+  );
+}
+
 /** Render the CTA as the right element for its destination (URL / route / hash). */
 function Cta({ label, href, large }: { label: string; href: string; large?: boolean }) {
   const cls = large
@@ -85,11 +103,7 @@ function PrimaryAnnouncement({ event }: { event: EventItem }) {
         {event.description && (
           <p className="text-ink-soft text-base font-light leading-relaxed">{event.description}</p>
         )}
-        {event.ctaLabel && event.ctaHref && (
-          <div className="mt-1">
-            <Cta label={event.ctaLabel} href={event.ctaHref} large />
-          </div>
-        )}
+        <CtaButtons event={event} large />
       </div>
     </div>
   );
@@ -106,7 +120,7 @@ function CompactAnnouncement({ event }: { event: EventItem }) {
         {event.description && (
           <p className="text-ink-muted text-sm font-light leading-relaxed line-clamp-3">{event.description}</p>
         )}
-        {event.ctaLabel && event.ctaHref && <Cta label={event.ctaLabel} href={event.ctaHref} />}
+        <CtaButtons event={event} />
       </div>
     </div>
   );

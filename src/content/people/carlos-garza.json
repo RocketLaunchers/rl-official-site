@@ -20,5 +20,6 @@
     "showCompany": false,
     "showLinkedin": true,
     "showEmail": true
-  }
+  },
+  "customFields": []
 }

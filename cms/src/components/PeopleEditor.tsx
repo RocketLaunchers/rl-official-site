@@ -1,6 +1,6 @@
 import { peopleApi, type Person } from '../api';
 import CollectionEditor from './CollectionEditor';
-import { Field, ImageField, TextArea, TextField } from './fields';
+import { CustomFieldsEditor, Field, ImageField, TextArea, TextField } from './fields';
 
 const PRIVACY: { key: keyof Person['privacy']; label: string }[] = [
   { key: 'showPublicly', label: 'Show publicly' },
@@ -73,6 +73,11 @@ export default function PeopleEditor({ repo }: { repo: string }) {
               ))}
             </div>
           </Field>
+          <CustomFieldsEditor
+            label="Custom fields (extra links / info shown on their profile)"
+            items={p.customFields}
+            onChange={(customFields) => update({ customFields })}
+          />
         </>
       )}
     />

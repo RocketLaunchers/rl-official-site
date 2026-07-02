@@ -6,6 +6,8 @@ import { seasonById } from '../data/seasons';
 import { personById } from '../data/people';
 import { subteamById } from '../data/subteams';
 import { rocketMedia, rocketSpecRows } from '../lib/rocket';
+import CustomFields from '../components/CustomFields';
+import { usableCustomFields } from '../lib/customFields';
 
 export default function RocketDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -114,6 +116,13 @@ export default function RocketDetailPage() {
               <span key={p!.id} className="text-ink-soft font-light text-sm">{p!.name}</span>
             ))}
           </div>
+        </section>
+      )}
+
+      {usableCustomFields(rocket.customFields).length > 0 && (
+        <section className="mt-14">
+          <h2 className="font-display text-2xl font-light text-ink tracking-tight mb-6">Additional Info</h2>
+          <CustomFields fields={rocket.customFields} className="border-t border-line/10 divide-y divide-line/10 max-w-2xl" />
         </section>
       )}
     </PageShell>

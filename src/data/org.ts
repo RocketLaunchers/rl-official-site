@@ -7,12 +7,14 @@ import type {
   RosterEntry,
   SponsorEntry,
   AdvisorEntry,
+  EventItem,
 } from '../content/schema';
 import { seasons, seasonById } from './seasons';
 import { people, personById } from './people';
 import { roleById } from './roles';
 import { subteamById } from './subteams';
 import { sponsorById } from './sponsors';
+import { events } from './events';
 
 /**
  * The relational resolver for the season-based content model.
@@ -241,4 +243,14 @@ export function roleHistoryFor(personId: string): { seasonId: string; seasonName
     if (!out[i].titles.includes(title)) out[i].titles.push(title);
   }
   return out;
+}
+
+/**
+ * Every catalog event a person is marked as having attended, newest first.
+ * Attendance is recorded on the event (`attendees`), so this is the person-facing
+ * view of that link — the profile card's event history, mirroring role history.
+ * `events` is already sorted newest-first by the events loader.
+ */
+export function eventsAttendedBy(personId: string): EventItem[] {
+  return events.filter((e) => e.attendees.includes(personId));
 }

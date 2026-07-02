@@ -1,6 +1,6 @@
 import { sponsorsApi, type Sponsor } from '../api';
 import CollectionEditor from './CollectionEditor';
-import { ImageField, TextArea, TextField } from './fields';
+import { CustomFieldsEditor, ImageField, TextArea, TextField } from './fields';
 
 export default function SponsorsEditor({ repo }: { repo: string }) {
   return (
@@ -36,6 +36,11 @@ export default function SponsorsEditor({ repo }: { repo: string }) {
           </div>
           <TextArea label="Description" value={s.description} onChange={(v) => update({ description: v })} />
           <TextField label="Contact (optional, private)" value={s.contact} onChange={(v) => update({ contact: v })} />
+          <CustomFieldsEditor
+            label="Custom fields (extra links / info shown on their card)"
+            items={s.customFields}
+            onChange={(customFields) => update({ customFields })}
+          />
         </>
       )}
     />

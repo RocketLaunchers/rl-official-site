@@ -51,7 +51,7 @@ export default function CompetitionsPage() {
 
           <section className="space-y-10">
             {competitions.map((e) => (
-              <EventCard key={e.id} event={e} showAwards={false} />
+              <EventCard key={e.id} event={e} showAwards={false} wide />
             ))}
           </section>
         </>

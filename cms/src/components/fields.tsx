@@ -119,6 +119,48 @@ export function StringListEditor({
   );
 }
 
+type CustomFieldRow = { label: string; value: string };
+
+/**
+ * Editable list of author-defined "label + value" fields (add / remove / reorder).
+ * The value can be a link (https://…, an email) or plain text — the site renders
+ * it as a link when it looks like a URL/email, otherwise as text. Use for
+ * flexible extras that don't fit the built-in fields (e.g. an Instagram link on a
+ * person, an extra document on a rocket). Structurally matches the shared
+ * `CustomField` schema so it plugs straight into any record's `customFields`.
+ */
+export function CustomFieldsEditor({
+  label = 'Custom fields', items, onChange,
+}: {
+  label?: string; items: CustomFieldRow[]; onChange: (items: CustomFieldRow[]) => void;
+}) {
+  const set = (i: number, patch: Partial<CustomFieldRow>) => onChange(items.map((it, j) => (j === i ? { ...it, ...patch } : it)));
+  const remove = (i: number) => onChange(items.filter((_, j) => j !== i));
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  return (
+    <Field label={label}>
+      <div style={{ display: 'grid', gap: 8 }}>
+        {items.map((it, i) => (
+          <div className="row" key={i}>
+            <input value={it.label} placeholder="Label (e.g. Instagram)" style={{ maxWidth: 200 }} onChange={(e) => set(i, { label: e.target.value })} />
+            <input value={it.value} placeholder="Link or text (e.g. https://instagram.com/…)" onChange={(e) => set(i, { value: e.target.value })} />
+            <button className="small ghost" title="Move up" onClick={() => move(i, -1)}>↑</button>
+            <button className="small ghost" title="Move down" onClick={() => move(i, 1)}>↓</button>
+            <button className="small danger" title="Remove" onClick={() => remove(i)}>✕</button>
+          </div>
+        ))}
+        <button className="small ghost" style={{ justifySelf: 'start' }} onClick={() => onChange([...items, { label: '', value: '' }])}>＋ Add field</button>
+      </div>
+    </Field>
+  );
+}
+
 /**
  * Consistent action row for any content item (block / tile / card / trait /
  * paragraph). Standardizes the CRUD affordances so delete always reads the same

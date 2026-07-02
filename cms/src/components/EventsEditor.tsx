@@ -1,10 +1,81 @@
-import { eventsApi, type EventItem } from '../api';
+import { useEffect, useState } from 'react';
+import { eventsApi, peopleApi, type EventItem, type Person } from '../api';
+import type { AnnouncementButton } from '@portfolio/content-schema';
 import CollectionEditor from './CollectionEditor';
-import { Field, ImageField, StringListEditor, Switch, TextArea, TextField } from './fields';
+import { CustomFieldsEditor, Field, ImageField, StringListEditor, Switch, TextArea, TextField } from './fields';
 
 const CATEGORIES = ['competition', 'launch', 'meeting', 'outreach', 'social', 'other'];
 
+/**
+ * Marks which members attended an event. Attendance is stored on the event as
+ * person ids (like rocket credits) and surfaced on each member's profile card,
+ * so it can only reference people who exist in the People catalog. Selected
+ * people show as removable chips; the dropdown offers everyone not yet added.
+ */
+function AttendeesEditor({ people, value, onChange }: { people: Person[]; value: string[]; onChange: (ids: string[]) => void }) {
+  const byId = new Map(people.map((p) => [p.id, p]));
+  const available = [...people].sort((a, b) => a.name.localeCompare(b.name)).filter((p) => !value.includes(p.id));
+  const add = (id: string) => { if (id && !value.includes(id)) onChange([...value, id]); };
+  const remove = (id: string) => onChange(value.filter((x) => x !== id));
+  return (
+    <Field label="Attendees (members who attended — shown on their profile)">
+      <div style={{ display: 'grid', gap: 8 }}>
+        {value.length > 0 && (
+          <div className="token-list">
+            {value.map((id) => (
+              <span key={id} className={`token${byId.has(id) ? '' : ' missing'}`}>
+                {byId.get(id)?.name ?? `${id} (missing)`}
+                <button className="token-x" title="Remove" onClick={() => remove(id)}>✕</button>
+              </span>
+            ))}
+          </div>
+        )}
+        <select
+          value=""
+          style={{ maxWidth: 320 }}
+          disabled={available.length === 0}
+          onChange={(ev) => { add(ev.target.value); ev.currentTarget.value = ''; }}
+        >
+          <option value="">{available.length ? '＋ Add attendee…' : (people.length ? 'Everyone added' : 'No people in the catalog yet')}</option>
+          {available.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+      </div>
+    </Field>
+  );
+}
+
+/** Editable list of announcement CTA buttons (label + link) with add / remove / reorder. */
+function AnnouncementButtonsEditor({ buttons, onChange }: { buttons: AnnouncementButton[]; onChange: (b: AnnouncementButton[]) => void }) {
+  const set = (i: number, patch: Partial<AnnouncementButton>) => onChange(buttons.map((b, j) => (j === i ? { ...b, ...patch } : b)));
+  const remove = (i: number) => onChange(buttons.filter((_, j) => j !== i));
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= buttons.length) return;
+    const next = [...buttons];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+  return (
+    <Field label="Announcement buttons (label + link)">
+      <div style={{ display: 'grid', gap: 8 }}>
+        {buttons.map((b, i) => (
+          <div className="row" key={i}>
+            <input value={b.label} placeholder="Button label (e.g. RSVP)" style={{ maxWidth: 200 }} onChange={(e) => set(i, { label: e.target.value })} />
+            <input value={b.href} placeholder="#join, /events, or https://…" onChange={(e) => set(i, { href: e.target.value })} />
+            <button className="small ghost" title="Move up" onClick={() => move(i, -1)}>↑</button>
+            <button className="small ghost" title="Move down" onClick={() => move(i, 1)}>↓</button>
+            <button className="small danger" title="Remove" onClick={() => remove(i)}>✕</button>
+          </div>
+        ))}
+        <button className="small ghost" style={{ justifySelf: 'start' }} onClick={() => onChange([...buttons, { label: '', href: '' }])}>＋ Add button</button>
+      </div>
+    </Field>
+  );
+}
+
 export default function EventsEditor({ repo }: { repo: string }) {
+  const [people, setPeople] = useState<Person[]>([]);
+  useEffect(() => { peopleApi.list(repo).then(setPeople).catch(() => setPeople([])); }, [repo]);
   return (
     <CollectionEditor<EventItem>
       repo={repo}
@@ -16,7 +87,8 @@ export default function EventsEditor({ repo }: { repo: string }) {
           'Click “＋ New”, type the event title, and Create.',
           'Set the Season id, Category, Date, Location, and Description.',
           'If it already happened, add a placement/result and any awards.',
-          'To put it on the homepage: turn on “Feature as a homepage announcement”, add a flyer, and optionally a CTA.',
+          'Under Attendees, add the members who came — each event then shows in their profile’s “Events attended”.',
+          'To put it on the homepage: turn on “Feature as a homepage announcement”, add a flyer, and optionally one or more buttons (e.g. RSVP, Directions).',
           'Use the search box to find an event, and the “Sort by” menu to reorder the list (by date, season, or category). Events show newest-first on the site regardless.',
           'Click Save, then Publish.',
         ],
@@ -51,14 +123,17 @@ export default function EventsEditor({ repo }: { repo: string }) {
           <ImageField label="Logo (optional)" root={repo} value={e.logo} onChange={(src) => update({ logo: src })} />
           <TextField label="Placement / result" value={e.placement} placeholder="2nd Place — 10,000 ft COTS" onChange={(v) => update({ placement: v })} />
           <StringListEditor label="Awards" items={e.awards ?? []} onChange={(awards) => update({ awards })} placeholder="Best Technical Report" />
+          <AttendeesEditor people={people} value={e.attendees} onChange={(attendees) => update({ attendees })} />
+          <CustomFieldsEditor
+            label="Custom fields (extra links / info shown on the event card)"
+            items={e.customFields}
+            onChange={(customFields) => update({ customFields })}
+          />
           <Field label="Announcement">
             <Switch label="Feature as a homepage announcement" checked={!!e.featured} onChange={(v) => update({ featured: v })} />
           </Field>
           <ImageField label="Flyer (for the announcement)" root={repo} value={e.flyer} onChange={(src) => update({ flyer: src })} />
-          <div className="grid2">
-            <TextField label="CTA label" value={e.ctaLabel} placeholder="RSVP" onChange={(v) => update({ ctaLabel: v })} />
-            <TextField label="CTA link" value={e.ctaHref} placeholder="#join, /events, or https://…" onChange={(v) => update({ ctaHref: v })} />
-          </div>
+          <AnnouncementButtonsEditor buttons={e.ctaButtons} onChange={(ctaButtons) => update({ ctaButtons })} />
         </>
       )}
     />

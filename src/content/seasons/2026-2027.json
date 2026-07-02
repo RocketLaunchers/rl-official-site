@@ -14,7 +14,9 @@
     "hybrid",
     "avionics",
     "propulsion",
-    "structures"
+    "structures",
+    "srad",
+    "graphics"
   ],
   "sponsorTiers": [
     "Platinum",

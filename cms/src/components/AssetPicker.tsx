@@ -1,7 +1,10 @@
 import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode,
 } from 'react';
-import { listMedia, type MediaAsset, type MediaKind } from '../api';
+import {
+  listMedia, assetUsageKeys, matchesUsage, usageLabel, USAGE_AREAS,
+  type MediaAsset, type MediaKind,
+} from '../api';
 import { Icon } from './icons';
 
 /**
@@ -65,6 +68,8 @@ function AssetPickerModal({
 }) {
   const [assets, setAssets] = useState<MediaAsset[] | null>(null);
   const [q, setQ] = useState('');
+  // Usage category filter: 'all' | 'unused' | 'other' | a content-area key.
+  const [usageFilter, setUsageFilter] = useState('all');
 
   useEffect(() => {
     listMedia(repo).then(setAssets).catch(() => setAssets([]));
@@ -76,15 +81,39 @@ function AssetPickerModal({
     return () => window.removeEventListener('keydown', onKey);
   }, [onPick]);
 
-  const matches = useMemo(() => {
-    // Only served files (public/, with a usable ref) are pickable.
+  // Pickable pool for this field (served files matching the kind/ext filter),
+  // before the usage/search filters — this is what the category chips count.
+  const pool = useMemo(() => {
     let list = (assets ?? []).filter((a) => a.area === 'public' && a.ref && !a.system);
     if (filter.kinds) list = list.filter((a) => filter.kinds!.includes(a.kind));
     if (filter.exts) list = list.filter((a) => filter.exts!.includes(a.ext));
+    return list;
+  }, [assets, filter]);
+
+  const filterOptions = useMemo(() => {
+    const countFor = (key: string) => pool.filter((a) => assetUsageKeys(a).includes(key)).length;
+    const opts = [{ key: 'all', label: 'All', count: pool.length }];
+    for (const { key, label } of USAGE_AREAS) {
+      const c = countFor(key);
+      if (c > 0) opts.push({ key, label, count: c });
+    }
+    for (const key of ['other', 'unused']) {
+      const c = countFor(key);
+      if (c > 0) opts.push({ key, label: usageLabel(key), count: c });
+    }
+    return opts;
+  }, [pool]);
+
+  useEffect(() => {
+    if (!filterOptions.some((o) => o.key === usageFilter)) setUsageFilter('all');
+  }, [filterOptions, usageFilter]);
+
+  const matches = useMemo(() => {
+    let list = pool.filter((a) => matchesUsage(a, usageFilter));
     const needle = q.trim().toLowerCase();
     if (needle) list = list.filter((a) => a.name.toLowerCase().includes(needle));
     return list;
-  }, [assets, filter, q]);
+  }, [pool, usageFilter, q]);
 
   return (
     <div className="viewer-modal" onMouseDown={(e) => { if (e.target === e.currentTarget) onPick(null); }}>
@@ -99,6 +128,21 @@ function AssetPickerModal({
         <div className="picker-toolbar">
           <input autoFocus placeholder="Search assets…" value={q} onChange={(e) => setQ(e.target.value)} />
           <span className="picker-hint">Need a new file? Import it in <b>Tools → Assets</b> first.</span>
+          {filterOptions.length > 2 && (
+            <div className="filter-chips picker-filters" role="tablist" aria-label="Filter by where the asset is used">
+              {filterOptions.map((o) => (
+                <button
+                  key={o.key}
+                  role="tab"
+                  aria-selected={usageFilter === o.key}
+                  className={`chip${usageFilter === o.key ? ' on' : ''}`}
+                  onClick={() => setUsageFilter(o.key)}
+                >
+                  {o.label} <span className="chip-n">{o.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="picker-body">
@@ -118,6 +162,9 @@ function AssetPickerModal({
                     {a.kind === 'video' && <video src={a.url} muted preload="metadata" />}
                     {a.kind === 'model' && <Icon name="cube" size={24} />}
                     {a.kind === 'other' && <Icon name="file" size={24} />}
+                    {a.usedIn.length > 0 && (
+                      <span className="picker-badge" title={`Already used in: ${a.usedIn.map(usageLabel).join(', ')}`}>in use</span>
+                    )}
                   </div>
                   <div className="picker-name">{a.name}</div>
                 </button>

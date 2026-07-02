@@ -1,6 +1,6 @@
 import { constitutionApi, type Constitution } from '../api';
 import CollectionEditor from './CollectionEditor';
-import { Field, ImageField, StringListEditor, TextField } from './fields';
+import { CustomFieldsEditor, Field, ImageField, StringListEditor, TextField } from './fields';
 
 const STATUSES = ['current', 'archived', 'draft'];
 
@@ -55,6 +55,11 @@ export default function ConstitutionEditor({ repo }: { repo: string }) {
             onChange={(src) => update({ pdf: src })}
           />
           <StringListEditor label="Summary of changes" items={c.summaryOfChanges} onChange={(summaryOfChanges) => update({ summaryOfChanges })} placeholder="Added the Director of Engineering role" />
+          <CustomFieldsEditor
+            label="Custom fields (extra links / info shown on the constitution page)"
+            items={c.customFields}
+            onChange={(customFields) => update({ customFields })}
+          />
         </>
       )}
     />

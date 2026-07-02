@@ -2,6 +2,8 @@ import PageShell from '../components/PageShell';
 import BlockRenderer from '../components/BlockRenderer';
 import { constitutions, currentConstitution } from '../data/constitution';
 import { seasonById } from '../data/seasons';
+import CustomFields from '../components/CustomFields';
+import { usableCustomFields } from '../lib/customFields';
 
 export default function ConstitutionPage() {
   const current = currentConstitution;
@@ -57,6 +59,15 @@ export default function ConstitutionPage() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {usableCustomFields(current.customFields).length > 0 && (
+              <div className="bg-surface border border-line/10 p-6 mb-10">
+                <h3 className="text-ink text-[11px] uppercase tracking-[0.18em] font-light mb-3">
+                  Links & Resources
+                </h3>
+                <CustomFields fields={current.customFields} className="divide-y divide-line/10" />
               </div>
             )}
 
